@@ -7,8 +7,8 @@ ENEMYLEVELSIZE:	equ     ENEMYPATW*ENEMYPATH*8*2
 		
 ENEMYVOFF:	equ	96*8	
 ENEMY3SPEED:	equ	11
-ENEMY2SPEED:	equ	12	
-ENEMY1SPEED:	equ	13
+ENEMY2SPEED:	equ	20	
+ENEMY1SPEED:	equ	30
 FRAMETIME:	equ	50
 ANIMETIME:	equ	40
 
@@ -352,10 +352,93 @@ section code
 
 
 
+;;; d -> y
+;;; e -> x
+	
+
+DestroyEnemy:
+	ld	a,(rocketx)
+	ld	e,a
+	ld	a,(rockety)
+	ld	d,a
+	call	.findCorner
+
+	ld	c,3
+	xor	a
+.loopy:	
+	ld	b,3	
+.loopx:
+	ld	(hl),a
+	inc	hl
+	djnz	.loopx
+
+	ld	de,32-3
+	add	hl,de
+	dec	c
+	jr	nz,.loopy
+
+
+;;; TODO: Decrement number of enemies!!!!!!!!!
+	xor	a
+	ret
+	
+	
+;;; d -> y
+;;; e -> x
+
+.findCorner:
+	ld	a,d
+	and	0f8h
+
+	ld	l,a
+	ld	h,0
+	add	hl,hl
+	add	hl,hl
+	ld	a,e
+	and	0f8h
+	rrca
+	rrca
+	rrca
+	ld	e,a
+	ld	d,0
+	add	hl,de
+	ld	de,PatternMap
+	add	hl,de
+
+	
+.findloopL:	
+	ld	a,(hl)
+	or	a
+	jr	z,.findl
+	dec	hl
+	jr	.findloopL
+	
+	
+.findl:	inc	hl
+	ld	de,-32
+	
+.findloopU:
+	ld	a,(hl)
+	or	a
+	jr	z,.findU
+	add	hl,de
+	
+.findU:	
+	ret
+
+	
+
 enemy_col:
-	jp	TestRocketCol
-;; 	pop	de
-;; 	ret
+	call	TestRocketCol
+ 	or	a
+	ret	z
+
+	call	DestroyEnemy
+	call	ToBase	
+	ld	hl,NumEnemy
+	dec	(hl)
+;;; TODO: Do something when rocket is destroyed
+ 	ret
 	
 
 
@@ -366,8 +449,8 @@ paintAllEnemy:
 
 .paintAllEne1:
 	ld	a,(NumEnemy)		;Paint Enemies
-	rr	a
-	rr	a
+	sra	a
+	sra	a
 	ld	b,a
 	
 .paintAllEne2:	
@@ -378,8 +461,8 @@ paintAllEnemy:
 	ld	de,64
 	add	hl,de		
 	ld	a,(NumEnemy)		;Paint Enemies
-	rr	a
-	rr	a
+	sra	a
+	sra	a
 	ld	b,a
 	
 .paintAllEne3:	
@@ -463,12 +546,12 @@ moveEnemy:	call	.checkPoint
 	
 .sp1:	cp	2
 	jr	nz,.sp2
-	ld	a,ENEMY3SPEED		
+	ld	a,ENEMY2SPEED		
 	jr	.sp3
 	
 .sp2:	cp	1
 	jr	nz,.sp4
-	ld	a,ENEMY3SPEED
+	ld	a,ENEMY1SPEED
 .sp3:	ld	(speedEnemy),a
 
 .sp4:	
@@ -995,4 +1078,4 @@ coordEnemy:	rb	NUMENEMIES*2
 pointCont:	rb	1
 contSpeed:	rb	1
 UpdateCont:	rb	1
-section code		
+section code
