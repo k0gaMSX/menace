@@ -438,7 +438,8 @@ enemy_col:
 	call	ToBase	
 	ld	hl,NumEnemy
 	dec	(hl)
-;;; TODO: Do something when rocket is destroyed
+	xor	a
+	call	addScore
  	ret
 	
 

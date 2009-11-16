@@ -120,10 +120,6 @@ DelIsrLevel:	di
 
 
 
-;; 		ld	a,7
-;; 		call	SNSMAT
-;; 		bit	2,a
-;; 		jr	nz,.noend
 	
 
 	
@@ -145,6 +141,12 @@ TestEnd:
 		ld	a,(DeathF)
 		or	a
 		jr	nz,.death
+
+ 		ld	a,7
+ 		call	SNSMAT
+ 		bit	2,a
+ 		jr	z,.endLevel
+	
 	
 		jr	.noend
 	
