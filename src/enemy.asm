@@ -474,6 +474,8 @@ DestroyEnemy:
 	
 
 enemy_col:
+	ld	hl,0
+	ld	(BankPattern),hl
 	call	TestRocketCol
  	or	a
 	ret	z

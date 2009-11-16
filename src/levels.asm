@@ -206,8 +206,29 @@ PlayLevel:
 		ld	a,4
 ;; 		call	set_cfondo
 		ei
-		halt
-		call	doPj
+ 		halt
+;; 		halt
+;; 		halt
+;; 		halt
+;; 		halt
+;; 		halt
+;; 		halt
+;; 		halt
+;; 		halt	
+;; 		halt
+;; 		halt
+;; 		halt
+;; 		halt
+;; 		halt
+;; 		halt
+;; 		halt
+;; 		halt
+;; 		halt
+;; 		halt
+;; 		halt
+;; 		halt
+;; 		halt
+		Call	doPj
 		call	doEnemy
 		call	doMeteors
 		call	VisOn
@@ -497,7 +518,7 @@ LevelISR:
 
 
 		call	SoundISR
-		ld	a,1
+;; 		ld	a,1
 ;; 		call	set_cfondo
 		ret
 	

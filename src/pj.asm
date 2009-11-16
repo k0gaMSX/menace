@@ -711,7 +711,9 @@ TestRocketCol:
 	ld	h,0
 	add	hl,hl
 	add	hl,hl
-	add	hl,hl	
+	add	hl,hl
+	ld	de,(BankPattern)
+	add	hl,de
  	ex	de,hl
  	call	ReadPTR_VRAM
 	ei
@@ -740,6 +742,7 @@ section rdata
 .XoffC:	  rb 1
 .Yoff:	  rb 1
 .YoffC:	  rb 1
+BankPattern:	rw 1
 section code	
 
 	

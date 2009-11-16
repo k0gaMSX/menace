@@ -95,6 +95,8 @@ InitMeteors:
 
 	
 meteor_col:
+	ld	hl,800h
+	ld	(BankPattern),hl	
 	call	TestRocketCol
  	or	a
 	ret	z
