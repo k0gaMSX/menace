@@ -215,28 +215,7 @@ PlayLevel:
 %endif
 		ei
  		halt
-;; 		halt
-;; 		halt
-;; 		halt
-;; 		halt
-;; 		halt
-;; 		halt
-;; 		halt
-;; 		halt
-;; 		halt
-;; 		halt
-;; 		halt
-;; 		halt
-;; 		halt
-;; 		halt
-;; 		halt
-;; 		halt
-;; 		halt
-;; 		halt
-;; 		halt
-;; 		halt
-;; 		halt
-		Call	doPj
+		call	doPj
 		call	doEnemy
 		call	doMeteors
 		call	VisOn
@@ -457,7 +436,7 @@ LevelISR:
 		ld	de,1b00h
 		call	SetPtr_VRAM
 		ld	hl,spratt
-		call    R_outi + 480 - 2 * 128
+		call    R_outi + 480 - 8 * 32
 
 		ld	de,0+96*8
 		call	SetPtr_VRAM
@@ -557,6 +536,7 @@ LevelISR:
   		call	set_cfondo
 %endif
 		ret
+
 
 
 .colours:

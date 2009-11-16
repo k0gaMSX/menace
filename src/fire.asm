@@ -1,147 +1,143 @@
 
 
-MAXFIRE:	equ	8
-MAXFIRE_1:	equ	MAXFIRE-1
-SPRFIRE_A:	equ	25
+MAXFIRE:	equ	5
+MAXFIRE_1:      equ     MAXFIRE-1
+SPRFIRE_A:	equ	SPRBOOM8+1
 FIRECOLOR0:	equ	7
-FIRECOLOR1:	equ	8	
+FIRECOLOR1:	equ	8
 FIRE_STATE0:	equ	13
+FIRE_ATTR:      equ     13
+FIRE_HIDEY:     equ     254
 
 
 
+;;; TODO: Test fire state by 4 byte of spriteFire <- Someone can explain
+;;;                                                  this to me? (k0ga)
 
 
-;;; TODO: Test fire state by 4 byte of spriteFire
-
-
-	
 InitFire:
 	ld	(probFire),a
-	xor	a	
+	xor	a
 	ld	(NumFire),a
 	ld	(OffsetFire),a
-	ld	(FireColor),a	
+	ld	(FireColor),a
+        ld      hl,spriteFire
+
+        ld      a,FIRE_HIDEY
+        ld      (hl),a
+        ld      de,spriteFire+1
+        ld      bc,MAXFIRE*4-1
+        ldir
 	ret
 
 
+;;; TODO: Test if searchEnemy is working well, or due to misworking of it,
+;;; the funcion newFire result always in the same X <- done, so problem is
+;;; due to newFire
+
+;;; bc -> Pointer to map
+;;; de -> pointer to end of the map
+;;; Return Z = 0 if not found
+;;;        Z = 1 if found
+;;;        de -> last position in the map looked
+
+searchEnemy:
+        ld      a,(bc)
+        or      a
+        jr      z,.noEnemy
+
+        ld      l,e           ;We are searching here for a 0 zone
+        ld      h,d
+        or      a
+        sbc     hl,bc
+        ret     z
+        inc     bc
+        jr      searchEnemy
+
+.noEnemy:
+        ld      a,(bc)         ;We continue searching while we don't found
+        or      a              ;a enemy or bc != de
+        ret     nz
+
+        ld      l,e
+        ld      h,d
+        or      a
+        sbc     hl,bc
+        ret     z
+        inc     bc
+        jr      .noEnemy
 
 
-	
+
+
+
+
 TestFire:
-	ret
 	ld	bc,PatternMap+4*32
 	ld	de,PatternMap+5*32
-	xor	a
-	ld	(.state),a
-	ld	a,4*8
+	ld	a,5*8
 	ld	(FireY),a
-	
-.1ndRowl:	
-	ld	l,c
-	ld	h,b
-	or	a
-	sbc	hl,de
-	jr	z,.2ndRow
 
-	ld	hl,.state
-	ld	a,(bc)
-	cp	(hl)
-	jr	z,.1ndRowi
 
-	ld	(hl),a
-	or	a
-	push	bc
-	push 	de
-	call	nz,NewFire
-	pop	de
-	pop	bc
-
-.1ndRowi:
-	inc	bc
-	jr	.1ndRowl
-
+.1ndRow:
+        ld      a,(NumFire)
+        cp      MAXFIRE
+        ret     z
+        call    searchEnemy
+        jr      z,.2ndRow
+	call	NewFire
+        jr      .1ndRow
 
 
 ;;; ***************************************************
-	
+
 .2ndRow:
+        ret
+	ld	bc,PatternMap+6*32
+	ld	de,PatternMap+7*32
+
+.2ndRow_1:
+        ld      a,(NumFire)
+        cp      MAXFIRE
+        ret     z
+        call    searchEnemy
+        ret     z
+	call	NewFire
+        jr      .2ndRow_1
 	ret
-	ld	bc,PatternMap+8*32
-	ld	de,PatternMap+9*32
-	xor	a
-	ld	(.state),a
-	ld	a,8*8
-	ld	(FireY),a
-	
-	
-.2ndRowl:	
-	ld	l,c
-	ld	h,b
-	or	a
-	sbc	hl,de
-	ret	z
-
-	ld	hl,.state
-	ld	a,(bc)
-	cp	(hl)
-	jr	z,.2ndRowi
-
-	ld	(hl),a
-	or	a
-	push	bc
-	push	de
-	call	nz,NewFire
-	pop	de
-	pop	bc
-	
-
-.2ndRowi:
-	inc	bc
-	jr	.2ndRowl
-	ret
-	
-
-
-
-section rdata
-.state:	rb	1
-section code	
-
-
-
 
 
 
 moveFire:
-	ret
-	ld	a,(NumFire)
+    	ld	a,(NumFire)
 	or	a
 	ret	z
 
-	ld	b,a
+	ld	b,MAXFIRE
 	ld	hl,spriteFire
 
-.loop:	
+.loop:
 	ld	a,(hl)
+        cp      FIRE_HIDEY
+        jr      z,.endloop
 	inc	a
-	ld	(hl),a	
-	push	af
+	ld	(hl),a
 	call    .chktile
-	pop	af
-	inc	hl
-	inc	hl
+
+.endloop:
+        inc     hl
+        inc     hl
+        inc	hl
 	inc	hl
 	djnz	.loop
-	
+
 
 	ret
-	
+
 
 
 .chktile:
 	push	hl
-	push	af
-	
  	inc	hl
   	ld	e,(hl)
   	add	a,8
@@ -153,7 +149,7 @@ moveFire:
 	and	0f8h
 	rrca
 	rrca
-	rrca	
+	rrca
 	ld	e,a
  	add	hl,hl
  	add	hl,hl
@@ -161,24 +157,29 @@ moveFire:
 	ex	de,hl
 	ld	hl,PatternMap
 	add	hl,de
-	
-	ld	a,(hl)
-	cp	30
-	jr	nz,.n1
 
-	ld	a,94
+	ld	a,(hl)
+	cp	0
+	jr	z,.n1
+
+        pop     hl              ;Sprite collision with a pattern!!!!
+        push    hl
+        ld      (hl),FIRE_HIDEY          ;Y sprite = FIRE_HIDEY
+        ld      hl,NumFire
+        dec     (hl)
+
+	ld	a,94            ;TODO: I must redraw destroyed floor to!!!
 	ld	hl,01a00h
 	add	hl,de
 	ld	de,32*8*2
 	or	a
 	sbc	hl,de
 	call	.vpoke
-	
+
 .n1:
-	pop	af
 	pop	hl
 	ret
-	
+
 
 
 
@@ -187,79 +188,99 @@ moveFire:
 	ex	de,hl
 	call	SetPtr_VRAM
 	ei
-	ex	af,af'	
+	ex	af,af'
 	out	(98h),a
 	ret
-	
-;;; hl -> pointer to the block where fire is launched
+
+;;; bc -> pointer to the block where fire is launched
+;;; de -> pointer to last coordenate of the row
 ;;; (FireY) -> y coordinate
 
-	
+HANG:   di
+        halt
+
 NewFire:
-	ret
-	ld	(.pos),bc
-	call	Rand
-	ld	hl,probFire
-	cp	(hl)
-	ret	c
+	push	bc
+	push 	de
 
-	
+        ex      de,hl
+        or      a
+        sbc     hl,bc
+	ld	(.pos),hl
+	;; call	Rand
+	;; ld	hl,probFire
+	;; cp	(hl)
+	;; ret	c
+
 	ld	a,(NumFire)
-	cp 	MAXFIRE_1
+	cp 	MAXFIRE
 	ret	z
 
-	cp	1
-	ret	z
+        cp     2
+        ret    z
 
-	
+        pop     de              ;FIXME: This 3 opcodes are here to help debugging
+        pop     bc              ;routine is hanging MSX in the next loop
+        ret
+
+
+        ld      c,MAXFIRE
 	ld	hl,spriteFire
-	add	a,a
-	add	a,a
-	ld	e,a
-	ld	d,0
-	add	hl,de
+.searchsprite:
+        ld      a,(hl)
+        cp      FIRE_HIDEY
+        jr      z,.foundSprite
+        dec     c
+        call    z,HANG
 
+        inc     hl
+        inc     hl
+        inc     hl
+        inc     hl
+        jr      .searchsprite
+
+.foundSprite:
 	ld	a,(FireY)
 	ld	(hl),a
-	
-	ld	de,(.pos)
-	ld	a,e
-	
-;; 	ld	a,(contframeEnemy)
-;; 	ld	e,a
-	and	0e0h
-	rlca
-	rlca
-	rlca
-	rlca
-	rlca
-;;; add	a,8
-;;  	sub	a,e
-
-	inc	hl	
-	ld	(hl),a
 	inc	hl
-	ld	a,FIRE_STATE0
-	ld	(hl),a
+
+
+
+	ld	de,(.pos)
+        ld      b,5
+.1:     srl     d
+        rl      e
+        djnz    .1
+
+
 	ld	hl,NumFire
 	inc	(hl)
+
+ 	ld	a,(contframeEnemy) ;d must be always 0 due to there is only
+        add     a,e                ;255 x pos (.pos == initialDE - initialBC)
+	ld	(hl),a
+
+
+	pop	de
+	pop	bc
 	ret
+
+
+
 
 
 section rdata
 .pos:	rw	1
-section code	
-	
+section code
 
-RenderFire:
-	ret
- 	xor	a
- 	ld	hl,spratt+SPRFIRE_A*4
- 	ld	(hl),a
- 	ld	de,spratt+SPRFIRE_A*4+1
- 	ld	bc,MAXFIRE_1*4-1
-  	ldir
-	
+
+renderFire:
+ 	;; xor	a
+ 	;; ld	hl,spratt+SPRFIRE_A*4
+ 	;; ld	(hl),a
+ 	;; ld	de,spratt+SPRFIRE_A*4+1
+ 	;; ld	bc,(MAXFIRE-1)*4-1
+  	;; ldir
 
 	ld	hl,FireColor
 	ld	a,FIRECOLOR1
@@ -267,65 +288,85 @@ RenderFire:
 	jr	z,.01
 	ld	(hl),a
 	jr	.0
-	
+
 .01:	ld	a,FIRECOLOR0
 	ld	(hl),a
-	
-.0:	ld	a,(NumFire)
-	or	a
-	ret 	z
 
-
-	ld	b,a
+.0:
+	ld	b,MAXFIRE
 	ld	de,spriteFire
+ 	ld	ix,spratt+SPRFIRE_A*4
 .1:	call	.writeSprite
 	djnz	.1
-	
-	
-	ld	a,(OffsetFire)
-	inc	a
-	cp	MAXFIRE-1
-	jr	nz,.2
-	xor	a
-	
+
+
+	;; ld	a,(OffsetFire)
+	;; inc	a
+	;; cp	MAXFIRE-1
+	;; jr	nz,.2
+	;; xor	a
+
 .2:	ld	(OffsetFire),a
 	ret
 
-	
-	
+
+
 
 ;;; b -> Number of sprite
-	
-.writeSprite:
-	push	bc
-	ld	c,b
-	dec	c
-	ld	a,(OffsetFire)
-	add	a,c
-	and	MAXFIRE-1
-	
- 	add	a,a
- 	add	a,a
- 	ld	ix,spratt+SPRFIRE_A*4
- 	ld	c,a
- 	ld	b,0
- 	add	ix,bc
 
+
+
+.writeSprite:
+        push    bc
  	ld	a,(de)
-	inc	de	
+	inc	de
 	ld	(ix+0),a
  	ld	a,(de)
-	inc	de		
+	inc	de
 	ld	(ix+1),a
-	ld	a,(de)
+        ld      a,FIRE_ATTR
 	ld	(ix+2),a
 	ld	a,(FireColor)
 	ld	(ix+3),a
-	pop 	bc
+        inc     ix
+        inc     ix
+        inc     ix
+        inc     ix
+        inc     de
+        inc     de
+        pop     bc
 	ret
-	
 
-	
+;; .writeSprite:
+	;; push	bc
+	;; ld	c,b
+	;; dec	c
+	;; ld	a,(OffsetFire)
+	;; add	a,c
+	;; and	MAXFIRE-1
+
+ 	;; add	a,a
+ 	;; add	a,a
+ 	;; ld	ix,spratt+SPRFIRE_A*4
+ 	;; ld	c,a
+ 	;; ld	b,0
+ 	;; add	ix,bc
+
+ 	;; ld	a,(de)
+	;; inc	de
+	;; ld	(ix+0),a
+ 	;; ld	a,(de)
+	;; inc	de
+	;; ld	(ix+1),a
+	;; ld	a,(de)
+	;; ld	(ix+2),a
+	;; ld	a,(FireColor)
+	;; ld	(ix+3),a
+	;; pop 	bc
+	;; ret
+
+
+
 section rdata
 FireColor:	rb	1
 NumFire:	rb	1
@@ -333,4 +374,4 @@ probFire:	rb	1
 spriteFire:	rb	MAXFIRE*4
 FireY:		rb	1
 OffsetFire:	rb	1
-section code	
+section code
