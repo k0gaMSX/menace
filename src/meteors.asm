@@ -127,6 +127,13 @@ moveMeteors:
 	xor	a
 	ld	(MeteorFrame),a
 
+
+	ld 	hl,PatternMap+32*9+1
+	ld	de,PatternMap+32*9+0
+	ld	bc,31
+	ldir
+ 	ld	(PatternMap+32*9+31),a		
+	
 	
 	ld 	hl,PatternMap+32*10+30
 	ld	de,PatternMap+32*10+31
@@ -149,6 +156,14 @@ moveMeteors:
 	ld	(PatternMap+32*12),a	
 
 
+	ld	hl,PatternMap+32*9+29
+	ld	a,(hl)
+	inc	hl
+	or	(hl)
+	inc	hl
+	or	(hl)
+	call	z,newMeteor2
+	
 	
 	ld	hl,PatternMap+32*10
 	ld	a,(hl)
