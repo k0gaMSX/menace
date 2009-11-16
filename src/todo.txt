@@ -1,0 +1,21 @@
+todo:
+- add game over
+	- na game over naar introscherm
+- hengst op spatie ofzo in het introscherm
+> gfx tcf'en
+	+ tni logo
+	+ intro
+	> ingame
+		+ sprites
+		+ patterns
+		- colors		(levels.asm)
+		- floor patterns	(levels.asm)
+		- floor colors		(levels.asm)
+		- enemy patterns	(enemy.asm)
+		- enemy colors		(enemy.asm)
+	+ 'demo' pictures
+- pt3 vervangen voor guyver5
+- muziek toevoegen
+- 'waar blijft mijn raket' met spatie ingedrukt
+- ending toevoegen
+	- na ending tni logo

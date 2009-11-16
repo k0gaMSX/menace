@@ -1,7 +1,7 @@
 
 
-	
-	
+
+
 initIntro:
 		ld	hl,0
 		ld	(BAKCLR),hl
@@ -18,27 +18,21 @@ initIntro:
 		ld	hl,0
 		call	FILVRM
 
-		ld	bc,1328		; size of intro patterns
 		ld	de,64*8		; starting from "@"
 		ld	hl,intro.pat
 		push	hl
-		push	bc
-		call	LDIRVM
-		pop	bc
+		call	UnTCFV
 		ld	de,$800+64*8
 		pop	hl
-		call	LDIRVM
+		call	UnTCFV
 
-		ld	bc,1328
 		ld	de,$2000+64*8
 		ld	hl,intro.col
 		push	hl
-		push	bc
-		call	LDIRVM
-		pop	bc
+		call	UnTCFV
 		ld	de,$2800+64*8
 		pop	hl
-		call	LDIRVM
+		call	UnTCFV
 
 		ld	bc,6*32
 		ld	de,$1880
@@ -50,8 +44,8 @@ initIntro:
 		ld	hl,intro.odd
 		call	LDIRVM
 
-	
-			
+
+
 		di
 		ld	a,$c3
 		ld	hl,mainIntro
@@ -61,19 +55,19 @@ initIntro:
 
 		call	ENASCR
 		ld	b,60*2
-.wait:		
+.wait:
 		ei
 		halt
-		djnz	.wait	
-	
+		djnz	.wait
+
 		ld	a,0c9h
 		ld	(0fd9ah),a
-		ret	
-	
-			
-		  
+		ret
+
+
+
 ;
-mainIntro:	
+mainIntro:
 		call	RDVDP
 
 		; $1800 = 0001 1000 0000 0000
@@ -82,14 +76,14 @@ mainIntro:
 		ld	a,($f3e1)
 		xor	1
 		ld	b,a
-		ld	c,2	
+		ld	c,2
 		call	WRTVDP
 		ret
 
 
-	
+
 ;
-setplt:	
+setplt:
 		ld	a,($2d)
 		or	a
 		ret	z
@@ -112,14 +106,14 @@ setplt:
 
 
 
-		
+
 intro:
 .palette:	dw	$000,$000,$612,$723,$227,$337,$262,$637
 		dw	$271,$373,$562,$663,$512,$255,$666,$777
 
-	
-.pat:		incbin	"intro.sc2",$0007,1328
-.col:		incbin	"intro.sc2",$2007,1328
+
+.pat:		incbin	"intro.pat.tcf",8
+.col:		incbin	"intro.col.tcf",8
 .even:		include	"intro0.asm"
 .odd:		include "intro1.asm"
 

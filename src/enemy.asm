@@ -8,7 +8,7 @@ ENEMYLEVELSIZE:	equ     ENEMYPATW*ENEMYPATH*8*2
 ENEMYVOFF:	equ	96*8	
 ENEMY3SPEED:	equ	11
 ENEMY2SPEED:	equ	20	
-ENEMY1SPEED:	equ	30
+ENEMY1SPEED:	equ	25
 FRAMETIME:	equ	50
 ANIMETIME:	equ	40
 
@@ -46,6 +46,10 @@ ENEMY4_PAT6:	equ	119
 	
 
 InitEnemy:
+	ld	hl,BufferColor1
+	ld	(BuffColorPtr1),hl
+	ld	hl,BufferColor2	
+	ld	(BuffColorPtr2),hl	
 	ld	a,NUMENEMIES
 	ld	(NumEnemy),a
 	ld	(renderEnemyF),a
@@ -732,6 +736,10 @@ SwapEnemy:
         ld	(bufferPtrUp1),de
 	ld	(bufferPtrUp2),hl
 
+	ld	hl,(BuffColorPtr1)
+	ld	de,(BuffColorPtr2)
+	ld	(BuffColorPtr1),de
+	ld	(BuffColorPtr2),hl
 
         ld	hl,(bufferPtrDw1)
 	ld	de,(bufferPtrDw2)
@@ -1105,7 +1113,7 @@ redchar_left2:	rb	2
 bufferPtrUp1:	rb	2
 bufferPtrUp2:	rb	2
 bufferPtrDw1:	rb	2	
-bufferPtrDw2:	rb	2
+bufferPtrDw2:	rb	2	
 	
 	
 bufferEnUp1:	rb	ENEMYSIZE
@@ -1115,7 +1123,10 @@ bufferEnDw2:	rb	ENEMYSIZE
 
 
 BufferColor1:	rb	16
-BufferColor2:	rb	16	
+BufferColor2:	rb	16
+BuffColorPtr1:	rw	1
+BuffColorPtr2:	rw	1
+	
 
 
 

@@ -1,4 +1,29 @@
-		; --- PT3 REPLAYER WORKING ON ROM ---
+PT3_ROUT:	XOR A
+	
+ROUT_A0:	; --- FIXES BITS 6 AND 7 OF MIXER ---
+		LD	HL,AYREGS+7
+		set	7,(hl)
+		res	6,(hl)
+
+		LD C,0A0h
+		LD HL,AYREGS
+.LOUT:		OUT (C),A
+		INC C
+		OUTI 
+		DEC C
+		INC A
+		CP 13
+		JR NZ,.LOUT
+		OUT (C),A
+		LD A,(HL)
+		AND A
+		RET M
+		INC C
+		OUT (C),A
+		RET
+
+
+/;		; --- PT3 REPLAYER WORKING ON ROM ---
 		; --- Can be assembled with asMSX ---
 		; --- ROM version: MSX-KUN        ---
 		; --- asMSX version: SapphiRe     ---
@@ -756,30 +781,6 @@ PT3_PLAY:	XOR A
 		LD (CurESld),HL
 		RET
 
-PT3_ROUT:	XOR A
-	
-ROUT_A0:	; --- FIXES BITS 6 AND 7 OF MIXER ---
-		LD	HL,AYREGS+AR_Mixer
-		set	7,(hl)
-		res	6,(hl)
-
-		LD C,0A0h
-		LD HL,AYREGS
-.LOUT:		OUT (C),A
-		INC C
-		OUTI 
-		DEC C
-		INC A
-		CP 13
-		JR NZ,.LOUT
-		OUT (C),A
-		LD A,(HL)
-		AND A
-		RET M
-		INC C
-		OUT (C),A
-		RET
-
 EMPTYSAMORN: 	db 0,1,0,090h ;delete 090h if you don't need default sample
 
 NT_:	;Note table 2 [if you use another in Vortex Tracker II copy it and paste
@@ -839,3 +840,4 @@ VT_:			rb	14
 EnvBase:		rb	2
 VAR0END:		rb	240
 section code	
+\;

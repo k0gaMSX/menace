@@ -133,36 +133,48 @@ move_pj:
 	ld	a,(fired)
 	cp	3
 	ret	z
-	
-	xor	a
+
 	ld	hl,PatternMap+20*32
 	ld	de,PatternMap+20*32+1
-	ld	(hl),a
 	ld	bc,31
+	ld	(hl),b
 	ldir
-	
-	ld	(keyleft),a
-	ld	(keyright),a
-	ld	(keyfire),a
+
+	ld	a,15
+	ld	e,8fh
+	call	WRTPSG
+	ld	a,14
+	call	RDPSG
+	cpl
+	rra		; skip up
+	rra		; skip down
+	and	7
+	ld	b,a
 	ld	a,8
 	call	SNSMAT
+	cpl
+	rlca
+	and	23h	; =NC
+	bit	5,a
+	jr	z,.nc
+	scf		; =C
+.nc:	rla
+	or	b
 	ld	b,a
-	ld	a,1
-	bit	0,b
-	jr	nz,.1
-	ld	(keyfire),a
-	
-.1:	bit	7,b
-	jr	nz,.2
-	ld	(keyright),a
-	
-		
-.2:	bit	4,b
-	jr	nz,.3
+	rr	b
+	sbc	a,a
+	and	1
 	ld	(keyleft),a
+	rr	b
+	sbc	a,a
+	and	1
+	ld	(keyright),a
+	rr	b
+	sbc	a,a
+	and	1
+	ld	(keyfire),a
 
-	
-.3:	ld	a,(fired)
+	ld	a,(fired)
 	cp	1
 	jp	z,.move_rocket
 	jp	.move_base

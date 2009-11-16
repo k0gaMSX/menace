@@ -22,7 +22,7 @@ ENEMYEXP_PRIO:		equ   1
 
 SoundISR:
 	call	PT3_ROUT
-	call	PT3_PLAY
+	call	SimPT3
 	call	ayFX_PLAY
 	ret
 

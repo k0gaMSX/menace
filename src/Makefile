@@ -1,12 +1,13 @@
 #AS = /usr/local/bin/tniasm.linux
 AS=/usr/local/bin/tniasm
-SRC = menace.asm tnimsx1.asm 
+SRC = menace.asm tnimsx1.asm
 MSX = openmsx
 MSXFLAGS = -machine turbor -ext debugdevice
 SR52 = ../tools/sr52pat
 PAT = patterns.pat
 SPR = ../tools/sr52spr
-VPATH = ../sc5	
+TCF = wine ../tools/tcpack.exe
+VPATH = ../sc5 ../sc2 ../data
 
 
 all: menace.rom
@@ -18,13 +19,13 @@ menace.rom: $(SRC)
 
 
 test: menace.rom
-	$(MSX) $(MSXFLAGS) menace.rom 
+	$(MSX) $(MSXFLAGS) menace.rom
 
-deps:	
-	files=`grep include menace.asm | cut -d'"' -f2` ; \
+deps:
+	files=`grep include *.asm | cut -d'"' -f2` ; \
 	for i in  $$files; do \
 	  if [ -f $$i ]; then \
-	     echo menace.rom: $$i >> depsy ;\
+	     echo menace.rom: $$i >> deps ;\
 	  else \
 	     tmp=`which tniasm.linux`;echo menace.rom: `dirname $$tmp`/$$i >> deps ;\
 	  fi ; \
@@ -37,7 +38,7 @@ deps:
 	    fi ; \
 	  done ;\
 	done ;\
-	files=`grep incbin menace.asm | cut -d'"' -f2` ; \
+	files=`grep incbin *.asm | cut -d'"' -f2` ; \
 	for i in $$files ; do \
 	   echo menace.rom: $$i >> deps ;\
 	done ;
@@ -50,7 +51,7 @@ deps:
 
 
 %.pat: %.sc5
-	$(SR52) $< 5 
+	$(SR52) $< 5
 	mv -f `dirname $<`/$@  .
 	cp -f `dirname $<`/$*.col .
 
@@ -77,6 +78,15 @@ deps:
 
 
 
+%.pat %.col: %.sc2
+	dd if=`dirname $<`/$*.sc2 of=$*.pat bs=1 count=6144
+	dd if=`dirname $<`/$*.sc2 of=$*.col bs=1 count=6144 skip=8192
+
+
+
+%.tcf: %
+	$(TCF) $< $@
+
 
 
 include deps
@@ -94,4 +104,5 @@ clean:
 	rm -f *.spr
 	rm -f *.flr
 	rm -f *.ene
+	rm -f *.tcf
 	rm deps

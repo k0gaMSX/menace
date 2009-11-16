@@ -1,7 +1,7 @@
 WAIT_TIME:	equ	120
 
-	
-	
+
+
 InitLevel:
 		call	BeginScore
 		call	DISSCR
@@ -10,7 +10,7 @@ InitLevel:
 		ld	a,1
 		ld	(NumLevel),a
 
-	
+
 		ld	bc,$4000
 		ld	hl,0
 		call	FILVRM
@@ -25,10 +25,9 @@ InitLevel:
 		xor	a
 		ld	hl,3800h
 		call	FILVRM
-		ld	bc,512
 		ld	hl,sprdata
 		ld	de,3800h
-		call	LDIRVM
+		call	UnTCFV
 		ld	bc,8
 		ld	a,0ffh
 		ld	hl,3800h+250*8
@@ -39,18 +38,18 @@ InitLevel:
 		ld	bc,32*4-1
 		ld	(hl),a
 		ldir
-		call	set_spd8	
+		call	set_spd8
 		ret
-	
-	
-.initpat:		
+
+
+.initpat:
 		ld	a,3
 		ld	de,0
 .cppat:		ld	hl,scrpat
-		ld	bc,800h
+		;ld	bc,800h
 		push	de
 		push	af
-		call    LDIRVM
+		call    UnTCFV
 		pop	af
 		pop	hl
 		ld	de,800h
@@ -63,17 +62,17 @@ InitLevel:
 		ld	bc,6*8
 		ld	de,basegfxt
 		call	LDIRMV
-	
+
 
 		ld	hl,basegfxt+8
 		ld	bc,3*8
 		ld	de,1000h+160*8
 		call	LDIRVM
-		ret	
+		ret
 
 
-	
-.initcol:		
+
+.initcol:
 		ld	a,3
 		ld	de,2000h
 .cpcol:		ld	hl,scrcol
@@ -92,17 +91,17 @@ InitLevel:
 		ld	hl,scrcol+121*8
 		ld	bc,3*8
 		ld	de,3000h+160*8
-		call	LDIRVM	
+		call	LDIRVM
 		ret
 
 
 TestDeath:
 		ld	a,(DeathF)
 		or	a
-		ret	
+		ret
 
 
-	
+
 
 
 InsIsrLevel:
@@ -116,7 +115,7 @@ InsIsrLevel:
 		ei
 		ret
 
-	
+
 
 DelIsrLevel:	di
 		ld	a,0c9h
@@ -126,24 +125,24 @@ DelIsrLevel:	di
 
 
 
-	
 
-	
+
+
 TestEnd:
 		call	TestBoom
 		jr	nz,.noend
 
-	
+
 		ld	a,(NumEnemy)
 		or	a
 		jr	z,.endLevel
 
-	
+
 		ld	a,(NumLives)
 		or	a
 		jr	z,.newgame
 
-	
+
 		ld	a,(DeathF)
 		or	a
 		jr	nz,.death
@@ -152,13 +151,13 @@ TestEnd:
  		call	SNSMAT
  		bit	2,a
  		jr	z,.endLevel
-	
-	
+
+
 		jr	.noend
-	
+
 .endLevel:
 		ld	hl,NumLevel
-		inc	(hl)	
+		inc	(hl)
 		ld	a,1
 		or	a
 		ret
@@ -167,7 +166,7 @@ TestEnd:
 		or	a
 		ret
 
-	
+
 .noend:		xor	a
 		ret
 
@@ -177,31 +176,31 @@ TestEnd:
 
 
 ;;; ************************************************
-	
-		
-PlayLevel:	
+
+
+PlayLevel:
 		ld	a,(NumLevel)
 		cp	11
 		jr	nz,.BeginPlay
 		xor	a
 		ret
 
-		
+
 .BeginPLay:
 		ld	a,WAIT_TIME
 		ld	(waitgame),a
 		call	CleanScr
 		call	.showLevel
-		call	.CleanMap	
+		call	.CleanMap
 		call	.initMap
-		call	VisOff	
+		call	VisOff
 		call    InitEnemy
 		call	InitMeteors
 		call	initPJ
 		call	PrintScore
 		call	InsIsrLevel
-	
-		
+
+
 .GameLoop:
 		ld	a,4
 ;; 		call	set_cfondo
@@ -214,7 +213,7 @@ PlayLevel:
 ;; 		halt
 ;; 		halt
 ;; 		halt
-;; 		halt	
+;; 		halt
 ;; 		halt
 ;; 		halt
 ;; 		halt
@@ -236,7 +235,7 @@ PlayLevel:
 		jr	nz,.death
 		call	TestEnd
 		jr	z,.GameLoop
-	
+
 
 .endGame:	call	.WaitTime
 		push	af
@@ -247,7 +246,7 @@ PlayLevel:
 .death:
 		ld	hl,waitgame
 		dec	(hl)
-		jr	nz,.GameLoop	
+		jr	nz,.GameLoop
  		call	TestEnd
   		jr	z,.GameLoop
  		jr	.endGame
@@ -255,26 +254,26 @@ PlayLevel:
 
 
 
-.WaitTime:	
+.WaitTime:
 		ld	b,50
 .1:		ei
 		halt
 		djnz	.1
 		ret
 
-	
 
-	
+
+
 ;;; ****************************************************
-	
 
-.initMap:	
+
+.initMap:
 		ld	hl,PatternMap+21*32
 
 		ld	b,2
 		ld	a,30
 .initMapLoopE:	push	bc
-		ld	b,16	
+		ld	b,16
 .initMapLoop:	push	af
 		ld	(hl),a
 		inc	hl
@@ -282,7 +281,7 @@ PlayLevel:
 		ld	(hl),a
 		inc	hl
 		pop	af
-		djnz	.initMapLoop		
+		djnz	.initMapLoop
 		pop	bc
 		ld	a,62
 		djnz	.initMapLoopE
@@ -292,7 +291,7 @@ PlayLevel:
 		ld	b,8
 .initMapLoop2:	ld	(hl),a
 		inc	a
-		inc	hl	
+		inc	hl
 		djnz	.initMapLoop2
 		xor	a
 		ld	(hl),a
@@ -310,7 +309,7 @@ PlayLevel:
 		djnz	.initMapLoop21
 
 
-	
+
 		ld	hl,PatternMap+759 ;Paint TNI CopyRight
 		ld	a,146
 		ld	b,8
@@ -319,7 +318,7 @@ PlayLevel:
 		inc	a
 		djnz	.initMapLoop3
 
-	
+
 		ld	a,(NumLives)
 		ld	b,a
 		ld	hl,PatternMap+23*32
@@ -332,7 +331,7 @@ PlayLevel:
 		djnz	.initMapLoop4
 		pop	bc
 		djnz	.initMapLoopE1
-	
+
 		ld	hl,PatternMap
 		ld	de,1800h
 		ld	bc,32*24
@@ -341,9 +340,9 @@ PlayLevel:
 
 
 
-	
 
-.CleanMap:		
+
+.CleanMap:
 		ld	bc,32*24-1
 		xor	a
 		ld	hl,PatternMap
@@ -354,13 +353,13 @@ PlayLevel:
 
 
 
-	
+
 .showLevel:	ld	d,8
 		ld	e,8
 		xor	a
 		call	.PrintDigit
 		ld	a,2
-		call	.PrintDigit	
+		call	.PrintDigit
 		ld	a,4
 		call	.PrintDigit
 		ld	a,6
@@ -368,32 +367,32 @@ PlayLevel:
 		ld	a,8
 		call	.PrintDigit
 		inc	de
-		inc	de		
+		inc	de
 		ld	a,(NumLevel)
 		cp	10
 		jr	nz,.showl1
-	
+
 		ld	a,12
 		call	.PrintDigit
 		ld	a,10
 		call	.PrintDigit
 		jr	.showl2
-	
-	
-.showl1:	add	a,a	
+
+
+.showl1:	add	a,a
 		add	a,10
 		call	.PrintDigit
-.showl2:		
+.showl2:
 		ld	b,2*60
 .showLevelloop:	ei
 		halt
 		djnz	.showLevelloop
-		
-		ret					
+
+		ret
 
 
 
-	
+
 
 .PrintDigit:	push	de
 		ld	l,d
@@ -410,8 +409,8 @@ PlayLevel:
 		ld	b,3
 		ld	de,31
 
-	
-.PrintDigitloop:		
+
+.PrintDigitloop:
 		push	af
 		call	WRTVRM
 		pop	af
@@ -428,15 +427,15 @@ PlayLevel:
 		inc	de
 		ret
 
-	
-		
-	
 
 
 
 
-	
-	
+
+
+
+
+
 LevelISR:
 		ld	a,5
 ;; 		call	set_cfondo
@@ -448,7 +447,7 @@ LevelISR:
 		ld	hl,spratt
 		ld	c,98h
 		call    tovram16x8
-	
+
 		ld	de,0+96*8
 		call	SetPtr_VRAM
                 ld	hl,(bufferPtrUp1)
@@ -457,7 +456,7 @@ LevelISR:
 
 		ld	de,0+102*8
 		call	SetPtr_VRAM
-	        ld	hl,(bufferPtrUp2)	
+	        ld	hl,(bufferPtrUp2)
 		ld	c,98h
 		call    tovram12x8
 
@@ -472,7 +471,7 @@ LevelISR:
 		ld	hl,(bufferPtrDw2)
 		ld	c,98h
 		call    tovram12x8
-	
+
   		ld	de,1800h+3*32
 		call	SetPtr_VRAM
 		ld	hl,PatternMap+3*32
@@ -481,7 +480,7 @@ LevelISR:
 		call	SetPtr_VRAM
 		ld	hl,PatternMap+6*32
  		call	tovram8x8
-		
+
 
 
 .meteorMap:	ld	de,1800h+4*32+20*8
@@ -500,35 +499,130 @@ LevelISR:
 		ld	de,800h+METEOR_VOFF1
 		call	SetPtr_VRAM
 		ld	hl,MeteorBufferR
-		ld	c,98h	
+		ld	c,98h
 		call	tovram3x8_slow
 
 		ld	de,800h+METEOR_VOFF2
 		call	SetPtr_VRAM
 		ld	hl,MeteorBufferL
-		ld	c,98h	
+		ld	c,98h
 		call	tovram3x8_slow
 
 		ld	de,1000h+120*8
 		call	SetPtr_VRAM
 		ld	hl,basegfx
-		ld 	c,98h	
-		call  	tovram5x8_slow	
+		ld 	c,98h
+		call  	tovram5x8_slow
+
+
  		call	.changefloor
+		ld	a,12
+;;  		call	set_cfondo
+		call	.colours
+ 		ld	a,10
+;;  		call	set_cfondo
+
 
 
 		call	SoundISR
-;; 		ld	a,1
-;; 		call	set_cfondo
+ 		ld	a,1
+;;  		call	set_cfondo
 		ret
-	
+
+
+.colours:
+
+		ld	de,2000h+ENEMYVOFF
+		call	SetPtr_VRAM
+		ld	hl,(BuffColorPtr1)
+		call	tovram1x8_slow
+		ld	hl,(BuffColorPtr1)
+		call	tovram1x8_slow
+		ld	hl,(BuffColorPtr1)
+		call    tovram1x8_slow
+		ld	hl,(BuffColorPtr1)
+		ld	de,8
+		add	hl,de
+		call    tovram1x8_slow
+		ld	hl,(BuffColorPtr1)
+		ld	de,8
+		add	hl,de
+		call    tovram1x8_slow
+		ld	hl,(BuffColorPtr1)
+		ld	de,8
+		add	hl,de
+		call    tovram1x8_slow
+
+
+		ld	hl,(BuffColorPtr2)
+		call    tovram1x8_slow
+		ld	hl,(BuffColorPtr2)
+		call    tovram1x8_slow
+		ld	hl,(BuffColorPtr2)
+		call    tovram1x8_slow
+		ld	hl,(BuffColorPtr2)
+		ld	de,8
+		add	hl,de
+		call    tovram1x8_slow
+		ld	hl,(BuffColorPtr2)
+		ld	de,8
+		add	hl,de
+		call    tovram1x8_slow
+		ld	hl,(BuffColorPtr2)
+		ld	de,8
+		add	hl,de
+		call    tovram1x8_slow
+
+
+		ld	hl,(BuffColorPtr1)
+		call    tovram1x8_slow
+		ld	hl,(BuffColorPtr1)
+		call    tovram1x8_slow
+		ld	hl,(BuffColorPtr1)
+		call    tovram1x8_slow
+		ld	hl,(BuffColorPtr1)
+		ld	de,8
+		add	hl,de
+		call    tovram1x8_slow
+		ld	hl,(BuffColorPtr1)
+		ld	de,8
+		add	hl,de
+		call    tovram1x8_slow
+		ld	hl,(BuffColorPtr1)
+		ld	de,8
+		add	hl,de
+		call    tovram1x8_slow
+
+
+		ld	hl,(BuffColorPtr2)
+		call    tovram1x8_slow
+		ld	hl,(BuffColorPtr2)
+		call    tovram1x8_slow
+		ld	hl,(BuffColorPtr2)
+		call    tovram1x8_slow
+		ld	hl,(BuffColorPtr2)
+		ld	de,8
+		add	hl,de
+		call    tovram1x8_slow
+		ld	hl,(BuffColorPtr2)
+		ld	de,8
+		add	hl,de
+		call    tovram1x8_slow
+		ld	hl,(BuffColorPtr2)
+		ld	de,8
+		add	hl,de
+		call    tovram1x8_slow
+
+		ret
 
 
 
-.changefloor:		
+
+
+.changefloor:
 		ld	a,(NumLevel)
 		dec	a
-		and	0feh	
+		and	0feh
 		add	a,a
 		add	a,a
 		ld	e,a
@@ -554,25 +648,25 @@ LevelISR:
 		ld	c,98h
 		call	tovram2x8_slow
 
-	
+
 		ld	de,1000h+62*8
 		call	SetPtr_VRAM
-		ld 	c,98h	
+		ld 	c,98h
 		call	tovram4x8_slow
-	
+
 ; WE MUST CHANGE destroyed floor!!!
-	
+
 		pop	de
 		ld	hl,floorcol
 		add	hl,de
 		ld	de,3000h+30*8
 		call	SetPtr_VRAM
-		ld	c,98h	
+		ld	c,98h
 		call	tovram2x8_slow
-	
+
 		ld	de,3000h+62*8
 		call	SetPtr_VRAM
-		ld 	c,98h	
+		ld 	c,98h
 		call  	tovram4x8_slow
 		ret        ; TODO: WE MUST CHANGE color of destroyed floor!!!
 
@@ -583,95 +677,134 @@ LevelISR:
 tovram5x8_slow:
 	outi
 	nop
-	outi
 	nop
 	outi
 	nop
-	outi
 	nop
 	outi
 	nop
-	outi
 	nop
 	outi
 	nop
+	nop
 	outi
 	nop
-	
+	nop
+	outi
+	nop
+	nop
+	outi
+	nop
+	nop
+	outi
+	nop
+	nop
+
 tovram4x8_slow:
 	outi
 	nop
-	outi
 	nop
 	outi
 	nop
-	outi
 	nop
 	outi
 	nop
-	outi
 	nop
 	outi
 	nop
-	outi
-	nop
-tovram3x8_slow:	
-	outi
 	nop
 	outi
 	nop
-	outi
 	nop
 	outi
 	nop
-	outi
 	nop
 	outi
 	nop
-	outi
 	nop
 	outi
 	nop
-tovram2x8_slow:	
+	nop
+tovram3x8_slow:
 	outi
+	nop
 	nop
 	outi
 	nop
-	outi
 	nop
 	outi
 	nop
-	outi
 	nop
 	outi
 	nop
-	outi
 	nop
 	outi
 	nop
-tovram1x8_slow:		
-	outi
 	nop
 	outi
 	nop
-	outi
 	nop
 	outi
 	nop
-	outi
 	nop
 	outi
 	nop
+	nop
+tovram2x8_slow:
 	outi
+	nop
+	nop
+	outi
+	nop
+	nop
+	outi
+	nop
+	nop
+	outi
+	nop
+	nop
+	outi
+	nop
+	nop
+	outi
+	nop
+	nop
+	outi
+	nop
+	nop
+	outi
+	nop
+	nop
+tovram1x8_slow:
+	outi
+	nop
+	nop
+	outi
+	nop
+	nop
+	outi
+	nop
+	nop
+	outi
+	nop
+	nop
+	outi
+	nop
+	nop
+	outi
+	nop
+	nop
+	outi
+	nop
 	nop
 	outi
 	ret
 
-	
 
 
-;TODO: Change tovramXxX routines to auto generated RAM routine for this	
-	
+
+;TODO: Change tovramXxX routines to auto generated RAM routine for this
+
 
 tovram16x8:
 	outi
@@ -681,9 +814,9 @@ tovram16x8:
 	outi
 	outi
 	outi
-	outi	
+	outi
 
-	
+
 tovram15x8:
 	outi
 	outi
@@ -692,8 +825,8 @@ tovram15x8:
 	outi
 	outi
 	outi
-	outi	
-	
+	outi
+
 tovram14x8:
 	outi
 	outi
@@ -702,7 +835,7 @@ tovram14x8:
 	outi
 	outi
 	outi
-	outi	
+	outi
 
 tovram13x8:
 	outi
@@ -712,9 +845,9 @@ tovram13x8:
 	outi
 	outi
 	outi
-	outi	
-		
-tovram12x8:	
+	outi
+
+tovram12x8:
 	outi
 	outi
 	outi
@@ -724,7 +857,7 @@ tovram12x8:
 	outi
 	outi
 
-tovram11x8:		
+tovram11x8:
 	outi
 	outi
 	outi
@@ -734,8 +867,8 @@ tovram11x8:
 	outi
 	outi
 
-	
-tovram10x8:	
+
+tovram10x8:
 	outi
 	outi
 	outi
@@ -745,7 +878,7 @@ tovram10x8:
 	outi
 	outi
 
-tovram9x8:		
+tovram9x8:
 	outi
 	outi
 	outi
@@ -753,7 +886,7 @@ tovram9x8:
 	outi
 	outi
 	outi
-	outi	
+	outi
 
 tovram8x8:
 	outi
@@ -763,7 +896,7 @@ tovram8x8:
 	outi
 	outi
 	outi
-	outi	
+	outi
 
 tovram7x8:
 	outi
@@ -773,8 +906,8 @@ tovram7x8:
 	outi
 	outi
 	outi
-	outi	
-	
+	outi
+
 tovram6x8:
 	outi
 	outi
@@ -783,7 +916,7 @@ tovram6x8:
 	outi
 	outi
 	outi
-	outi	
+	outi
 
 tovram5x8:
 	outi
@@ -793,9 +926,9 @@ tovram5x8:
 	outi
 	outi
 	outi
-	outi	
-		
-tovram4x8:	
+	outi
+
+tovram4x8:
 	outi
 	outi
 	outi
@@ -805,7 +938,7 @@ tovram4x8:
 	outi
 	outi
 
-tovram3x8:		
+tovram3x8:
 	outi
 	outi
 	outi
@@ -815,8 +948,8 @@ tovram3x8:
 	outi
 	outi
 
-	
-tovram2x8:	
+
+tovram2x8:
 	outi
 	outi
 	outi
@@ -826,7 +959,7 @@ tovram2x8:
 	outi
 	outi
 
-tovram1x8:		
+tovram1x8:
 	outi
 	outi
 	outi
@@ -837,7 +970,7 @@ tovram1x8:
 	outi
 	ret
 
-	
+
 
 
 ReadPTR_VRAM:
@@ -847,14 +980,14 @@ ReadPTR_VRAM:
 	ld	a,d
 	out	(99h),a		;VDP acess
 	ret
-	
 
-	
+
+
 ;Nombre:  SetPtr_VRAM
 ;Entrada: de -> Direccion a escribir
 ;Modifica: af
 
-SetPtr_VRAM:  
+SetPtr_VRAM:
 	di
 	ld	a,e
 	out	(99h),a		;VDP acess
@@ -868,7 +1001,7 @@ SetPtr_VRAM:
 ;objetivo: poner los sprites en 16x16
 
 
-set_spd8:	
+set_spd8:
 	di
 	ld	a,(RG1SAV)
 	res	1,a
@@ -878,10 +1011,10 @@ set_spd8:
 	out	(99h),a
 	ei
 	ret
-	
-		
 
-	
+
+
+
 CleanScr:	xor	a
 		ld	bc,400h
 		ld	hl,1800h
@@ -894,7 +1027,7 @@ CleanScr:	xor	a
 ;Objetivo: Esta Funcion Habilita La Visualizacion De La Pantalla Ademas
 ;          De Colocar El Tamagno De Sprites A 16x16
 ;Modifica: A
-	
+
 
 VisOn:	di
 	ld	a,(rg1sav)
@@ -907,7 +1040,7 @@ VisOn:	di
 
 
 
-	
+
 
 ;Nombre: set_cfondo
 ;Objetivo: colocar un color de fondo.
@@ -915,15 +1048,15 @@ VisOn:	di
 ;Modifica: a
 
 
-set_cfondo:	
+set_cfondo:
 	di
 	out	(99h),a
 	ld	a,128+7
 	out	(99h),a
 	ret
 
-	
-	
+
+
 ;nombre: VisOff
 ;Autor: Roberto Vargas Caballero
 ;Objetivo: Esta Funcion Deshabilita La Visualizacion De La Pantalla
@@ -942,19 +1075,19 @@ visoff:	di
 	ret
 
 
-	
-	
-section rdata		
+
+
+section rdata
 
 waitgame:	rb	1
 DeathF:		rb	1
-time:		rb	1	
+time:		rb	1
 NumLevel:	rb	1
 NumLives:	rb	1
 PatternMap:	rb	32*24
-spratt:		rb	4*32	
+spratt:		rb	4*32
 
 
 
-	
-section code	
+
+section code

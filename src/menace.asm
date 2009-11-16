@@ -9,42 +9,38 @@
 %include "z80().inc"
 %include "msx.inc"
 
-
-
-        fname   "menace.rom"
-
-
+%outfile "menace.rom"
 
 orgcode 4000h
 orgrdata 0E000h
 
-pagsize equ	32*1024	
+pagsize equ	32*1024
 p1size  equ     p1end-p1load
 p1padd  equ     pagsize-p1size
 p1sizeT equ     p1endf-p1load
 
-	
+
 section code
 
 p1load:	equ	$
 	db      'AB'
         dw      main
-        dw      0,0,0,0,0,0,0,0
+        dw      0,0,0,0,0,0
 
-	
+
 
 
 main:	call	SaveSlotC
 	call	RomSlotPage2
 	call	InitScore
-	ld	a,1fh
-	out	(02eh),a
+	;ld	a,1fh
+	;out	(02eh),a
 
-	
+
 game:
  	call	showLogo
  	call	initIntro
-	call	initsound	
+	call	initsound
 	call	InitLevel
 nextl:	call	PlayLevel
 	cp	0
@@ -54,14 +50,14 @@ nextl:	call	PlayLevel
 	jr	nextl
 
 
-showGameOver:	
+showGameOver:
 	pop	hl
 	ld	hl,game
 	push	hl
 	ret
 
-	
-	
+
+
 showEnding:
 	pop	hl
 	ld	hl,game
@@ -73,11 +69,12 @@ showEnding:
 
 
 
-	
+
 %include "sound.asm"
 %include "sys.asm"
+%include "untcfv_msx1.asm"
 %include "tnimsx1.asm"
-%include "intro.asm"		
+%include "intro.asm"
 %include "levels.asm"
 %include "pj.asm"
 %include "score.asm"
@@ -85,30 +82,30 @@ showEnding:
 %include "aysfx.asm"
 %include "meteors.asm"
 %include "pt3.asm"
-	
+
 sfx:
-%incbin  "../sounds/sound.afb"	
-scrpat:	
-%incbin  "patterns.pat"
-scrcol:		
+%incbin  "../sounds/sound.afb"
+scrpat:
+%incbin  "patterns.pat.tcf",8
+scrcol:
 %incbin  "patterns.col"
-sprdata:		
-%incbin  "sprites.spr"
+sprdata:
+%incbin  "sprites.spr.tcf",8
 floorpat:
 %incbin  "floor.flr"
-floorcol:	
+floorcol:
 %incbin  "floor.col"
-enemybin:		
+enemybin:
 %incbin  "enemy.ene"
-enemycol:		
-%incbin  "enemy.col"				
-	
-		
+enemycol:
+%incbin  "enemy.col"
+
+
 p1end:	equ $
 	ds      p1padd,0
 p1endf: equ $
-	
+
 %if p1size > pagsize
    %warn "Page 0 boundary broken"
 %endif
-		
+
