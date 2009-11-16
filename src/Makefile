@@ -48,6 +48,15 @@ deps:
 	mv -f `dirname $<`/$@  .
 	cp -f `dirname $<`/$*.col .
 
+
+%.pat: %.sc5
+	$(SR52) $< 5 
+	mv -f `dirname $<`/$@  .
+	cp -f `dirname $<`/$*.col .
+
+
+
+
 %.spr: %.sc5 %.col
 	$(SR52) $< 2 `dirname $<`/$*.col .
 	mv -f `dirname $<`/$*.pat  $@

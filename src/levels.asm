@@ -326,7 +326,7 @@ LevelISR:	ld	hl,time
 		ld	de,1800h
 		call	SetPtr_VRAM
 		ld	hl,PatternMap
-		ld	b,3
+		ld	b,3	
 .isrloop:	push	bc
 		ld	b,0
 		otir
@@ -359,7 +359,87 @@ LevelISR:	ld	hl,time
 		ld	hl,bufferEnDw2
 		ld	b,8*6*2
 		ld	c,98h
+		otir
+
+	
+		ld	de,2000h+ENEMYVOFF
+		call	SetPtr_VRAM
+		ld	hl,BufferColor1
+		ld	b,8
+		otir
+		ld	hl,BufferColor1
+		ld	b,8
+		otir
+		ld	hl,BufferColor1
+		ld	b,8
+		otir
+		ld	hl,BufferColor1+8
+		ld	b,8
+		otir
+		ld	hl,BufferColor1+8
+		ld	b,8
+		otir
+		ld	hl,BufferColor1+8
+		ld	b,8
+		otir
+
+		ld	hl,BufferColor2
+		ld	b,8
+		otir
+		ld	hl,BufferColor2
+		ld	b,8
+		otir
+		ld	hl,BufferColor2
+		ld	b,8
+		otir
+		ld	hl,BufferColor2+8
+		ld	b,8
+		otir
+		ld	hl,BufferColor2+8
+		ld	b,8
+		otir
+		ld	hl,BufferColor2+8
+		ld	b,8
+		otir
+
+		ld	hl,BufferColor1
+		ld	b,8
+		otir
+		ld	hl,BufferColor1
+		ld	b,8
+		otir
+		ld	hl,BufferColor1
+		ld	b,8
+		otir
+		ld	hl,BufferColor1+8
+		ld	b,8
+		otir
+		ld	hl,BufferColor1+8
+		ld	b,8
+		otir
+		ld	hl,BufferColor1+8
+		ld	b,8
+		otir
+
+		ld	hl,BufferColor2
+		ld	b,8
+		otir
+		ld	hl,BufferColor2
+		ld	b,8
+		otir
+		ld	hl,BufferColor2
+		ld	b,8
+		otir
+		ld	hl,BufferColor2+8
+		ld	b,8
+		otir
+		ld	hl,BufferColor2+8
+		ld	b,8
+		otir
+		ld	hl,BufferColor2+8
+		ld	b,8
 		otir	
+	
 		ret
 	
 
@@ -391,36 +471,74 @@ LevelISR:	ld	hl,time
 		add	hl,de
 		ld	de,1000h+30*8
 		call	SetPtr_VRAM
-		ld	b,2*8
 		ld	c,98h
-		otir
+		call	tovram2x8
 
 	
 		ld	de,1000h+62*8
 		call	SetPtr_VRAM
-		ld	b,4*8
-		ld	c,98h
-		otir		; WE MUST CHANGE destroyed floor!!!
+		call	tovram4x8
 	
-		
+; WE MUST CHANGE destroyed floor!!!
+	
 		pop	de
 		ld	hl,floorcol
 		add	hl,de
 		ld	de,3000h+30*8
 		call	SetPtr_VRAM
-		ld	b,2*8
-		ld	c,98h
-		otir
-
+		ld	c,98h	
+		call	tovram2x8
 	
 		ld	de,3000h+62*8
 		call	SetPtr_VRAM
-		ld	b,4*8
-		ld	c,98h
-		otir		; TODO: WE MUST CHANGE color of destroyed floor!!!
-		ret
+		call  	tovram4x8
+		ret        ; TODO: WE MUST CHANGE color of destroyed floor!!!
 
 
+
+
+tovram4x8:
+	ld 	c,98h
+	outi
+	outi
+	outi
+	outi
+	outi
+	outi
+	outi
+	outi
+
+	outi
+	outi
+	outi
+	outi
+	outi
+	outi
+	outi
+	outi
+
+tovram2x8:	
+	outi
+	outi
+	outi
+	outi
+	outi
+	outi
+	outi
+	outi
+
+	outi
+	outi
+	outi
+	outi
+	outi
+	outi
+	outi
+	outi
+	ret
+
+	
+	
 
 	
 ;Nombre:  SetPtr_VRAM
