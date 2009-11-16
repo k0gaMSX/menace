@@ -111,6 +111,7 @@ PlayLevel:
 		call	.initMap
 		call	VisOff	
 		call    InitEnemy
+		call	InitMeteors
 		call	initPJ
 		call	PrintScore	
 		ld	a,0c3h
@@ -118,10 +119,12 @@ PlayLevel:
 		ld	(0fd9ah),a
 		ld	(0fd9bh),hl
 
+		
 .1:		ei
 		halt
 		call	doPj
 		call	doEnemy
+		call	doMeteors
 		call	VisOn
 		ld	a,7
 		call	SNSMAT
@@ -305,7 +308,10 @@ PlayLevel:
 
 	
 	
-LevelISR:	ld	hl,time
+LevelISR:
+		ld	a,5
+		call	set_cfondo
+		ld	hl,time
 		inc	(hl)
 
 		call	.changefloor
@@ -345,6 +351,7 @@ LevelISR:	ld	hl,time
 		ld	c,98h
 		call    tovram12x8
 
+	
 	
 		ld	de,2000h+ENEMYVOFF
 		call	SetPtr_VRAM
@@ -400,15 +407,31 @@ LevelISR:	ld	hl,time
 		ld	hl,BufferColor2+8
 		outi\outi\outi\outi\outi\outi\outi\outi
 
-		ld	de,1800h
+
+		ld	de,800h+METEOR_VOFF1
 		call	SetPtr_VRAM
-		ld	hl,PatternMap
-		call	tovram16x8
+		ld	hl,MeteorBufferR
+		ld	c,98h	
+		call	tovram3x8
+
+
+		ld	de,800h+METEOR_VOFF2
+		call	SetPtr_VRAM
+		ld	hl,MeteorBufferL
+		ld	c,98h	
+		call	tovram3x8
+	
+		ld	de,1800h+1*32
+		call	SetPtr_VRAM
+		ld	hl,PatternMap+1*32
+		call	tovram15x8
 		call	tovram16x8	
 		call	tovram16x8
 		call	tovram16x8
 		call	tovram16x8
-		call	tovram16x8		
+		call	tovram13x8
+		ld	a,1
+		call	set_cfondo
 		ret
 	
 
@@ -467,7 +490,7 @@ LevelISR:	ld	hl,time
 
 
 
-	
+;TODO: Change tovramXxX routines to auto generated RAM routine for this	
 	
 
 tovram16x8:
@@ -690,12 +713,28 @@ VisOn:	di
 	out	(99h),a
 	ld	a,128+1
 	out	(99h),a
-	ei
 	ret
 
 
+
 	
-;Nombre: VisOff
+
+;Nombre: set_cfondo
+;Objetivo: colocar un color de fondo.
+;Entrada: a -> color
+;Modifica: a
+
+
+set_cfondo:	
+	di
+	out	(99h),a
+	ld	a,128+7
+	out	(99h),a
+	ret
+
+	
+	
+;nombre: VisOff
 ;Autor: Roberto Vargas Caballero
 ;Objetivo: Esta Funcion Deshabilita La Visualizacion De La Pantalla
 ;          Ademas De Colocar El Tamagno De Los Sprites A 16x16

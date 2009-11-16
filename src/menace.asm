@@ -70,6 +70,7 @@ section	code
 %include "score.asm"
 %include "enemy.asm"
 %include "aysfx.asm"
+%include "meteors.asm"
 	
 scrpat:	
 %incbin  "patterns.pat"

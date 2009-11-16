@@ -547,6 +547,9 @@ UpdateChars:
 
 	
 SwapEnemy:
+	ld	a,10
+	call	set_cfondo
+	
 	ld	hl,BufferColor1	
 	ld	de,bufferTmp
 	ld	bc,16
@@ -561,6 +564,7 @@ SwapEnemy:
 	ld	de,BufferColor2
 	ld	bc,16
 	ldir
+
 
 	
 	ld	hl,bufferEnUp1		
@@ -592,6 +596,8 @@ SwapEnemy:
 	ld	de,bufferEnDw2
 	ld	bc,ENEMYSIZE
 	ldir
+	ld	a,1
+	call	set_cfondo	
 	ret
 
 	
@@ -956,6 +962,12 @@ redchar_left1:	rb	2
 redchar_left2:	rb	2	
 
 
+bufferptrUp1:	rb	2
+bufferptrUp2:	rb	2
+bufferptrDw1:	rb	2	
+bufferptrDw2:	rb	2
+	
+	
 bufferTmp:	rb	ENEMYSIZE
 bufferEnUp1:	rb	ENEMYSIZE
 bufferEnUp2:	rb	ENEMYSIZE
