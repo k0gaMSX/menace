@@ -405,7 +405,8 @@ DestroyEnemy:
 	ld	de,PatternMap
 	add	hl,de
 
-	
+
+	call	.findEnemy	
 .findloopL:	
 	ld	a,(hl)
 	or	a
@@ -425,6 +426,44 @@ DestroyEnemy:
 	
 .findU:	
 	ret
+
+
+
+
+
+
+.findEnemy:
+	ld	b,3
+	ld	de,32
+	
+.findEnemyl:	
+	ld	a,(hl)
+	or	a
+	ret	nz
+
+	dec	hl
+	ld	a,(hl)
+	or	a
+	ret	nz
+
+	inc	hl
+	inc	hl
+	ld	a,(hl)
+	or	a
+	ret	nz
+
+	dec	hl
+	add	hl,de
+
+	ld	a,e
+	add	a,32
+	ld	e,a
+	djnz	.findEnemyl
+	
+	ret			;if we are here, we have a problem!!
+	
+
+
 
 	
 
