@@ -486,10 +486,11 @@ enemy_col:
 
 	call	DestroyEnemy
 	call	toBoom
-	call	ToBase	
+	call	ToBase
 	ld	hl,NumEnemy
 	dec	(hl)
 	xor	a
+	ld	(fired),a
 	call	addScore
  	ret
 	

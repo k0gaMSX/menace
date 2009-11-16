@@ -651,6 +651,6 @@ OldISR:		rb	5
 FrameCtr:	rb	1
 BG:		rb	200+40
 Sprites:	rb	128
-R_outi:		rb	200*2+1
+R_outi:		rb	240*2+1
 
 section code

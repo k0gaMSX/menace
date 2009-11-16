@@ -52,11 +52,10 @@ InitMeteors:
 
 
 
-
-	ld	hl,scrcol+METEOR_COLOFF
-	ld	de,2800h+METEOR_VOFF1
+	ld	a,11h
+	ld	hl,2800h+METEOR_VOFF1
 	ld	bc,8
-	call	LDIRVM
+	call	FILVRM
 
  	ld	hl,scrcol+METEOR_COLOFF
 	ld	de,2800h+METEOR_VOFF1+8
@@ -68,7 +67,6 @@ InitMeteors:
 	ld	bc,8
 	call	LDIRVM
 	
-
 	ld	hl,scrcol+METEOR_COLOFF2
 	ld	de,2800h+METEOR_VOFF2
 	ld	bc,8
@@ -79,10 +77,25 @@ InitMeteors:
 	ld	bc,8
 	call	LDIRVM
 
- 	ld	hl,scrcol+METEOR_COLOFF2
-	ld	de,2800h+METEOR_VOFF2+16
+	ld	a,11h
+	ld	hl,2800h+METEOR_VOFF2+16
+	ld	bc,8
+	call	FILVRM
+
+	ld	hl,scrcol+METEOR_COLOFF2
+	ld	de,3000h+METEOR_VOFF2
 	ld	bc,8
 	call	LDIRVM
+
+ 	ld	hl,scrcol+METEOR_COLOFF2
+	ld	de,3000h+METEOR_VOFF2+8
+	ld	bc,8
+	call	LDIRVM
+
+	ld	a,11h
+	ld	hl,3000h+METEOR_VOFF2+16
+	ld	bc,8
+	call	FILVRM
 	ret
 
 
@@ -139,25 +152,32 @@ moveMeteors:
  	ld	(PatternMap+32*9+31),a		
 	
 	
-	ld 	hl,PatternMap+32*10+30
-	ld	de,PatternMap+32*10+31
+	ld 	hl,PatternMap+32*11+30
+	ld	de,PatternMap+32*11+31
 	ld	bc,31
 	lddr
-	ld	(PatternMap+32*10),a
+	ld	(PatternMap+32*11),a
 
 
-	ld 	hl,PatternMap+32*11+1
-	ld	de,PatternMap+32*11+0
+	ld 	hl,PatternMap+32*13+1
+	ld	de,PatternMap+32*13+0
 	ld	bc,31
 	ldir
- 	ld	(PatternMap+32*11+31),a	
+ 	ld	(PatternMap+32*13+31),a	
 
 	
-	ld 	hl,PatternMap+32*12+30
-	ld	de,PatternMap+32*12+31
+	ld 	hl,PatternMap+32*15+30
+	ld	de,PatternMap+32*15+31
 	ld	bc,31
 	lddr
-	ld	(PatternMap+32*12),a	
+	ld	(PatternMap+32*15),a	
+
+
+	ld 	hl,PatternMap+32*18+1
+	ld	de,PatternMap+32*18+0
+	ld	bc,31
+	ldir
+ 	ld	(PatternMap+32*18+31),a	
 
 
 	ld	hl,PatternMap+32*9+29
@@ -169,7 +189,7 @@ moveMeteors:
 	call	z,newMeteor2
 	
 	
-	ld	hl,PatternMap+32*10
+	ld	hl,PatternMap+32*11
 	ld	a,(hl)
 	inc	hl
 	or	(hl)
@@ -178,7 +198,7 @@ moveMeteors:
 	call	z,newMeteor
 
 
-	ld	hl,PatternMap+32*11+29
+	ld	hl,PatternMap+32*13+29
 	ld	a,(hl)
 	inc	hl
 	or	(hl)
@@ -187,7 +207,7 @@ moveMeteors:
 	call	z,newMeteor2
 
 	
-	ld	hl,PatternMap+32*12
+	ld	hl,PatternMap+32*15
 	ld	a,(hl)
 	inc	hl
 	or	(hl)
@@ -195,7 +215,14 @@ moveMeteors:
 	or	(hl)
 	call	z,newMeteor
 
-	
+
+	ld	hl,PatternMap+32*18+29		; hurry up meteor
+	ld	a,(hl)
+	inc	hl
+	or	(hl)
+	inc	hl
+	or	(hl)
+	call	z,newMeteor3
 	ret
 
 
@@ -236,7 +263,24 @@ newMeteor2:
 	inc	hl
 	inc	hl
 	ret
+
+
 	
+newMeteor3:
+	ld	a,[hurryup]
+	or	a
+	ret	nz
+	ld	a,INITIALHURRY
+	ld	[hurryup],a
+
+	ld	(hl),METEOR2_PAT1
+	dec	hl
+	ld	(hl),METEOR2_PAT2
+	dec	hl
+	ld	(hl),METEOR2_PAT3
+	inc	hl
+	inc	hl
+	ret
 
 
 

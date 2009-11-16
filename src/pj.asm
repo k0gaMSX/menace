@@ -29,7 +29,7 @@ SPRBOOM8:	equ	SPRBOOM7+1
 	
 INITIALPOS:	equ	(256/2-16)/8
 INITIALFRAME:	equ	8
-
+INITIALHURRY:	equ	240
 
 
 
@@ -47,6 +47,8 @@ InitPJ:
 	xor	a
 	ld	(fired),a
 	ld	(boom),a
+	ld	a,INITIALHURRY
+	ld	(hurryup),a
 
 	ld	hl,basegfxt
  	ld	bc,6*8
@@ -92,6 +94,7 @@ rockety:	rb	1
 keyleft:	rb	1
 keyright:	rb	1
 keyfire:	rb	1		
+keyfirenew:	rb	1
 basegfx:	rb	40
 basegfxt:	rb	48
 countchain:	rb	1
@@ -108,6 +111,7 @@ Death:
 
 	ld	a,3
 	ld	(fired),a
+	call	cleanBase
 	call	cleanRocket
 	ld	a,230
 	ld	(rocketx),a
@@ -163,39 +167,49 @@ move_pj:
 	ld	b,a
 	rr	b
 	sbc	a,a
-	and	1
 	ld	(keyleft),a
 	rr	b
 	sbc	a,a
-	and	1
 	ld	(keyright),a
 	rr	b
 	sbc	a,a
-	and	1
-	ld	(keyfire),a
+	ld	b,a
+	ld	hl,keyfire
+	ld	a,[hl]
+	xor	b
+	ld	[keyfirenew],a
+	ld	[hl],b
 
 	ld	a,(fired)
 	cp	1
-	jp	z,.move_rocket
-	jp	.move_base
-
+	call	nz,.move_base
+	jp	.move_rocket
 
 	
 	
 .move_base:
+	ld	a,[hurryup]
+	or	a
+	jr	z,.hurryup
+	dec	a
+	ld	[hurryup],a
+.hurryup:
+
 	ld	a,(fired)
 	cp	2
 	jr	nz,.mvb1
-	ld	a,(keyfire)	
-	or	a
-	ret	nz
+	xor	a
 	ld	(fired),a
-	
-.mvb1:		
+
+.mvb1:
+	ld	hl,keyfirenew	
 	ld	a,(keyfire)
-	or	a
+	and	[hl]
+	and	1
 	jr	z,.move_baseN
 	ld	(fired),a
+	ld	a,INITIALHURRY
+	ld	(hurryup),a
 	ld	a,4
 	ld	(contRocket),a
 	call	cleanBase
@@ -476,6 +490,10 @@ move_pj:
 	
 	
 .nocol_rock:	
+	ld	a,(fired)		; don't move unless it's flying
+	cp	1
+	ret	nz
+
 	ld	a,(keyfire)
 	or	a
 	jr	nz,.mvrocket_sp
@@ -496,7 +514,8 @@ move_pj:
 ToBase:	
 	ld	a,2
  	ld	(fired),a
-	ld	a,(pos)
+	ld	a,INITIALPOS
+	ld	(pos),a
 	add	a,a
 	add	a,a
 	add	a,a
@@ -971,5 +990,6 @@ cleanBase:
 section rdata
 savebase:	rb	5
 GetColorPar:	rb	1	
+hurryup:	rb	1
 section code	
 				

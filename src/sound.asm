@@ -6,19 +6,25 @@ IMPACT01_PRIO:		equ  10
 
 PJEXP_NUMBER:	        equ   2
 PJEXP_PRIO:		equ   0
-	
+
 RCKIGN_NUMBER:		equ   3
 RCKIGN_PRIO:		equ   5
 RCKIGN_FRAMES:		equ   6
-	
+
 BASEMTR_NUMBER:		equ   4
 BASEMTR_PRIO:		equ   6
 BASEMTR_FRAMES:		equ   7
 
 ENEMYEXP_NUMBER:	equ   5
 ENEMYEXP_PRIO:		equ   1
-	
-	
+
+
+MENU_NUMBER:            equ   7
+MENU_PRIO:              equ   1
+
+LETTER_NUMBER:          equ   10
+LETTER_PRIO:            equ   10
+
 
 SoundISR:
 	call	PT3_ROUT
@@ -38,12 +44,12 @@ SimPT3:
 	ret
 
 
-	
 
-initsound:	
+
+initsound:
 	ld	hl,sfx
- 	call	ayFX_SETUP	
-	call	SimPT3	
+ 	call	ayFX_SETUP
+	call	SimPT3
 	xor	a
 	ld	(rckign),a
 	ld	(atmos),a
@@ -51,28 +57,38 @@ initsound:
 	ret
 
 
-	
-impact01:	
+
+impact01:
 	ld	c,IMPACT01_PRIO
 	ld	a,IMPACT01_NUMBER
 	jp	ayFX_INIT
 
 
-enemyexp:	
+enemyexp:
 	ld	c,ENEMYEXP_PRIO
 	ld	a,ENEMYEXP_NUMBER
 	jp	ayFX_INIT
-	
+
 
 pjexp:
 	ld	c,PJEXP_PRIO
 	ld	a,PJEXP_NUMBER
 	jp	ayFX_INIT
-	
-	
 
 
-	
+letter_sfx:
+	ld	c,LETTER_PRIO
+	ld	a,LETTER_NUMBER
+	jp	ayFX_INIT
+
+
+
+menu_sfx:
+	ld	c,MENU_PRIO
+	ld	a,MENU_NUMBER
+	jp	ayFX_INIT
+
+
 base_motor:
 	ld	a,(basemtr)
 	or	a
@@ -80,7 +96,7 @@ base_motor:
 	dec	a
 	ld	(basemtr),a
 	ret
-	
+
 .1:	ld	a,BASEMTR_FRAMES
 	ld	(basemtr),a
 	ld	c,BASEMTR_PRIO
@@ -90,10 +106,7 @@ base_motor:
 
 
 
-	
-	
 
-	
 rck_ignition:
 	ld	a,(rckign)
 	or	a
@@ -101,16 +114,16 @@ rck_ignition:
 	dec	a
 	ld	(rckign),a
 	ret
-	
+
 .1:	ld	a,RCKIGN_FRAMES
 	ld	(rckign),a
 	ld	c,RCKIGN_PRIO
 	ld	a,RCKIGN_NUMBER
 	jp	ayFX_INIT
 
-	
+
 section rdata
 rckign:	    rb	0
 basemtr:    rb  0
 atmos:	    rb  0
-section code	
+section code

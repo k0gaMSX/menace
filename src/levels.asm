@@ -156,8 +156,6 @@ TestEnd:
 		jr	.noend
 
 .endLevel:
-		ld	hl,NumLevel
-		inc	(hl)
 		ld	a,1
 		or	a
 		ret
@@ -179,14 +177,23 @@ TestEnd:
 
 
 PlayLevel:
-		ld	a,(NumLevel)
-		cp	11
+		cp	1
+		ld	hl,NumLevel
+		ld	a,(hl)
+		jr	nz,.nonewlevel
+		inc	a
+		ld	(hl),a
+.nonewlevel:	cp	11
 		jr	nz,.BeginPlay
 		xor	a
 		ret
 
 
-.BeginPLay:
+.BeginPlay:
+		ld	a,(NumLives)
+		or	a
+		jr	z,TestEnd.newgame
+
 		ld	a,WAIT_TIME
 		ld	(waitgame),a
 		call	CleanScr
@@ -202,8 +209,10 @@ PlayLevel:
 
 
 .GameLoop:
+%if DEBUG
 		ld	a,4
-;; 		call	set_cfondo
+ 		call	set_cfondo
+%endif
 		ei
  		halt
 ;; 		halt
@@ -437,96 +446,116 @@ PlayLevel:
 
 
 LevelISR:
+%if DEBUG
 		ld	a,5
-;; 		call	set_cfondo
+ 		call	set_cfondo
+%endif
 		ld	hl,time
 		inc	(hl)
 
+		ld	c,98h
 		ld	de,1b00h
 		call	SetPtr_VRAM
 		ld	hl,spratt
-		ld	c,98h
-		call    tovram16x8
+		call    R_outi + 480 - 2 * 128
 
 		ld	de,0+96*8
 		call	SetPtr_VRAM
                 ld	hl,(bufferPtrUp1)
-		ld	c,98h
-		call    tovram12x8
+		call    R_outi + 480 - 2 * 48
 
 		ld	de,0+102*8
 		call	SetPtr_VRAM
 	        ld	hl,(bufferPtrUp2)
-		ld	c,98h
-		call    tovram12x8
+		call    R_outi + 480 - 2 * 48
 
 		ld	de,0+108*8
 		call	SetPtr_VRAM
 		ld	hl,(bufferPtrDw1)
-		ld	c,98h
-		call    tovram12x8
+		call    R_outi + 480 - 2 * 48
 
 		ld	de,0+114*8
 		call	SetPtr_VRAM
 		ld	hl,(bufferPtrDw2)
-		ld	c,98h
-		call    tovram12x8
+		call    R_outi + 480 - 2 * 48
 
   		ld	de,1800h+3*32
 		call	SetPtr_VRAM
 		ld	hl,PatternMap+3*32
-		call	tovram8x8
+		call    R_outi + 480 - 2 * 64
   		ld	de,1800h+6*32
 		call	SetPtr_VRAM
 		ld	hl,PatternMap+6*32
- 		call	tovram8x8
+ 		call    R_outi + 480 - 2 * 64
 
 
 
 .meteorMap:	ld	de,1800h+4*32+20*8
 		call	SetPtr_VRAM
 		ld	hl,PatternMap+9*32
- 		call	tovram16x8
+ 		call    R_outi + 480 - 2 * 32
 
-		ld	a,2
-;; 		call	set_cfondo
+		ld	de,1800h+6*32+20*8
+		call	SetPtr_VRAM
+		ld	hl,PatternMap+11*32
+ 		call    R_outi + 480 - 2 * 32
 
-  		ld	de,1800h+20*32
+		ld	de,1800h+8*32+20*8
+		call	SetPtr_VRAM
+		ld	hl,PatternMap+13*32
+ 		call    R_outi + 480 - 2 * 32
+
+		ld	de,1800h+10*32+20*8
+		call	SetPtr_VRAM
+		ld	hl,PatternMap+15*32
+ 		call    R_outi + 480 - 2 * 32
+
+  		ld	de,1800h+20*32			;base
 		call	SetPtr_VRAM
 		ld	hl,PatternMap+20*32
-		call	tovram4x8
+		call    R_outi + 480 - 2 * 32
 
 		ld	de,800h+METEOR_VOFF1
 		call	SetPtr_VRAM
 		ld	hl,MeteorBufferR
-		ld	c,98h
-		call	tovram3x8_slow
+		call    R_outi + 480 - 2 * 24
 
 		ld	de,800h+METEOR_VOFF2
 		call	SetPtr_VRAM
 		ld	hl,MeteorBufferL
-		ld	c,98h
-		call	tovram3x8_slow
+		call    R_outi + 480 - 2 * 24
+
+		call	.colours
+
+%if DEBUG
+ 		ld	a,12
+  		call	set_cfondo
+%endif
+		ld	de,1000h+METEOR_VOFF2
+		call	SetPtr_VRAM
+		ld	hl,MeteorBufferL
+		call    tovram3x8_slow
+
+		ld	de,1800h+13*32+20*8
+		call	SetPtr_VRAM
+		ld	hl,PatternMap+18*32
+ 		call    tovram4x8_slow
 
 		ld	de,1000h+120*8
 		call	SetPtr_VRAM
 		ld	hl,basegfx
-		ld 	c,98h
-		call  	tovram5x8_slow
-
+		call    tovram5x8_slow
 
  		call	.changefloor
-		ld	a,12
-;;  		call	set_cfondo
-		call	.colours
- 		ld	a,10
-;;  		call	set_cfondo
-
-
-
+%if DEBUG
+		ld	a,10
+  		call	set_cfondo
+%endif
 		call	SoundISR
+%if DEBUG
  		ld	a,1
-;;  		call	set_cfondo
+  		call	set_cfondo
+%endif
 		ret
 
 
@@ -535,19 +564,23 @@ LevelISR:
 		ld	de,2000h+ENEMYVOFF
 		call	SetPtr_VRAM
 		ld	hl,(BuffColorPtr1)
-		call	tovram1x8_slow
+		call    R_outi + 480 - 2 * 8
 		ld	hl,(BuffColorPtr1)
-		call	tovram1x8_slow
+		call    R_outi + 480 - 2 * 8
 		ld	hl,(BuffColorPtr1)
-		call    tovram1x8_slow
-		ld	hl,(BuffColorPtr1)
-		ld	de,8
-		add	hl,de
-		call    tovram1x8_slow
+		call    R_outi + 480 - 2 * 8
 		ld	hl,(BuffColorPtr1)
 		ld	de,8
 		add	hl,de
-		call    tovram1x8_slow
+		call    R_outi + 480 - 2 * 8
+		ld	hl,(BuffColorPtr1)
+		ld	de,8
+		add	hl,de
+		call    R_outi + 480 - 2 * 8
+%if DEBUG
+		ld	a,2
+ 		call	set_cfondo
+%endif
 		ld	hl,(BuffColorPtr1)
 		ld	de,8
 		add	hl,de
@@ -699,7 +732,6 @@ tovram5x8_slow:
 	outi
 	nop
 	nop
-
 tovram4x8_slow:
 	outi
 	nop
@@ -802,177 +834,6 @@ tovram1x8_slow:
 
 
 
-
-;TODO: Change tovramXxX routines to auto generated RAM routine for this
-
-
-tovram16x8:
-	outi
-	outi
-	outi
-	outi
-	outi
-	outi
-	outi
-	outi
-
-
-tovram15x8:
-	outi
-	outi
-	outi
-	outi
-	outi
-	outi
-	outi
-	outi
-
-tovram14x8:
-	outi
-	outi
-	outi
-	outi
-	outi
-	outi
-	outi
-	outi
-
-tovram13x8:
-	outi
-	outi
-	outi
-	outi
-	outi
-	outi
-	outi
-	outi
-
-tovram12x8:
-	outi
-	outi
-	outi
-	outi
-	outi
-	outi
-	outi
-	outi
-
-tovram11x8:
-	outi
-	outi
-	outi
-	outi
-	outi
-	outi
-	outi
-	outi
-
-
-tovram10x8:
-	outi
-	outi
-	outi
-	outi
-	outi
-	outi
-	outi
-	outi
-
-tovram9x8:
-	outi
-	outi
-	outi
-	outi
-	outi
-	outi
-	outi
-	outi
-
-tovram8x8:
-	outi
-	outi
-	outi
-	outi
-	outi
-	outi
-	outi
-	outi
-
-tovram7x8:
-	outi
-	outi
-	outi
-	outi
-	outi
-	outi
-	outi
-	outi
-
-tovram6x8:
-	outi
-	outi
-	outi
-	outi
-	outi
-	outi
-	outi
-	outi
-
-tovram5x8:
-	outi
-	outi
-	outi
-	outi
-	outi
-	outi
-	outi
-	outi
-
-tovram4x8:
-	outi
-	outi
-	outi
-	outi
-	outi
-	outi
-	outi
-	outi
-
-tovram3x8:
-	outi
-	outi
-	outi
-	outi
-	outi
-	outi
-	outi
-	outi
-
-
-tovram2x8:
-	outi
-	outi
-	outi
-	outi
-	outi
-	outi
-	outi
-	outi
-
-tovram1x8:
-	outi
-	outi
-	outi
-	outi
-	outi
-	outi
-	outi
-	outi
-	ret
-
-
-
-
 ReadPTR_VRAM:
 	di
         ld      a,e
@@ -1041,7 +902,7 @@ VisOn:	di
 
 
 
-
+%if DEBUG
 ;Nombre: set_cfondo
 ;Objetivo: colocar un color de fondo.
 ;Entrada: a -> color
@@ -1054,7 +915,7 @@ set_cfondo:
 	ld	a,128+7
 	out	(99h),a
 	ret
-
+%endif
 
 
 ;nombre: VisOff
