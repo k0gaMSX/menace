@@ -1,4 +1,5 @@
-AS = /usr/local/bin/tniasm.linux
+#AS = /usr/local/bin/tniasm.linux
+AS=/usr/local/bin/tniasm
 SRC = menace.asm tnimsx1.asm 
 MSX = openmsx
 MSXFLAGS = -machine msx1

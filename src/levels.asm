@@ -16,7 +16,7 @@ InitLevel:
 		call	FILVRM
 		call	.initpat
 		call	.initcol
-		call	.initCharPat
+
 		call	.initsp
 		call	ENASCR
 		ret
@@ -88,17 +88,6 @@ InitLevel:
 		ld	de,3000h+160*8
 		call	LDIRVM	
 		ret
-
-		
-
-
-.initCharPat:
-		ld	hl,scrpat+32*8
-		ld	de,refchar1
-		ld	bc,3*2*2*2*8
-		ldir
-		ret
-
 	
 	
 
@@ -119,6 +108,7 @@ PlayLevel:	ld	a,(NumLevel)
 		call	.showLevel
 		call	.CleanMap	
 		call	.initMap
+		call    InitEnemy
 		call	initPJ
 		call	PrintScore	
 		ld	a,0c3h
@@ -127,8 +117,9 @@ PlayLevel:	ld	a,(NumLevel)
 		ld	(0fd9bh),hl
 
 .1:		ei
-		halt							
+		halt
 		call	doPj
+		call	doEnemy
 		ld	a,7
 		call	SNSMAT
 		bit	2,a
@@ -175,9 +166,9 @@ PlayLevel:	ld	a,(NumLevel)
 		inc	hl
 		ld	(hl),a
 
-		ld	hl,PatternMap+12
-		ld	a,146
-		ld	b,8
+		ld	hl,PatternMap+13 ;Paint Score
+		ld	a,141
+		ld	b,5
 .initMapLoop21:	ld	(hl),a
 		inc	hl
 		inc	a
@@ -185,9 +176,9 @@ PlayLevel:	ld	a,(NumLevel)
 
 
 	
-		ld	hl,PatternMap+759
-		ld	a,154
-		ld	b,6
+		ld	hl,PatternMap+759 ;Paint TNI CopyRight
+		ld	a,146
+		ld	b,8
 .initMapLoop3:	ld	(hl),a
 		inc	hl
 		inc	a
@@ -305,83 +296,6 @@ PlayLevel:	ld	a,(NumLevel)
 	
 		
 	
-.flevel1_right1:	ret
-		
-.flevel1_right2:	ret
-	
-.flevel1_left1:		ret
-	
-.flevel1_left2:		ret
-	
-		
-
-
-.fvec:		dw	.flevel1_right1
-		dw      .flevel1_right2
-		dw	.flevel1_left1
-		dw	.flevel1_left2
-			
-		dw	.flevel1_right1
-		dw      .flevel1_right2
-		dw	.flevel1_left1
-		dw	.flevel1_left2
-
-		dw	.flevel1_right1
-		dw      .flevel1_right2
-		dw	.flevel1_left1
-		dw	.flevel1_left2
-	
-		dw	.flevel1_right1
-		dw      .flevel1_right2
-		dw	.flevel1_left1
-		dw	.flevel1_left2
-	
-		dw	.flevel1_right1
-		dw      .flevel1_right2
-		dw	.flevel1_left1
-		dw	.flevel1_left2
-
-		dw	.flevel1_right1
-		dw      .flevel1_right2
-		dw	.flevel1_left1
-		dw	.flevel1_left2
-	
-		dw	.flevel1_right1
-		dw      .flevel1_right2
-		dw	.flevel1_left1
-		dw	.flevel1_left2
-		
-
-		dw	.flevel1_right1
-		dw      .flevel1_right2
-		dw	.flevel1_left1
-		dw	.flevel1_left2
-
-
-		dw	.flevel1_right1
-		dw      .flevel1_right2
-		dw	.flevel1_left1
-		dw	.flevel1_left2
-
-		dw	.flevel1_right1
-		dw      .flevel1_right2
-		dw	.flevel1_left1
-		dw	.flevel1_left2
-		
-	
-
-	
-PointerCall:	jp	(hl)	
-
-UpdateChars:	ld	hl,(redchar_right1)
-		call	PointerCall
-		ld	hl,(redchar_right2)
-		call	PointerCall
-		ld	hl,(redchar_left1)
-		call	PointerCall	
-		ld	hl,(redchar_left2)
-		call	PointerCall
-		ret	
 
 
 
@@ -415,16 +329,23 @@ LevelISR:	ld	hl,time
 		otir
 		pop	bc
 		djnz	.isrloop
-		ret
-	
-	
-		ld	hl,refchar1
-		ld	de,0+32*8
-		ld	bc,3*2*2*2*8
-		call	LDIRVM
 
-		call	UpdateChars
+	
+		ld	de,0+96*8
+		call	SetPtr_VRAM
+		ld	hl,bufferEnUp1
+		ld	b,8*6*2
+		ld	c,98h
+		otir
+
+		ld	de,0+102*8
+		call	SetPtr_VRAM
+		ld	hl,bufferEnUp2
+		ld	b,8*6*2
+		ld	c,98h
+		otir	
 		ret
+	
 
 
 
@@ -480,7 +401,7 @@ LevelISR:	ld	hl,time
 		call	SetPtr_VRAM
 		ld	b,4*8
 		ld	c,98h
-		otir		; WE MUST CHANGE color of destroyed floor!!!
+		otir		; TODO: WE MUST CHANGE color of destroyed floor!!!
 		ret
 
 
@@ -533,18 +454,8 @@ NumLevel:	rb	1
 NumLives:	rb	1
 PatternMap:	rb	32*24
 spratt:		rb	4*32	
-redchar_right1:	rb	2
-redchar_right2:	rb	2
-redchar_left1:	rb	2
-redchar_left2:	rb	2	
-			
-refchar1:	rb	2
-refchar2:	rb	2
 
-charpat1:	rb	3*2*8
-charpat2:	rb	3*2*8
-charpat3:	rb	3*2*8
-charpat4:	rb	3*2*8		
-			
+
+
 	
 section code	

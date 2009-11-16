@@ -328,6 +328,11 @@ section code
 
 
 renderPJ:
+	
+	ld	a,(fired)
+	cp	2
+	jp	z,cleanRocket
+	
 	call	renderBase
 	ld	a,(boom)
 	or	a
@@ -470,6 +475,16 @@ renderBase:
 	ret	
 
 
+
+	
+cleanRocket:
+	ld	a,230
+	ld	(spratt+SPRRCK1*4+0),a
+	ld	(spratt+SPRRCK2*4+0),a
+	ld	(spratt+SPRRCK3*4+0),a
+	ld	(spratt+SPRFIRE1*4+0),a
+	ld	(spratt+SPRFIRE2*4+0),a	
+	ret
 
 
 	
