@@ -657,11 +657,11 @@ renderEnemy:
 
 
 	call	UpdateChars
-	call	TestFire
 	jr	renderEnemy
 
 .endtime:
 	ld	(contSpeed),a
+        call	TestFire
 	ret
 
 
