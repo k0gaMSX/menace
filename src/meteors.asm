@@ -3,6 +3,11 @@ METEOR_PROB:	equ     5*255/100
 METEOR_PAT1:	equ 	127
 METEOR_PAT2:	equ	126
 METEOR_PAT3:	equ	125
+
+METEOR2_PAT1:	equ 	127+32
+METEOR2_PAT2:	equ	126+32
+METEOR2_PAT3:	equ	125+32
+
 	
 METEOR_SIZE:	equ	3*8
 METEOR_VSIZE:	equ	2*8
@@ -11,6 +16,7 @@ METEOR_PATOFF1:	equ	(32*4)-2
 METEOR_PATOFF2:	equ	(32*5)-2
 
 METEOR_COLOFF:	equ	METEOR_PATOFF1*8
+METEOR_COLOFF2:	equ	METEOR_PATOFF2*8	
 		
 METEOR_VOFF1:	equ 	((32*4)-3)*8
 METEOR_VOFF2:	equ 	((32*5)-3)*8
@@ -62,17 +68,17 @@ InitMeteors:
 	call	LDIRVM
 	
 
-	ld	hl,scrcol+METEOR_COLOFF
+	ld	hl,scrcol+METEOR_COLOFF2
 	ld	de,2800h+METEOR_VOFF2
 	ld	bc,8
 	call	LDIRVM
 
- 	ld	hl,scrcol+METEOR_COLOFF
+ 	ld	hl,scrcol+METEOR_COLOFF2
 	ld	de,2800h+METEOR_VOFF2+8
 	ld	bc,8
 	call	LDIRVM
 
- 	ld	hl,scrcol+METEOR_COLOFF
+ 	ld	hl,scrcol+METEOR_COLOFF2
 	ld	de,2800h+METEOR_VOFF2+16
 	ld	bc,8
 	call	LDIRVM
@@ -111,35 +117,48 @@ moveMeteors:
 	lddr
 	ld	(PatternMap+32*10),a
 
-	ld 	hl,PatternMap+32*11+30
-	ld	de,PatternMap+32*11+31
-	ld	bc,31
-	lddr
-	ld	(PatternMap+32*11),a	
 
+	ld 	hl,PatternMap+32*11+1
+	ld	de,PatternMap+32*11+0
+	ld	bc,31
+	ldir
+ 	ld	(PatternMap+32*11+31),a	
+
+	
 	ld 	hl,PatternMap+32*12+30
 	ld	de,PatternMap+32*12+31
 	ld	bc,31
 	lddr
 	ld	(PatternMap+32*12),a	
+
+
 	
 	ld	hl,PatternMap+32*10
-	ld	c,30
-	ld	b,3
-	
-.loop:
-	push	bc	
 	ld	a,(hl)
 	inc	hl
 	or	(hl)
 	inc	hl
 	or	(hl)
 	call	z,newMeteor
-	pop	bc
-	ld	d,0
-	ld	e,c
-	add	hl,de
-	djnz	.loop
+
+
+	ld	hl,PatternMap+32*11+29
+	ld	a,(hl)
+	inc	hl
+	or	(hl)
+	inc	hl
+	or	(hl)
+	call	z,newMeteor2
+
+	
+	ld	hl,PatternMap+32*12
+	ld	a,(hl)
+	inc	hl
+	or	(hl)
+	inc	hl
+	or	(hl)
+	call	z,newMeteor
+	
 	ret
 
 
@@ -167,6 +186,21 @@ newMeteor:
 
 
 
+newMeteor2:
+	call	Rand
+	cp	METEOR_PROB
+	ret	nc
+
+	ld	(hl),METEOR2_PAT1
+	dec	hl
+	ld	(hl),METEOR2_PAT2
+	dec	hl
+	ld	(hl),METEOR2_PAT3
+	inc	hl
+	inc	hl
+	ret
+	
+
 
 
 
@@ -174,6 +208,7 @@ newMeteor:
 
 
 renderMeteors:
+	di
 	ld	a,(MeteorFrame)	
 	or	a
 	jr	z,.restore
@@ -199,7 +234,7 @@ renderMeteors:
 	rl	(ix+0)
 	inc 	ix
 	djnz 	.left
-	
+	ei
 	ret
 
 
@@ -211,7 +246,7 @@ renderMeteors:
 	ld	de,MeteorBufferR+1
 	ld	bc,METEOR_SIZE*2-1
  	ldir			
-
+	
 
 	ld	hl,scrpat+METEOR_PATOFF1*8
 	ld	de,MeteorBufferR
@@ -223,6 +258,7 @@ renderMeteors:
 	ld	de,MeteorBufferL+8
 	ld	bc,METEOR_VSIZE
 	ldir
+	ei
 	ret
 
 	

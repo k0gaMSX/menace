@@ -314,98 +314,36 @@ LevelISR:
 		ld	hl,time
 		inc	(hl)
 
-		call	.changefloor
 		ld	de,1b00h
 		call	SetPtr_VRAM
 		ld	hl,spratt
 		ld	c,98h
-		call    tovram16x8
-	
-		ld	de,1000h+120*8
-		call	SetPtr_VRAM
-		ld	hl,basegfx
-		ld 	c,98h	
-		call  	tovram5x8	
+		call    tovram16x8	
 	
 		ld	de,0+96*8
 		call	SetPtr_VRAM
-		ld	hl,bufferEnUp1
+                ld	hl,(bufferPtrUp1)
 		ld	c,98h
 		call    tovram12x8
 
 		ld	de,0+102*8
 		call	SetPtr_VRAM
-		ld	hl,bufferEnUp2
+	        ld	hl,(bufferPtrUp2)	
 		ld	c,98h
 		call    tovram12x8
 
 		ld	de,0+108*8
 		call	SetPtr_VRAM
-		ld	hl,bufferEnDw1
+		ld	hl,(bufferPtrDw1)
 		ld	c,98h
 		call    tovram12x8
 
 		ld	de,0+114*8
 		call	SetPtr_VRAM
-		ld	hl,bufferEnDw2
+		ld	hl,(bufferPtrDw2)
 		ld	c,98h
 		call    tovram12x8
-
 	
-	
-		ld	de,2000h+ENEMYVOFF
-		call	SetPtr_VRAM
-		ld	hl,BufferColor1
-		outi\outi\outi\outi\outi\outi\outi\outi
-		ld	hl,BufferColor1
-		outi\outi\outi\outi\outi\outi\outi\outi	
-		ld	hl,BufferColor1
-		outi\outi\outi\outi\outi\outi\outi\outi	
-		ld	hl,BufferColor1+8
-		outi\outi\outi\outi\outi\outi\outi\outi	
-		ld	hl,BufferColor1+8
-		outi\outi\outi\outi\outi\outi\outi\outi	
-		ld	hl,BufferColor1+8
-		outi\outi\outi\outi\outi\outi\outi\outi	
-
-		ld	hl,BufferColor2
-		outi\outi\outi\outi\outi\outi\outi\outi	
-		ld	hl,BufferColor2
-		outi\outi\outi\outi\outi\outi\outi\outi	
-		ld	hl,BufferColor2
-		outi\outi\outi\outi\outi\outi\outi\outi	
-		ld	hl,BufferColor2+8
-		outi\outi\outi\outi\outi\outi\outi\outi	
-		ld	hl,BufferColor2+8
-		outi\outi\outi\outi\outi\outi\outi\outi	
-		ld	hl,BufferColor2+8
-		outi\outi\outi\outi\outi\outi\outi\outi	
-
-		ld	hl,BufferColor1
-		outi\outi\outi\outi\outi\outi\outi\outi	
-		ld	hl,BufferColor1
-		outi\outi\outi\outi\outi\outi\outi\outi	
-		ld	hl,BufferColor1
-		outi\outi\outi\outi\outi\outi\outi\outi	
-		ld	hl,BufferColor1+8
-		outi\outi\outi\outi\outi\outi\outi\outi	
-		ld	hl,BufferColor1+8
-		outi\outi\outi\outi\outi\outi\outi\outi	
-		ld	hl,BufferColor1+8
-		outi\outi\outi\outi\outi\outi\outi\outi	
-
-		ld	hl,BufferColor2
-		outi\outi\outi\outi\outi\outi\outi\outi	
-		ld	hl,BufferColor2
-		outi\outi\outi\outi\outi\outi\outi\outi	
-		ld	hl,BufferColor2
-		outi\outi\outi\outi\outi\outi\outi\outi	
-		ld	hl,BufferColor2+8
-		outi\outi\outi\outi\outi\outi\outi\outi
-		ld	hl,BufferColor2+8
-		outi\outi\outi\outi\outi\outi\outi\outi
-		ld	hl,BufferColor2+8
-		outi\outi\outi\outi\outi\outi\outi\outi
 
 
 		ld	de,800h+METEOR_VOFF1
@@ -420,16 +358,41 @@ LevelISR:
 		ld	hl,MeteorBufferL
 		ld	c,98h	
 		call	tovram3x8
-	
-		ld	de,1800h+1*32
+
+
+		ld	hl,renderEnemyF
+		xor	a
+		or	(hl)
+		jr	z,.meteorMap
+		xor	a
+		ld	(hl),a		
+		ld	de,1800h+3*32
 		call	SetPtr_VRAM
-		ld	hl,PatternMap+1*32
-		call	tovram15x8
-		call	tovram16x8	
+		ld	hl,PatternMap+3*32
 		call	tovram16x8
-		call	tovram16x8
-		call	tovram16x8
-		call	tovram13x8
+		call	tovram4x8
+		
+
+
+.meteorMap:	
+;; 		call	tovram16x8	
+;; 		call	tovram16x8
+;; 		call	tovram16x8
+;; 		call	tovram16x8
+;; 		call	tovram10x8
+
+
+
+		ld	a,2
+		call	set_cfondo
+
+		ld	de,1000h+120*8
+		call	SetPtr_VRAM
+		ld	hl,basegfx
+		ld 	c,98h	
+		call  	tovram5x8_slow	
+ 		call	.changefloor
+	
 		ld	a,1
 		call	set_cfondo
 		ret
@@ -464,13 +427,13 @@ LevelISR:
 		ld	de,1000h+30*8
 		call	SetPtr_VRAM
 		ld	c,98h
-		call	tovram2x8
+		call	tovram2x8_slow
 
 	
 		ld	de,1000h+62*8
 		call	SetPtr_VRAM
 		ld 	c,98h	
-		call	tovram4x8
+		call	tovram4x8_slow
 	
 ; WE MUST CHANGE destroyed floor!!!
 	
@@ -480,14 +443,106 @@ LevelISR:
 		ld	de,3000h+30*8
 		call	SetPtr_VRAM
 		ld	c,98h	
-		call	tovram2x8
+		call	tovram2x8_slow
 	
 		ld	de,3000h+62*8
 		call	SetPtr_VRAM
 		ld 	c,98h	
-		call  	tovram4x8
+		call  	tovram4x8_slow
 		ret        ; TODO: WE MUST CHANGE color of destroyed floor!!!
 
+
+
+
+
+tovram5x8_slow:
+	outi
+	nop
+	outi
+	nop
+	outi
+	nop
+	outi
+	nop
+	outi
+	nop
+	outi
+	nop
+	outi
+	nop
+	outi
+	nop
+	
+tovram4x8_slow:
+	outi
+	nop
+	outi
+	nop
+	outi
+	nop
+	outi
+	nop
+	outi
+	nop
+	outi
+	nop
+	outi
+	nop
+	outi
+	nop
+tovram3x8_slow:	
+	outi
+	nop
+	outi
+	nop
+	outi
+	nop
+	outi
+	nop
+	outi
+	nop
+	outi
+	nop
+	outi
+	nop
+	outi
+	nop
+tovram2x8_slow:	
+	outi
+	nop
+	outi
+	nop
+	outi
+	nop
+	outi
+	nop
+	outi
+	nop
+	outi
+	nop
+	outi
+	nop
+	outi
+	nop
+tovram1x8_slow:		
+	outi
+	nop
+	outi
+	nop
+	outi
+	nop
+	outi
+	nop
+	outi
+	nop
+	outi
+	nop
+	outi
+	nop
+	outi
+	ret
+
+	
 
 
 ;TODO: Change tovramXxX routines to auto generated RAM routine for this	
@@ -503,6 +558,7 @@ tovram16x8:
 	outi
 	outi	
 
+	
 tovram15x8:
 	outi
 	outi

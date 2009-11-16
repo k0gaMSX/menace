@@ -27,6 +27,7 @@ ANIMETIME:	equ	40
 InitEnemy:
 	ld	a,NUMENEMIES
 	ld	(NumEnemy),a
+	ld	(renderEnemyF),a
 
 	ld	a,(NumLevel)
 	ld	de,.LevelData
@@ -163,6 +164,18 @@ InitEnemy:
 	ld	de,BufferEnDw2+32
 	ld	bc,16
 	ldir
+
+        ld	hl,BufferEnUp1
+	ld	(bufferPtrUp1),hl
+
+        ld	hl,BufferEnUp2	
+        ld	(bufferPtrUp2),hl
+
+	ld	hl,BufferEnDw1	
+        ld	(bufferPtrDw1),hl
+
+	ld	hl,BufferEnDw2		
+        ld	(bufferPtrDw2),hl
 	ret
 
 
@@ -311,8 +324,7 @@ InitEnemy:
 	call	LDIRVM		; Here is initializiled colour table		
 	ret
 
-
-
+	
 	
 		
 section rdata
@@ -493,7 +505,9 @@ renderEnemy:
 
 	
 
-UpdateChars:	
+UpdateChars:
+	ld	a,1
+	ld	(renderEnemyF),a
 	ld	hl,(redchar_right1)
 	call	PointerCall
 	ld	hl,(redchar_right2)
@@ -547,57 +561,17 @@ UpdateChars:
 
 	
 SwapEnemy:
-	ld	a,10
-	call	set_cfondo
+        ld	hl,(bufferPtrUp1)
+	ld	de,(bufferPtrUp2)
+        ld	(bufferPtrUp1),de
+	ld	(bufferPtrUp2),hl
+
+
+        ld	hl,(bufferPtrDw1)
+	ld	de,(bufferPtrDw2)
+        ld	(bufferPtrDw1),de
+	ld	(bufferPtrDw2),hl
 	
-	ld	hl,BufferColor1	
-	ld	de,bufferTmp
-	ld	bc,16
-	ldir
-
-	ld	hl,BufferColor2	
-	ld	de,BufferColor1
-	ld	bc,16
-	ldir
-
-	ld	hl,bufferTmp
-	ld	de,BufferColor2
-	ld	bc,16
-	ldir
-
-
-	
-	ld	hl,bufferEnUp1		
-	ld	de,bufferTmp
-	ld	bc,ENEMYSIZE
-	ldir
-
-	ld	hl,bufferEnUp2	
-	ld	de,bufferEnUp1
-	ld	bc,ENEMYSIZE
-	ldir
-	
-	ld	hl,bufferTmp		
-	ld	de,bufferEnUp2
-	ld	bc,ENEMYSIZE
-	ldir
-
-	ld	hl,bufferEnDw1		
-	ld	de,bufferTmp
-	ld	bc,ENEMYSIZE
-	ldir
-
-	ld	hl,bufferEnDw2	
-	ld	de,bufferEnDw1
-	ld	bc,ENEMYSIZE
-	ldir
-	
-	ld	hl,bufferTmp		
-	ld	de,bufferEnDw2
-	ld	bc,ENEMYSIZE
-	ldir
-	ld	a,1
-	call	set_cfondo	
 	ret
 
 	
@@ -962,13 +936,12 @@ redchar_left1:	rb	2
 redchar_left2:	rb	2	
 
 
-bufferptrUp1:	rb	2
-bufferptrUp2:	rb	2
-bufferptrDw1:	rb	2	
-bufferptrDw2:	rb	2
+bufferPtrUp1:	rb	2
+bufferPtrUp2:	rb	2
+bufferPtrDw1:	rb	2	
+bufferPtrDw2:	rb	2
 	
 	
-bufferTmp:	rb	ENEMYSIZE
 bufferEnUp1:	rb	ENEMYSIZE
 bufferEnUp2:	rb	ENEMYSIZE
 bufferEnDw1:	rb	ENEMYSIZE
@@ -979,7 +952,8 @@ BufferColor1:	rb	16
 BufferColor2:	rb	16	
 
 
-	
+
+renderEnemyF:	rb	1
 contPoint:	rb	1	
 contframeEnemy:	rb	1	
 NumEnemy:	rb	1
