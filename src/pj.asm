@@ -287,7 +287,7 @@ move_pj:
 
 .move_rocket:
 	ld	a,(rockety)
-	cp	24
+	cp	16
 	jp	c,.nocol_rock
 
 	
@@ -601,6 +601,7 @@ TestRocketCol:
 
 .3rdPart:
 	ld	a,(.Yoff)
+	inc	a
 	ld	(.NumberY),a
 	
 	ld	de,0

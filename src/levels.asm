@@ -390,8 +390,8 @@ LevelISR:
 		call  	tovram5x8_slow	
  		call	.changefloor
 	
-;; 		ld	a,1
-;; 		call	set_cfondo
+		ld	a,1
+		call	set_cfondo
 		ret
 	
 

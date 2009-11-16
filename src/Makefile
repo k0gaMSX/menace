@@ -69,7 +69,7 @@ deps:
 	rm -f `dirname $<`/$*.col
 
 
-%.ene: %.sc5
+%.ene: %.sc5 ../sc5/enemy.col
 	$(SR52) $< 3 ../sc5/enemy.col
 	dd if=`dirname $<`/$*.pat of=$@ bs=1 count=640
 	dd if=`dirname $<`/$*.col of=$*.col bs=1 count=640
