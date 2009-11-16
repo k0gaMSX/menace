@@ -155,7 +155,7 @@ move_pj:
 	or	a
 	jr	z,.baseright
 	
-	ld	hl,pos		; CHECK LIMITS!!!!
+	ld	hl,pos		
 	xor	a
 	cp	(hl)
 	ret	z
@@ -204,7 +204,7 @@ move_pj:
 	ret	z
 
 	
-	ld	hl,pos		; CHECK LIMITS!!!!
+	ld	hl,pos
 	ld	a,27
 	cp	(hl)
 	ret	z
@@ -283,7 +283,6 @@ move_pj:
 
 
 
-;;; TODO: colission must be detected in the left pattern if x isn't multiple of 8
 
 .move_rocket:
 	ld	a,(rockety)
@@ -439,6 +438,8 @@ move_pj:
 	dec	(hl)
 	ret	nz
 	
+
+ToBase:	
 	ld	a,2
 	ld	(fired),a
 	ld	a,(pos)
@@ -454,7 +455,7 @@ move_pj:
 	ld	(rockety),a		
 	ret
 
-
+	
 	
 section rdata
 contRocket:	rb	1
@@ -462,12 +463,11 @@ section code
 
 
 
-;;; d -> y
-;;; e -> x
 
 
-;;; TODO: Clean definition of enemy graphics to allowing a cool
-;;; 	  collision detect based in the definition of the pattern
+	
+;;; *****************************************************
+
 	
 TestRocketCol:
 	ld	a,(rockety)
@@ -526,9 +526,10 @@ TestRocketCol:
    	call	.1stPart
    	call	z,.2ndPart
   	call	z,.3rdPart
+ 	ld	a,0
   	ret	z
 
- 	pop	hl
+ 	ld	a,1
 	ret
 
 
@@ -648,8 +649,7 @@ TestRocketCol:
 	ld	c,(hl)
 	ld	a,(.mask)
 	and	c
-	jr	nz,.exit
-;; 	ret	nz
+ 	ret	nz
 	inc	hl	
 	djnz	.Test1bLoop
 
@@ -659,7 +659,7 @@ TestRocketCol:
 	
 
 
-.exit:	ret
+
 	
 	
 ;;; a -> Number of pattern
