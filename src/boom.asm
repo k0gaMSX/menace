@@ -1,8 +1,15 @@
 
 BOOM_COLOR0:	equ	15
-BOOM_COLOR1:	equ	9
+BOOM_COLOR1:	equ	11
+BOOM_COLOR2:	equ	8
 
 
+
+TestBoom:
+	ld	a,(boom)
+	or	a
+	ret
+	
 	
 Boom1: 
 	ld	a,(boomx)
@@ -14,7 +21,7 @@ Boom1:
 	ld	a,14
 	ld	(spratt+SPRBOOM1*4+2),a
 	ld	a,BOOM_COLOR0
-	ld	(spratt+SPRBOOM1*4+3),a ;TODO: Put correct color
+	ld	(spratt+SPRBOOM1*4+3),a 
 	ret
 
 	
@@ -28,7 +35,7 @@ Boom2:
 	ld	a,15
 	ld	(spratt+SPRBOOM1*4+2),a
 	ld	a,BOOM_COLOR0
-	ld	(spratt+SPRBOOM1*4+3),a	;TODO: Put correct color
+	ld	(spratt+SPRBOOM1*4+3),a	
 	ret
 	
 
@@ -74,13 +81,13 @@ Boom3:
 	inc	a
 	ld	(spratt+SPRBOOM8*4+2),a		
 
-	ld	a,BOOM_COLOR0			;;TODO: Put correct color
+	ld	a,BOOM_COLOR1			;;TODO: Put correct color
 	ld	(spratt+SPRBOOM1*4+3),a
 	ld	(spratt+SPRBOOM2*4+3),a	
 	ld	(spratt+SPRBOOM3*4+3),a
 	ld	(spratt+SPRBOOM4*4+3),a	
 
-	ld	a,BOOM_COLOR1                     ;;TODO: Put correct color
+	ld	a,BOOM_COLOR2                     ;;TODO: Put correct color
 	ld	(spratt+SPRBOOM5*4+3),a 
 	ld	(spratt+SPRBOOM6*4+3),a	
 	ld	(spratt+SPRBOOM7*4+3),a

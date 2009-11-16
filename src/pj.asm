@@ -104,6 +104,13 @@ Death:
 
 	ld	a,1
 	ld	(DeathF),a
+
+	ld	a,3
+	ld	(fired),a
+	call	cleanRocket
+	ld	a,230
+	ld	(rocketx),a
+	ld	(rockety),a	
 	ret
 
 
@@ -121,7 +128,11 @@ doPj:
 	
 			
 	
-move_pj:		
+move_pj:
+	ld	a,(fired)
+	cp	3
+	ret	z
+	
 	xor	a
 	ld	hl,PatternMap+20*32
 	ld	de,PatternMap+20*32+1
@@ -754,6 +765,14 @@ renderPJ:
 
 	
 .renderocket:
+	ld	a,(fired)
+	cp	3
+	jr	nz,.renderocket0
+	call	cleanRocket
+	ret
+	
+	
+.renderocket0:			
 	ld	a,(rocketx)
 	ld	(spratt+SPRRCK1*4+1),a
 	ld	(spratt+SPRRCK2*4+1),a

@@ -93,13 +93,9 @@ InitLevel:
 TestDeath:
 		ld	a,(DeathF)
 		or	a
-		ret	z
+		ret	
 
-		push	af
-		xor	a
-		ld	(DeathF),a
-		pop	af
-		ret
+
 	
 
 
@@ -124,23 +120,37 @@ DelIsrLevel:	di
 
 
 
+;; 		ld	a,7
+;; 		call	SNSMAT
+;; 		bit	2,a
+;; 		jr	nz,.noend
+	
+
 	
 TestEnd:
-		ld	a,(NumLives)
-		or	a
-		jr	z,.newgame
-	
-		ld	a,(NumEnemy)
-		or	a
-		jr	z,.end
-	
-		ld	a,7
-		call	SNSMAT
-		bit	2,a
+		call	TestBoom
 		jr	nz,.noend
 
 	
-.end:	
+		ld	a,(NumEnemy)
+		or	a
+		jr	z,.endLevel
+
+	
+		ld	a,(NumLives)
+		or	a
+		jr	z,.newgame
+
+	
+		ld	a,(DeathF)
+		or	a
+		jr	nz,.death
+	
+		jr	.noend
+	
+.endLevel:
+		ld	hl,NumLevel
+		inc	(hl)	
 		ld	a,1
 		or	a
 		ret
@@ -153,18 +163,23 @@ TestEnd:
 .noend:		xor	a
 		ret
 
-	
+.death:		ld	a,3
+		or	a
+		ret
+
+
+;;; ************************************************
 	
 		
 PlayLevel:	
 		ld	a,(NumLevel)
 		cp	11
-		jr	nz,.2
+		jr	nz,.BeginPlay
 		xor	a
 		ret
 
 		
-.2: 		
+.BeginPLay: 		
 		call	CleanScr
 		call	.showLevel
 		call	.CleanMap	
@@ -177,7 +192,7 @@ PlayLevel:
 		call	InsIsrLevel
 	
 		
-.1:
+.GameLoop:
 		ld	a,4
 		call	set_cfondo
 		ei
@@ -187,26 +202,27 @@ PlayLevel:
 		call	doMeteors
 		call	VisOn
 		call	TestDeath
-		jr	nz,.3
+		jr	nz,.death
 		call	TestEnd
-		jr	z,.1		
+		jr	z,.GameLoop		
 
-.4:
+
+.endGame:	
 		push	af
-		ld	hl,NumLevel
-		inc	(hl)
 		call	DelIsrLevel
 		pop	af
 		ret
 
-.3:
+.death:
  		call	TestEnd
- 		jr	nz,.4
-		call	DelIsrLevel
-		jr	PlayLevel
+  		jr	z,.GameLoop
+ 		jr	.endGame
+
+
 	
 
-
+	
+;;; ****************************************************
 	
 
 .initMap:	

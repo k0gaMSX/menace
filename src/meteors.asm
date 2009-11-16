@@ -97,7 +97,8 @@ meteor_col:
 	call	TestRocketCol
  	or	a
 	ret	z
-	
+
+	call	toBoom
 	call	Death
 	ret
 	
@@ -174,6 +175,7 @@ moveMeteors:
 	inc	hl
 	or	(hl)
 	call	z,newMeteor
+
 	
 	ret
 
