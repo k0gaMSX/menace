@@ -58,6 +58,8 @@ introdemo:	ld	ix,.script
 		db	$38,$2e,$34,$47,$33,$27,$24,$47,$21,$24,$32,$33,$47,$36,$24,$20,$2f,$2e,$2d,$47,$33,$27,$24,$38,$47,$27,$20,$35,$24,$44,-1
 ;
 enddemo:	ld	ix,.script
+		ld	b,2
+.loop:		push	bc
 
 		call	DISSCR
 		di
@@ -65,13 +67,27 @@ enddemo:	ld	ix,.script
 		ld	($fd9a),a
 		ei
 
-		call	showdemo
+		pop	bc
+		ld	a,b
+		push	bc
+		dec	a
+		jr	nz,.first
+
+		ld	de,pattern+$e0*8
+		ld	hl,splash.end02.pat
+		call	UnTCFV
+		ld	de,color+$e0*8
+		ld	hl,splash.end02.col
+		call	UnTCFV
+		jr	.second
+
+.first:		call	showdemo
 		ld	bc,8		; change "." into "!" for the ending
 		ld	de,$1000 +8* $44
 		ld	hl,font.exclamation
 		call	LDIRVM
 
-		di
+.second:	di
 		ld	a,$c3
 		ld	hl,mainIntro
 		ld	($fd9a),a
@@ -79,17 +95,24 @@ enddemo:	ld	ix,.script
 		ei
 		call	ENASCR
 
+		pop	bc
+		ld	a,b
+		push	bc
+		dec	a
 		ld	c,0
-		call	showtext
+		call	nz,showtext
 
 		ld	b,0
 .wait:		halt
 		halt
 		djnz	.wait
+
+.skip:		pop	bc
+		djnz	.loop
 		ret
 
 
-.script:	dw	splash.end.pat,splash.end.col,$1a25,.text
+.script:	dw	splash.end01.pat,splash.end01.col,$1a25,.text
 
 .text:		db	$22,$2e,$2d,$26,$31,$20,$33,$34,$2b,$20,$33,$28,$2e,$2d,$32,$44,$44,$44,-2
 		db	$38,$2e,$34,$47,$32,$20,$35,$24,$23,$47,$33,$27,$24,$47,$36,$2e,$31,$2b,$23,$44,$44,$44,-2,-2

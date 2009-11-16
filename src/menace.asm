@@ -29,10 +29,9 @@ p1load:	equ	$
 main:	call	SaveSlotC
 	call	RomSlotPage2
 	call	InitScore
-%if DEBUG
-	ld	a,1fh
-	out	(02eh),a
-%endif
+	;ld	a,1fh
+	;out	(02eh),a
+
 
 game:
  	call	showLogo
@@ -148,10 +147,14 @@ db	01100000b
 db	01100000b
 
 splash:
-.end.pat:
+.end01.pat:
 %incbin  "end01.pat.tcf",8
-.end.col:
+.end01.col:
 %incbin  "end01.col.tcf",8
+.end02.pat:
+%incbin  "end02.pat.tcf",8
+.end02.col:
+%incbin  "end02.col.tcf",8
 .intro01.pat:
 %incbin  "intro01.pat.tcf",8
 .intro01.col:

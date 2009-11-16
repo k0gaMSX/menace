@@ -19,7 +19,7 @@ ENEMYEXP_NUMBER:	equ   5
 ENEMYEXP_PRIO:		equ   1
 
 
-MENU_NUMBER:            equ   7
+MENU_NUMBER:            equ   8
 MENU_PRIO:              equ   1
 
 LETTER_NUMBER:          equ   10

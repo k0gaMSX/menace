@@ -11,8 +11,6 @@ FIRE_HIDEY:     equ     254
 
 
 
-;;; TODO: Test fire state by 4 byte of spriteFire <- Someone can explain
-;;;                                                  this to me? (k0ga)
 
 
 InitFire:
@@ -31,15 +29,14 @@ InitFire:
 	ret
 
 
-;;; TODO: Test if searchEnemy is working well, or due to misworking of it,
-;;; the funcion newFire result always in the same X <- done, so problem is
-;;; due to newFire
 
 ;;; bc -> Pointer to map
 ;;; de -> pointer to end of the map
 ;;; Return Z = 0 if not found
 ;;;        Z = 1 if found
 ;;;        de -> last position in the map looked
+
+
 
 searchEnemy:
         ld      a,(bc)
@@ -81,7 +78,7 @@ TestFire:
 
 .1ndRow:
         ld      a,(NumFire)
-        cp      MAXFIRE
+        cp      MAXFIRE-1
         ret     z
         call    searchEnemy
         jr      z,.2ndRow
@@ -95,10 +92,12 @@ TestFire:
         ret
 	ld	bc,PatternMap+6*32
 	ld	de,PatternMap+7*32
+	ld	a,7*8
+	ld	(FireY),a
 
 .2ndRow_1:
         ld      a,(NumFire)
-        cp      MAXFIRE
+        cp      MAXFIRE-1
         ret     z
         call    searchEnemy
         ret     z
@@ -158,7 +157,7 @@ moveFire:
 	ld	hl,PatternMap
 	add	hl,de
 
-	ld	a,(hl)
+	ld	a,(hl)          ;Test if there is something i the pattern map
 	cp	0
 	jr	z,.n1
 
@@ -199,39 +198,45 @@ moveFire:
 HANG:   di
         halt
 
+
+
 NewFire:
 	push	bc
 	push 	de
-
-        ex      de,hl
-        or      a
-        sbc     hl,bc
-	ld	(.pos),hl
-	;; call	Rand
-	;; ld	hl,probFire
-	;; cp	(hl)
-	;; ret	c
-
-	ld	a,(NumFire)
-	cp 	MAXFIRE
-	ret	z
-
-        cp     2
-        ret    z
-
-        pop     de              ;FIXME: This 3 opcodes are here to help debugging
-        pop     bc              ;routine is hanging MSX in the next loop
+        call    .newFire1
+        pop     de
+        pop     bc
         ret
 
+.newFire1:
+        ld      hl,-256         ;one row less
+        add     hl,de
+        ex      de,hl
+        ld      l,c
+        ld      h,b
+        or      a
+        sbc     hl,de
+        ld      a,l
+	ld	(.pos),a
+	call	Rand
+	ld	hl,probFire
+	cp	(hl)
+	ret	nc
 
+	ld	a,(NumFire)
         ld      c,MAXFIRE
+	cp 	c
+	ret	z
+
 	ld	hl,spriteFire
 .searchsprite:
+        dec     c
+        ret     z
+        ;; call    z,HANG
+
         ld      a,(hl)
         cp      FIRE_HIDEY
         jr      z,.foundSprite
-        dec     c
-        call    z,HANG
 
         inc     hl
         inc     hl
@@ -243,26 +248,13 @@ NewFire:
 	ld	a,(FireY)
 	ld	(hl),a
 	inc	hl
-
-
-
-	ld	de,(.pos)
-        ld      b,5
-.1:     srl     d
-        rl      e
-        djnz    .1
+	ld	a,(.pos)
+        ld      e,a
+        ld      (hl),a
 
 
 	ld	hl,NumFire
 	inc	(hl)
-
- 	ld	a,(contframeEnemy) ;d must be always 0 due to there is only
-        add     a,e                ;255 x pos (.pos == initialDE - initialBC)
-	ld	(hl),a
-
-
-	pop	de
-	pop	bc
 	ret
 
 
@@ -270,7 +262,8 @@ NewFire:
 
 
 section rdata
-.pos:	rw	1
+.pos:	rb	1
+
 section code
 
 

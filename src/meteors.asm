@@ -8,22 +8,22 @@ METEOR2_PAT1:	equ 	127+32
 METEOR2_PAT2:	equ	126+32
 METEOR2_PAT3:	equ	125+32
 
-	
+
 METEOR_SIZE:	equ	3*8
 METEOR_VSIZE:	equ	2*8
-	
+
 METEOR_PATOFF1:	equ	(32*4)-2
 METEOR_PATOFF2:	equ	(32*5)-2
 
 METEOR_COLOFF:	equ	METEOR_PATOFF1*8
-METEOR_COLOFF2:	equ	METEOR_PATOFF2*8	
-		
+METEOR_COLOFF2:	equ	METEOR_PATOFF2*8
+
 METEOR_VOFF1:	equ 	((32*4)-3)*8
 METEOR_VOFF2:	equ 	((32*5)-3)*8
 
-	
 
-	
+
+
 
 InitMeteors:
 	ld	hl,0d431h
@@ -36,7 +36,7 @@ InitMeteors:
 	ld	(hl),a
 	ld	de,MeteorBufferR+1
 	ld	bc,METEOR_SIZE*2-1
- 	ldir			
+ 	ldir
 
 
 	ld	hl,METEOR_PATOFF1*8
@@ -66,7 +66,7 @@ InitMeteors:
 	ld	de,2800h+METEOR_VOFF1+16
 	ld	bc,8
 	call	LDIRVM
-	
+
 	ld	hl,scrcol+METEOR_COLOFF2
 	ld	de,2800h+METEOR_VOFF2
 	ld	bc,8
@@ -103,13 +103,13 @@ InitMeteors:
 
 
 
-	
-	
 
-	
+
+
+
 meteor_col:
 	ld	hl,800h
-	ld	(BankPattern),hl	
+	ld	(BankPattern),hl
 	call	TestRocketCol
  	or	a
 	ret	z
@@ -118,20 +118,20 @@ meteor_col:
 	call	toBoom
 	call	Death
 	ret
-	
 
 
-	
+
+
 
 doMeteors:
 	call	moveMeteors
 	call	renderMeteors
-	ret	
+	ret
 
 
 
 
-	
+
 
 
 moveMeteors:
@@ -140,7 +140,7 @@ moveMeteors:
 	bit 	3,a
 	ld	(MeteorFrame),a
 	ret 	z
-	
+
 	xor	a
 	ld	(MeteorFrame),a
 
@@ -149,9 +149,9 @@ moveMeteors:
 	ld	de,PatternMap+32*9+0
 	ld	bc,31
 	ldir
- 	ld	(PatternMap+32*9+31),a		
-	
-	
+ 	ld	(PatternMap+32*9+31),a
+
+
 	ld 	hl,PatternMap+32*11+30
 	ld	de,PatternMap+32*11+31
 	ld	bc,31
@@ -163,21 +163,21 @@ moveMeteors:
 	ld	de,PatternMap+32*13+0
 	ld	bc,31
 	ldir
- 	ld	(PatternMap+32*13+31),a	
+ 	ld	(PatternMap+32*13+31),a
 
-	
+
 	ld 	hl,PatternMap+32*15+30
 	ld	de,PatternMap+32*15+31
 	ld	bc,31
 	lddr
-	ld	(PatternMap+32*15),a	
+	ld	(PatternMap+32*15),a
 
 
 	ld 	hl,PatternMap+32*18+1
 	ld	de,PatternMap+32*18+0
 	ld	bc,31
 	ldir
- 	ld	(PatternMap+32*18+31),a	
+ 	ld	(PatternMap+32*18+31),a
 
 
 	ld	hl,PatternMap+32*9+29
@@ -187,8 +187,8 @@ moveMeteors:
 	inc	hl
 	or	(hl)
 	call	z,newMeteor2
-	
-	
+
+
 	ld	hl,PatternMap+32*11
 	ld	a,(hl)
 	inc	hl
@@ -206,7 +206,7 @@ moveMeteors:
 	or	(hl)
 	call	z,newMeteor2
 
-	
+
 	ld	hl,PatternMap+32*15
 	ld	a,(hl)
 	inc	hl
@@ -231,9 +231,9 @@ moveMeteors:
 
 
 
-	
-	
-	
+
+
+
 newMeteor:
 	call	Rand
 	cp	METEOR_PROB
@@ -265,7 +265,7 @@ newMeteor2:
 	ret
 
 
-	
+
 newMeteor3:
 	ld	a,[hurryup]
 	or	a
@@ -285,18 +285,18 @@ newMeteor3:
 
 
 
-	
+
 
 
 renderMeteors:
 	di
-	ld	a,(MeteorFrame)	
+	ld	a,(MeteorFrame)
 	or	a
 	jr	z,.restore
 
 
 	ld	ix,MeteorBufferR
-	ld	b,8		
+	ld	b,8
 .right:
 	or 	a
 	rr	(ix+0)
@@ -305,9 +305,9 @@ renderMeteors:
 	inc 	ix
 	djnz 	.right
 
-	
+
 	ld	ix,MeteorBufferL
-	ld	b,8		
+	ld	b,8
 .left:
 	or 	a
 	rl	(ix+16)
@@ -326,8 +326,8 @@ renderMeteors:
 	ld	(hl),a
 	ld	de,MeteorBufferR+1
 	ld	bc,METEOR_SIZE*2-1
- 	ldir			
-	
+ 	ldir
+
 
 	ld	hl,MeteorBufferRt
 	ld	de,MeteorBufferR
@@ -342,24 +342,16 @@ renderMeteors:
 	ei
 	ret
 
-	
 
-	
+
+
 
 
 Rand:
-	push	hl	
-        ld      hl,(RandomSeed)        
-        dec     hl                     
-	ld	d,l
-	dec	l
-	ld	a,h
-	add	a,l
-	ld	e,a
-	sbc	hl,de
-        ld      (RandomSeed),hl      
-	ld	a,r
-	sub	l
+	push	hl
+        ld      hl,MeteorFrame
+        ld      a,r
+        xor     (hl)
 	pop	hl
 	ret
 
@@ -376,6 +368,6 @@ MeteorBufferL:	rb	METEOR_SIZE
 
 MeteorBufferRt:	rb 	METEOR_SIZE
 MeteorBufferLt:	rb	METEOR_SIZE
-section code	
-	
-	
+section code
+
+
