@@ -312,134 +312,103 @@ LevelISR:	ld	hl,time
 		ld	de,1b00h
 		call	SetPtr_VRAM
 		ld	hl,spratt
-		ld	b,4*32
 		ld	c,98h
-		otir	
+		call    tovram16x8
 	
 		ld	de,1000h+120*8
 		call	SetPtr_VRAM
 		ld	hl,basegfx
-		ld	b,5*8
-		ld	c,98h
-		otir
-
-		ld	de,1800h
-		call	SetPtr_VRAM
-		ld	hl,PatternMap
-		ld	b,3	
-.isrloop:	push	bc
-		ld	b,0
-		otir
-		pop	bc
-		djnz	.isrloop
+		ld 	c,98h	
+		call  	tovram5x8	
 	
 		ld	de,0+96*8
 		call	SetPtr_VRAM
 		ld	hl,bufferEnUp1
-		ld	b,8*6*2
-		ld	c,98h	
-		otir
+		ld	c,98h
+		call    tovram12x8
 
 		ld	de,0+102*8
 		call	SetPtr_VRAM
 		ld	hl,bufferEnUp2
-		ld	b,8*6*2
 		ld	c,98h
-		otir
+		call    tovram12x8
 
 		ld	de,0+108*8
 		call	SetPtr_VRAM
 		ld	hl,bufferEnDw1
-		ld	b,8*6*2
 		ld	c,98h
-		otir
+		call    tovram12x8
 
 		ld	de,0+114*8
 		call	SetPtr_VRAM
 		ld	hl,bufferEnDw2
-		ld	b,8*6*2
 		ld	c,98h
-		otir
+		call    tovram12x8
 
 	
 		ld	de,2000h+ENEMYVOFF
 		call	SetPtr_VRAM
 		ld	hl,BufferColor1
-		ld	b,8
-		otir
+		outi\outi\outi\outi\outi\outi\outi\outi
 		ld	hl,BufferColor1
-		ld	b,8
-		otir
+		outi\outi\outi\outi\outi\outi\outi\outi	
 		ld	hl,BufferColor1
-		ld	b,8
-		otir
+		outi\outi\outi\outi\outi\outi\outi\outi	
 		ld	hl,BufferColor1+8
-		ld	b,8
-		otir
+		outi\outi\outi\outi\outi\outi\outi\outi	
 		ld	hl,BufferColor1+8
-		ld	b,8
-		otir
+		outi\outi\outi\outi\outi\outi\outi\outi	
 		ld	hl,BufferColor1+8
-		ld	b,8
-		otir
+		outi\outi\outi\outi\outi\outi\outi\outi	
 
 		ld	hl,BufferColor2
-		ld	b,8
-		otir
+		outi\outi\outi\outi\outi\outi\outi\outi	
 		ld	hl,BufferColor2
-		ld	b,8
-		otir
+		outi\outi\outi\outi\outi\outi\outi\outi	
 		ld	hl,BufferColor2
-		ld	b,8
-		otir
+		outi\outi\outi\outi\outi\outi\outi\outi	
 		ld	hl,BufferColor2+8
-		ld	b,8
-		otir
+		outi\outi\outi\outi\outi\outi\outi\outi	
 		ld	hl,BufferColor2+8
-		ld	b,8
-		otir
+		outi\outi\outi\outi\outi\outi\outi\outi	
 		ld	hl,BufferColor2+8
-		ld	b,8
-		otir
+		outi\outi\outi\outi\outi\outi\outi\outi	
 
 		ld	hl,BufferColor1
-		ld	b,8
-		otir
+		outi\outi\outi\outi\outi\outi\outi\outi	
 		ld	hl,BufferColor1
-		ld	b,8
-		otir
+		outi\outi\outi\outi\outi\outi\outi\outi	
 		ld	hl,BufferColor1
-		ld	b,8
-		otir
+		outi\outi\outi\outi\outi\outi\outi\outi	
 		ld	hl,BufferColor1+8
-		ld	b,8
-		otir
+		outi\outi\outi\outi\outi\outi\outi\outi	
 		ld	hl,BufferColor1+8
-		ld	b,8
-		otir
+		outi\outi\outi\outi\outi\outi\outi\outi	
 		ld	hl,BufferColor1+8
-		ld	b,8
-		otir
+		outi\outi\outi\outi\outi\outi\outi\outi	
 
 		ld	hl,BufferColor2
-		ld	b,8
-		otir
+		outi\outi\outi\outi\outi\outi\outi\outi	
 		ld	hl,BufferColor2
-		ld	b,8
-		otir
+		outi\outi\outi\outi\outi\outi\outi\outi	
 		ld	hl,BufferColor2
-		ld	b,8
-		otir
+		outi\outi\outi\outi\outi\outi\outi\outi	
 		ld	hl,BufferColor2+8
-		ld	b,8
-		otir
+		outi\outi\outi\outi\outi\outi\outi\outi
 		ld	hl,BufferColor2+8
-		ld	b,8
-		otir
+		outi\outi\outi\outi\outi\outi\outi\outi
 		ld	hl,BufferColor2+8
-		ld	b,8
-		otir	
-	
+		outi\outi\outi\outi\outi\outi\outi\outi
+
+		ld	de,1800h
+		call	SetPtr_VRAM
+		ld	hl,PatternMap
+		call	tovram16x8
+		call	tovram16x8	
+		call	tovram16x8
+		call	tovram16x8
+		call	tovram16x8
+		call	tovram16x8		
 		ret
 	
 
@@ -477,6 +446,7 @@ LevelISR:	ld	hl,time
 	
 		ld	de,1000h+62*8
 		call	SetPtr_VRAM
+		ld 	c,98h	
 		call	tovram4x8
 	
 ; WE MUST CHANGE destroyed floor!!!
@@ -491,14 +461,56 @@ LevelISR:	ld	hl,time
 	
 		ld	de,3000h+62*8
 		call	SetPtr_VRAM
+		ld 	c,98h	
 		call  	tovram4x8
 		ret        ; TODO: WE MUST CHANGE color of destroyed floor!!!
 
 
 
+	
+	
 
-tovram4x8:
-	ld 	c,98h
+tovram16x8:
+	outi
+	outi
+	outi
+	outi
+	outi
+	outi
+	outi
+	outi	
+
+tovram15x8:
+	outi
+	outi
+	outi
+	outi
+	outi
+	outi
+	outi
+	outi	
+	
+tovram14x8:
+	outi
+	outi
+	outi
+	outi
+	outi
+	outi
+	outi
+	outi	
+
+tovram13x8:
+	outi
+	outi
+	outi
+	outi
+	outi
+	outi
+	outi
+	outi	
+		
+tovram12x8:	
 	outi
 	outi
 	outi
@@ -508,6 +520,7 @@ tovram4x8:
 	outi
 	outi
 
+tovram11x8:		
 	outi
 	outi
 	outi
@@ -517,6 +530,88 @@ tovram4x8:
 	outi
 	outi
 
+	
+tovram10x8:	
+	outi
+	outi
+	outi
+	outi
+	outi
+	outi
+	outi
+	outi
+
+tovram9x8:		
+	outi
+	outi
+	outi
+	outi
+	outi
+	outi
+	outi
+	outi	
+
+tovram8x8:
+	outi
+	outi
+	outi
+	outi
+	outi
+	outi
+	outi
+	outi	
+
+tovram7x8:
+	outi
+	outi
+	outi
+	outi
+	outi
+	outi
+	outi
+	outi	
+	
+tovram6x8:
+	outi
+	outi
+	outi
+	outi
+	outi
+	outi
+	outi
+	outi	
+
+tovram5x8:
+	outi
+	outi
+	outi
+	outi
+	outi
+	outi
+	outi
+	outi	
+		
+tovram4x8:	
+	outi
+	outi
+	outi
+	outi
+	outi
+	outi
+	outi
+	outi
+
+tovram3x8:		
+	outi
+	outi
+	outi
+	outi
+	outi
+	outi
+	outi
+	outi
+
+	
 tovram2x8:	
 	outi
 	outi
@@ -527,6 +622,7 @@ tovram2x8:
 	outi
 	outi
 
+tovram1x8:		
 	outi
 	outi
 	outi
