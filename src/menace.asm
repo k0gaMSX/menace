@@ -39,10 +39,12 @@ main:	call	SaveSlotC
 	call	InitScore
 	ld	a,1fh
 	out	(02eh),a
+
 	
 game:
-	call	showLogo
-	call	initIntro
+ 	call	showLogo
+ 	call	initIntro
+	call	initsound	
 	call	InitLevel
 nextl:	call	PlayLevel
 	cp	0
@@ -69,20 +71,23 @@ showEnding:
 
 
 
-section	code	
+
 
 	
-
+%include "sound.asm"
 %include "sys.asm"
-%include "tnimsx1.asm"	
-%include "intro.asm"
+%include "tnimsx1.asm"
+%include "intro.asm"		
 %include "levels.asm"
 %include "pj.asm"
 %include "score.asm"
 %include "enemy.asm"
 %include "aysfx.asm"
 %include "meteors.asm"
+%include "pt3.asm"
 	
+sfx:
+%incbin  "../sounds/sound.afb"	
 scrpat:	
 %incbin  "patterns.pat"
 scrcol:		
@@ -99,7 +104,8 @@ enemycol:
 %incbin  "enemy.col"				
 	
 		
-p1end:  ds      p1padd,0
+p1end:	equ $
+	ds      p1padd,0
 p1endf: equ $
 	
 %if p1size > pagsize

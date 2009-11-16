@@ -1,45 +1,72 @@
-		; --- ayFX REPLAYER ---
+		; --- ayFX REPLAYER v1.2f ---
 
-ayFX_SETUP:	ld	a,1				; Starting channel
+		; --- v1.2f  ayFX bank support
+		; --- v1.11f If a frame volume is zero then no AYREGS update
+		; --- v1.1f  Fixed volume for all ayFX streams
+		; --- v1.1   Explicit priority (as suggested by AR)
+		; --- v1.0f  Bug fixed (error when using noise)
+		; --- v1.0   Initial release
+
+ayFX_SETUP:	; ---          ayFX replayer setup          ---
+		; --- INPUT: HL -> pointer to the ayFX bank ---
+		ld	(ayFX_BANK),hl			; Current ayFX bank
+		ld	a,1				; Starting channel
 		ld	(ayFX_CHANNEL),a		; Updated
-		dec	a				; a:=0
-		ld	(ayFX_PLAYING),a		; not playing ayfx stream
-		dec	a				; a:=255
-		ld	(ayFX_CURRENT),a		; lower ayfx stream
+ayFX_END:	; --- End of an ayFX stream ---
+		ld	a,255				; Lowest ayFX priority
+		ld	(ayFX_PRIORITY),a		; Priority saved (not playing ayFX stream)
 		ret					; Return
 
 ayFX_INIT:	; ---     INIT A NEW ayFX STREAM     ---
 		; --- INPUT: A -> sound to be played ---
+		; ---        C -> sound priority     ---
 		push	bc				; Store bc in stack
 		push	de				; Store de in stack
 		push	hl				; Store hl in stack
-		ld	b,a				; b:=a (new ayFX stream)
-		ld	a,(ayFX_CURRENT)		; a:=Current ayFX stream
-		cp	b				; If new ayFX stream is higher than currently one...
+		; --- Check if the index is in the bank ---
+		ld	b,a				; b:=a (new ayFX stream index)
+		ld	hl,(ayFX_BANK)			; Current ayFX BANK
+		ld	a,(hl)				; Number of samples in the bank
+		or	a				; If zero (means 256 samples)...
+		jp	z,.CHECK_PRI			; ...goto .CHECK_PRI
+		; The bank has less than 256 samples
+		ld	a,b				; a:=b (new ayFX stream index)
+		cp	(hl)				; If new index is not in the bank...
+		ld	a,2				; a:=2 (error 2: Sample not in the bank)
+		jp	nc,.INIT_END			; ...we can't init it
+.CHECK_PRI:	; --- Check if the new priority is lower than the current one ---
+		; ---   Remember: 0 = highest priority, 15 = lowest priority  ---
+		ld	a,b				; a:=b (new ayFX stream index)
+		ld	a,(ayFX_PRIORITY)		; a:=Current ayFX stream priority
+		cp	c				; If new ayFX stream priority is lower than current one...
+		ld	a,1				; a:=1 (error 1: A sample with higher priority is being played)
 		jp	c,.INIT_END			; ...we don't start the new ayFX stream
-		; --- INITS ---
+		; --- Set new priority ---
+		ld	a,c				; a:=New priority
+		and	00Fh				; We mask the priority
+		ld	(ayFX_PRIORITY),a		; new ayFX stream priority saved in RAM
+		; --- Calculate the pointer to the new ayFX stream ---
+		ld	de,(ayFX_BANK)			; de:=Current ayFX bank
+		inc	de				; de points to the increments table of the bank
 		ld	l,b				; l:=b (new ayFX stream index)
 		ld	h,0				; hl:=b (new ayFX stream index)
 		add	hl,hl				; hl:=hl*2
-		ld	de,ayFX_STREAMS			; Pointer to the pointer list of the ayFX streams
-		add	hl,de				; Pointer to the pointer of new ayFX stream to be played
-		ld	e,(hl)				; e:=lower byte of new ayFX stream pointer
-		inc	hl				; Increment pointer to the pointer
-		ld	d,(hl)				; de:=pointer to the new ayFX stream
-		ld	(ayFX_POINTER),de		; Pointer saved in RAM
-		ld	a,b				; a:=b (new ayFX stream)
-		ld	(ayFX_CURRENT),a		; new ayFX stream saved in RAM
-		ld	a,255				; a:=255 (a non zero value)
-		ld	(ayFX_PLAYING),a		; There's an ayFX stream to be played
+		add	hl,de				; hl:=hl+de (hl points to the correct increment)
+		ld	e,(hl)				; e:=lower byte of the increment
+		inc	hl				; hl points to the higher byte of the correct increment
+		ld	d,(hl)				; de:=increment
+		add	hl,de				; hl:=hl+de (hl points to the new ayFX stream)
+		ld	(ayFX_POINTER),hl		; Pointer saved in RAM
+		xor	a				; a:=0 (no errors)
 .INIT_END:	pop	hl				; Retrieve hl from stack
 		pop	de				; Retrieve de from stack
 		pop	bc				; Retrieve bc from stack
 		ret					; Return
 
 ayFX_PLAY:	; --- PLAY A FRAME OF AN ayFX STREAM ---
-		ld	a,(ayFX_PLAYING)		; There's an ayFX stream to be played?
-		or	a				; If not...
-		ret	z				; ...return
+		ld	a,(ayFX_PRIORITY)		; a:=Current ayFX stream priority
+		or	a				; If priority has bit 7 on...
+		ret	m				; ...return
 		; --- Extract control byte from stream ---
 		ld	hl,(ayFX_POINTER)		; Pointer to the current ayFX stream
 		ld	c,(hl)				; c:=Control byte
@@ -58,15 +85,17 @@ ayFX_PLAY:	; --- PLAY A FRAME OF AN ayFX STREAM ---
 		jp	z,.SETPOINTER			; ...jump to .SETPOINTER (no new noise)
 		; --- Extract new noise from stream ---
 		ld	a,(hl)				; a:=New noise
-		cp	$20				; If it's an illegal value of noise (used to mark end of stream)...
+		inc	hl				; Increment pointer
+		cp	020h				; If it's an illegal value of noise (used to mark end of stream)...
 		jp	z,ayFX_END			; ...jump to ayFX_END
 		ld	(ayFX_NOISE),a			; ayFX noise updated
 .SETPOINTER:	; --- Update ayFX pointer ---
 		ld	(ayFX_POINTER),hl		; Update ayFX stream pointer
 		; --- Extract volume ---
 		ld	a,c				; a:=Control byte
-		and	$0F				; lower nibble
+		and	00Fh				; lower nibble
 		ld	(ayFX_VOLUME),a			; ayFX volume updated
+		ret	z				; Return if volume is zero (don't copy ayFX values in to AYREGS)
 		; -------------------------------------
 		; --- COPY ayFX VALUES IN TO AYREGS ---
 		; -------------------------------------
@@ -77,13 +106,13 @@ ayFX_PLAY:	; --- PLAY A FRAME OF AN ayFX STREAM ---
 		ld	(AYREGS+6),a			; copied in to AYREGS (noise channel)
 .SETMASKS:	; --- Set mixer masks ---
 		ld	a,c				; a:=Control byte
-		and	$90				; Only bits 7 and 4 (noise and tone mask for psg reg 7)
-		cp	$90				; If no noise and no tone...
+		and	090h				; Only bits 7 and 4 (noise and tone mask for psg reg 7)
+		cp	090h				; If no noise and no tone...
 		ret	z				; ...return (don't copy ayFX values in to AYREGS)
 		; --- Copy ayFX values in to ARYREGS ---
 		rrc	a				; Rotate a to the right (1 TIME)
 		rrc	a				; Rotate a to the right (2 TIMES) (OR mask)
-		ld	d,$DB				; d:=Mask for psg mixer (AND mask)
+		ld	d,0DBh				; d:=Mask for psg mixer (AND mask)
 		; --- Calculate next ayFX channel ---
 		ld	hl,ayFX_CHANNEL			; Old ayFX playing channel
 		dec	(hl)				; New ayFX playing channel
@@ -132,31 +161,21 @@ ayFX_PLAY:	; --- PLAY A FRAME OF AN ayFX STREAM ---
 		ld	a,(ayFX_VOLUME)			; a:=ayFX volume value
 		ret					; Return
 
-ayFX_END:	; --- End of an ayFX stream ---
-		xor	a				; a:=0
-		ld	(ayFX_PLAYING),a		; There's no ayFX stream to be played!
-		dec	a				; a:=255
-		ld	(ayFX_CURRENT),a		; Lower ayFX stream
-		ret					; Return
 
 
 
-	
+section  rdata	
 
-section rdata
-
-;;; !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!	
-ayFX_STREAMS:	rb	1     ;Temporaly!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
-AYREGS:		rb 	1
-;;; !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
-	
-	
-ayFX_PLAYING:	rb	1			; There's an ayFX stream to be played?
-ayFX_CURRENT:	rb	1			; Current ayFX stream playing
+ayFX_BANK:	rb	2			; Current ayFX Bank
+ayFX_PRIORITY:	rb	1			; Current ayFX stream priotity
 ayFX_POINTER:	rb	2			; Pointer to the current ayFX stream
 ayFX_TONE:	rb	2			; Current tone of the ayFX stream
 ayFX_NOISE:	rb	1			; Current noise of the ayFX stream
 ayFX_VOLUME:	rb	1			; Current volume of the ayFX stream
-ayFX_CHANNEL:	rb	1			; PSG channel to play the ayFX stream	
+ayFX_CHANNEL:	rb	1			; PSG channel to play the ayFX stream
 
-section code		
+		; --- UNCOMMENT THIS IF YOU DON'T USE THIS REPLAYER WITH PT3 REPLAYER ---
+;; AYREGS:		rb	14			; Ram copy of PSG registers
+		; --- UNCOMMENT THIS IF YOU DON'T USE THIS REPLAYER WITH PT3 REPLAYER ---
+	
+section code 

@@ -47,11 +47,11 @@ InitPJ:
 	xor	a
 	ld	(fired),a
 	ld	(boom),a
-	
-	ld	hl,scrpat+120*8
-	ld	bc,5*8
-	ld	de,basegfx
-	ldir
+
+	ld	hl,basegfxt
+ 	ld	bc,6*8
+ 	ld	de,basegfx
+ 	ldir	
 
 	ld	a,129
 	ld	(rocketx),a		
@@ -93,6 +93,7 @@ keyleft:	rb	1
 keyright:	rb	1
 keyfire:	rb	1		
 basegfx:	rb	40
+basegfxt:	rb	48
 countchain:	rb	1
 section	code							
 	
@@ -210,11 +211,12 @@ move_pj:
 	ld	a,INITIALFRAME
 	ld	(hl),a
 	ld	hl,pos
-	dec	(hl)		
-	ld	hl,scrpat+120*8
-	ld	bc,5*8
-	ld	de,basegfx
-	ldir
+	dec	(hl)
+
+ 	ld	hl,basegfxt
+ 	ld	bc,5*8
+ 	ld	de,basegfx
+ 	ldir
 	ret
 
 
@@ -231,6 +233,7 @@ move_pj:
 	rl	(ix)
 	inc	ix
 	djnz	.shiftleft
+	call	base_motor
 	ret
 
 
@@ -259,11 +262,11 @@ move_pj:
 	ld	a,INITIALFRAME
 	ld	(hl),a
 	ld	hl,pos	
-	inc	(hl)		
-	ld	hl,scrpat+120*8
-	ld	bc,5*8
-	ld	de,basegfx
-	ldir
+	inc	(hl)
+ 	ld	hl,basegfxt
+ 	ld	bc,5*8
+ 	ld	de,basegfx
+ 	ldir	
 	ret
 
 	
@@ -280,6 +283,7 @@ move_pj:
 	rr	(ix+32)
 	inc	ix
 	djnz	.shiftright
+	call	base_motor	
 	ret
 
 	
@@ -470,7 +474,7 @@ move_pj:
 	ld	a,6
 	ld	(hl),a	
 
-.mvrocket_sp:		
+.mvrocket_sp:
 	call	.mvrck_side
 	ld	hl,rockety
 	dec	(hl)
@@ -667,7 +671,7 @@ TestRocketCol:
 ;;; (.maptr) -> pointer to pattern map
 ;;; (.offsetY) -> offset in Y
 ;;; (.NumberY) -> number of pixels in Y
-;;; (.mask) -> Mascara a aplicar
+;;; (.mask) -> Mask 
 	
 .Test1b:
 	ld	hl,(.maptr)
@@ -827,7 +831,8 @@ renderPJ:
 	ld	a,11
 	ld	(spratt+SPRFIRE1*4+3),a
 	ld	a,8
-	ld	(spratt+SPRFIRE2*4+3),a	
+	ld	(spratt+SPRFIRE2*4+3),a
+	call	rck_ignition			
 	ret
 	
 

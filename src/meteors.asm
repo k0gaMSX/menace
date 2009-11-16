@@ -39,16 +39,17 @@ InitMeteors:
  	ldir			
 
 
-	ld	hl,scrpat+METEOR_PATOFF1*8
-	ld	de,MeteorBufferR
+	ld	hl,METEOR_PATOFF1*8
+	ld	de,MeteorBufferRt
 	ld	bc,METEOR_VSIZE
-	ldir
+	call	LDIRMV
 
 
-	ld	hl,scrpat+METEOR_PATOFF2*8
-	ld	de,MeteorBufferL+8
+	ld	hl,METEOR_PATOFF2*8
+	ld	de,MeteorBufferLt
 	ld	bc,METEOR_VSIZE
-	ldir
+	call	LDIRMV
+
 
 
 
@@ -98,6 +99,7 @@ meteor_col:
  	or	a
 	ret	z
 
+	call	pjexp
 	call	toBoom
 	call	Death
 	ret
@@ -281,13 +283,13 @@ renderMeteors:
  	ldir			
 	
 
-	ld	hl,scrpat+METEOR_PATOFF1*8
+	ld	hl,MeteorBufferRt
 	ld	de,MeteorBufferR
 	ld	bc,METEOR_VSIZE
 	ldir
 
 
-	ld	hl,scrpat+METEOR_PATOFF2*8
+	ld	hl,MeteorBufferLt
 	ld	de,MeteorBufferL+8
 	ld	bc,METEOR_VSIZE
 	ldir
@@ -325,7 +327,9 @@ MeteorFrame:	rb	1
 
 MeteorBufferR:	rb	METEOR_SIZE
 MeteorBufferL:	rb	METEOR_SIZE
-	
+
+MeteorBufferRt:	rb 	METEOR_SIZE
+MeteorBufferLt:	rb	METEOR_SIZE
 section code	
 	
 	

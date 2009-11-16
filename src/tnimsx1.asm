@@ -2971,4 +2971,4 @@ BG:		rb	200+40
 Sprites:	rb	128
 R_outi:		rb	200*2+1
 
-	
+section code	

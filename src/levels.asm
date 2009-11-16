@@ -1,4 +1,4 @@
-
+WAIT_TIME:	equ	120
 
 	
 	
@@ -59,7 +59,13 @@ InitLevel:
 		dec	a
 		jr	nz,.cppat
 
-		ld	hl,scrpat+121*8
+		ld	hl,120*8
+		ld	bc,6*8
+		ld	de,basegfxt
+		call	LDIRMV
+	
+
+		ld	hl,basegfxt+8
 		ld	bc,3*8
 		ld	de,1000h+160*8
 		call	LDIRVM
@@ -181,7 +187,9 @@ PlayLevel:
 		ret
 
 		
-.BeginPLay: 		
+.BeginPLay:
+		ld	a,WAIT_TIME
+		ld	(waitgame),a
 		call	CleanScr
 		call	.showLevel
 		call	.CleanMap	
@@ -196,7 +204,7 @@ PlayLevel:
 		
 .GameLoop:
 		ld	a,4
-		call	set_cfondo
+;; 		call	set_cfondo
 		ei
 		halt
 		call	doPj
@@ -206,20 +214,32 @@ PlayLevel:
 		call	TestDeath
 		jr	nz,.death
 		call	TestEnd
-		jr	z,.GameLoop		
+		jr	z,.GameLoop
+	
 
-
-.endGame:	
+.endGame:	call	.WaitTime
 		push	af
 		call	DelIsrLevel
 		pop	af
 		ret
 
 .death:
+		ld	hl,waitgame
+		dec	(hl)
+		jr	nz,.GameLoop	
  		call	TestEnd
   		jr	z,.GameLoop
  		jr	.endGame
 
+
+
+
+.WaitTime:	
+		ld	b,50
+.1:		ei
+		halt
+		djnz	.1
+		ret
 
 	
 
@@ -398,7 +418,7 @@ PlayLevel:
 	
 LevelISR:
 		ld	a,5
-		call	set_cfondo
+;; 		call	set_cfondo
 		ld	hl,time
 		inc	(hl)
 
@@ -449,7 +469,7 @@ LevelISR:
  		call	tovram16x8
 
 		ld	a,2
-		call	set_cfondo
+;; 		call	set_cfondo
 
   		ld	de,1800h+20*32
 		call	SetPtr_VRAM
@@ -474,9 +494,11 @@ LevelISR:
 		ld 	c,98h	
 		call  	tovram5x8_slow	
  		call	.changefloor
-	
+
+
+		call	SoundISR
 		ld	a,1
-		call	set_cfondo
+;; 		call	set_cfondo
 		ret
 	
 
@@ -903,6 +925,7 @@ visoff:	di
 	
 section rdata		
 
+waitgame:	rb	1
 DeathF:		rb	1
 time:		rb	1	
 NumLevel:	rb	1

@@ -40,7 +40,9 @@ ENEMY4_PAT4:	equ	117
 ENEMY4_PAT5:	equ	118
 ENEMY4_PAT6:	equ	119
 	
-	
+
+
+%include "fire.asm"	
 	
 
 InitEnemy:
@@ -49,16 +51,18 @@ InitEnemy:
 	ld	(renderEnemyF),a
 
 	ld	a,(NumLevel)
+	dec	a
 	ld	de,.LevelData
 	ld	l,a
 	ld	h,0
 	add	hl,hl
 	add	hl,de
 	ld	a,(hl)
+	out	(2fh),a
 	ld	(speedEnemy),a
 	inc	hl
 	ld	a,(hl)
-	ld	(probFire),a
+	call	InitFire
 
 	
 	ld	b,2
@@ -86,17 +90,19 @@ InitEnemy:
 	
 	ld	a,FRAMETIME
 	ld	(contSpeed),a
-	ld	a,8
+	ld	a,NUMENEMIES
 	ld	(UpdateCont),a
 	ld	(contPoint),a
 	ld	(pointCont),a
 	ld	hl,stateEnemy
-	ld	b,8
+	ld	b,NUMENEMIES
 .3:	ld	(hl),a
 	djnz	.3
+
 	
 	ld	(frameEnemy),a
 	ld	(contframeEnemy),a
+	xor	a
 	ld	bc,ENEMYSIZE*4-1
 	ld	hl,BufferEnUp1
 	ld	de,BufferEnUp1+1
@@ -134,7 +140,7 @@ InitEnemy:
 	db	7,5
 	db	8,5
 	db      9,5
-	db	10,5
+	db	9,5
 	
 
 	
@@ -376,9 +382,9 @@ DestroyEnemy:
 	add	hl,de
 	dec	c
 	jr	nz,.loopy
-
-
-;;; TODO: Decrement number of enemies!!!!!!!!!
+	
+	call	enemyexp
+	
 	xor	a
 	ret
 	
@@ -561,6 +567,7 @@ paintEnemy:
 DoEnemy:
 	call	moveEnemy
 	call	renderEnemy
+	call	renderFire
 	ret
 
 
@@ -568,11 +575,13 @@ DoEnemy:
 	
 
 	
-moveEnemy:	call	.checkPoint
-		ret	nz
-		call	.setSpeed
+moveEnemy:
+	call	.checkPoint
+	ret	nz
+	call	.setSpeed
+	call	moveFire	
 ;;; TODO: HERE WE MUST CHEK FIRE !!!!!!!!!!!!
-		ret
+	ret
 		
 
 	
@@ -642,6 +651,7 @@ renderEnemy:
 		
 
 	call	UpdateChars
+	call	TestFire
 	jr	renderEnemy
 	
 .endtime:	
@@ -652,6 +662,8 @@ renderEnemy:
 
 
 
+
+	
 
 	
 
@@ -1111,7 +1123,6 @@ contPoint:	rb	1
 contframeEnemy:	rb	1	
 NumEnemy:	rb	1
 speedEnemy:	rb	1	
-probFire:	rb	1
 animationEnemy:	rb	1
 frameEnemy:	rb	1
 stateEnemy:	rb	NUMENEMIES	
