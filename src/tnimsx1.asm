@@ -13,7 +13,8 @@ VDP.DW:		equ	7
 
 section code
 	
-ShowLogo:	
+ShowLogo:
+	call	Make_outi
 	ld	a,C9h		; disable interrupt hook
 	ld	[FD9Ah],a
 
@@ -263,6 +264,23 @@ MainShow:
 	ret
  
 
+
+	
+Make_outi:
+	ld	b,240
+	ld	hl,R_outi
+	
+.loop:
+	ld	(hl),0edh
+	inc	hl	
+	ld	(hl),0a3h
+	inc	hl
+	djnz	.loop
+	ld	(hl),0c9h
+	ret
+
+
+	
 ;**********************
 ;* Interrupt routines *
 ;**********************
@@ -278,62 +296,20 @@ Interrupt:
 	ld	hl,0000h
 	call	SETWRT
 	ld	hl,BG
-	;200x outi
-	outi\outi\outi\outi\outi\outi\outi\outi\outi\outi\outi\outi\outi\outi\outi\outi
-	outi\outi\outi\outi\outi\outi\outi\outi\outi\outi\outi\outi\outi\outi\outi\outi
-	outi\outi\outi\outi\outi\outi\outi\outi\outi\outi\outi\outi\outi\outi\outi\outi
-	outi\outi\outi\outi\outi\outi\outi\outi\outi\outi\outi\outi\outi\outi\outi\outi
-	outi\outi\outi\outi\outi\outi\outi\outi\outi\outi\outi\outi\outi\outi\outi\outi
-	outi\outi\outi\outi\outi\outi\outi\outi\outi\outi\outi\outi\outi\outi\outi\outi
-	outi\outi\outi\outi\outi\outi\outi\outi\outi\outi\outi\outi\outi\outi\outi\outi
-	outi\outi\outi\outi\outi\outi\outi\outi\outi\outi\outi\outi\outi\outi\outi\outi
-	outi\outi\outi\outi\outi\outi\outi\outi\outi\outi\outi\outi\outi\outi\outi\outi
-	outi\outi\outi\outi\outi\outi\outi\outi\outi\outi\outi\outi\outi\outi\outi\outi
-	outi\outi\outi\outi\outi\outi\outi\outi\outi\outi\outi\outi\outi\outi\outi\outi
-	outi\outi\outi\outi\outi\outi\outi\outi\outi\outi\outi\outi\outi\outi\outi\outi
-	outi\outi\outi\outi\outi\outi\outi\outi
-	outi\outi\outi\outi\outi\outi\outi\outi\outi\outi\outi\outi\outi\outi\outi\outi
-	outi\outi\outi\outi\outi\outi\outi\outi\outi\outi\outi\outi\outi\outi\outi\outi
-	outi\outi\outi\outi\outi\outi\outi\outi
+ 	call	R_outi
+
 
 	ld	hl,0800h
 	call	SETWRT
 	ld	hl,BG
-	;200x outi
-	outi\outi\outi\outi\outi\outi\outi\outi\outi\outi\outi\outi\outi\outi\outi\outi
-	outi\outi\outi\outi\outi\outi\outi\outi\outi\outi\outi\outi\outi\outi\outi\outi
-	outi\outi\outi\outi\outi\outi\outi\outi\outi\outi\outi\outi\outi\outi\outi\outi
-	outi\outi\outi\outi\outi\outi\outi\outi\outi\outi\outi\outi\outi\outi\outi\outi
-	outi\outi\outi\outi\outi\outi\outi\outi\outi\outi\outi\outi\outi\outi\outi\outi
-	outi\outi\outi\outi\outi\outi\outi\outi\outi\outi\outi\outi\outi\outi\outi\outi
-	outi\outi\outi\outi\outi\outi\outi\outi\outi\outi\outi\outi\outi\outi\outi\outi
-	outi\outi\outi\outi\outi\outi\outi\outi\outi\outi\outi\outi\outi\outi\outi\outi
-	outi\outi\outi\outi\outi\outi\outi\outi\outi\outi\outi\outi\outi\outi\outi\outi
-	outi\outi\outi\outi\outi\outi\outi\outi\outi\outi\outi\outi\outi\outi\outi\outi
-	outi\outi\outi\outi\outi\outi\outi\outi\outi\outi\outi\outi\outi\outi\outi\outi
-	outi\outi\outi\outi\outi\outi\outi\outi\outi\outi\outi\outi\outi\outi\outi\outi
-	outi\outi\outi\outi\outi\outi\outi\outi
-	outi\outi\outi\outi\outi\outi\outi\outi\outi\outi\outi\outi\outi\outi\outi\outi
-	outi\outi\outi\outi\outi\outi\outi\outi\outi\outi\outi\outi\outi\outi\outi\outi
-	outi\outi\outi\outi\outi\outi\outi\outi
+ 	call	R_outi	
+
 
 	ld	hl,1000h
 	call	SETWRT
 	ld	hl,BG
-	;200x outi
-	outi\outi\outi\outi\outi\outi\outi\outi\outi\outi\outi\outi\outi\outi\outi\outi
-	outi\outi\outi\outi\outi\outi\outi\outi\outi\outi\outi\outi\outi\outi\outi\outi
-	outi\outi\outi\outi\outi\outi\outi\outi\outi\outi\outi\outi\outi\outi\outi\outi
-	outi\outi\outi\outi\outi\outi\outi\outi\outi\outi\outi\outi\outi\outi\outi\outi
-	outi\outi\outi\outi\outi\outi\outi\outi\outi\outi\outi\outi\outi\outi\outi\outi
-	outi\outi\outi\outi\outi\outi\outi\outi\outi\outi\outi\outi\outi\outi\outi\outi
-	outi\outi\outi\outi\outi\outi\outi\outi\outi\outi\outi\outi\outi\outi\outi\outi
-	outi\outi\outi\outi\outi\outi\outi\outi\outi\outi\outi\outi\outi\outi\outi\outi
-	outi\outi\outi\outi\outi\outi\outi\outi\outi\outi\outi\outi\outi\outi\outi\outi
-	outi\outi\outi\outi\outi\outi\outi\outi\outi\outi\outi\outi\outi\outi\outi\outi
-	outi\outi\outi\outi\outi\outi\outi\outi\outi\outi\outi\outi\outi\outi\outi\outi
-	outi\outi\outi\outi\outi\outi\outi\outi\outi\outi\outi\outi\outi\outi\outi\outi
-	outi\outi\outi\outi\outi\outi\outi\outi
+ 	call	R_outi+40*2	
+
 
 	ld	a,[FrameCtr]
 	cp	InitialWait	; start logoscroll after X interrupts
@@ -407,21 +383,13 @@ Interrupt:
 	call	SETWRT
 	ex	de,hl
 	ld	bc,[VDP.DW]
-	outi\outi\outi\outi\outi\outi\outi\outi\outi\outi\outi\outi\outi\outi\outi\outi
-	outi\outi\outi\outi\outi\outi\outi\outi\outi\outi\outi\outi\outi\outi\outi\outi
-	outi\outi\outi\outi\outi\outi\outi\outi
+	call 	R_outi+199
 
 	ld	hl,1B00h
 	call	SETWRT
 	ld	hl,Sprites
-	outi\outi\outi\outi\outi\outi\outi\outi\outi\outi\outi\outi\outi\outi\outi\outi
-	outi\outi\outi\outi\outi\outi\outi\outi\outi\outi\outi\outi\outi\outi\outi\outi
-	outi\outi\outi\outi\outi\outi\outi\outi\outi\outi\outi\outi\outi\outi\outi\outi
-	outi\outi\outi\outi\outi\outi\outi\outi\outi\outi\outi\outi\outi\outi\outi\outi
-	outi\outi\outi\outi\outi\outi\outi\outi\outi\outi\outi\outi\outi\outi\outi\outi
-	outi\outi\outi\outi\outi\outi\outi\outi\outi\outi\outi\outi\outi\outi\outi\outi
-	outi\outi\outi\outi\outi\outi\outi\outi\outi\outi\outi\outi\outi\outi\outi\outi
-	outi\outi\outi\outi\outi\outi\outi\outi\outi\outi\outi\outi\outi\outi\outi\outi
+	call    R_outi+112*2
+	
 
 .noscroll:
 	ld	hl,FrameCtr
@@ -3001,3 +2969,6 @@ OldISR:		rb	5
 FrameCtr:	rb	1
 BG:		rb	200+40
 Sprites:	rb	128
+R_outi:		rb	200*2+1
+
+	
