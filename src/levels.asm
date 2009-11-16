@@ -436,15 +436,15 @@ LevelISR:
 		call	tovram8x8
   		ld	de,1800h+6*32
 		call	SetPtr_VRAM
-		ld	hl,PatternMap+6*32	
+		ld	hl,PatternMap+6*32
  		call	tovram8x8
 		
 
 
-.meteorMap:	ld	de,1800h+5*32+20*8
+.meteorMap:	ld	de,1800h+4*32+20*8
 		call	SetPtr_VRAM
-		ld	hl,PatternMap+10*32
- 		call	tovram12x8
+		ld	hl,PatternMap+9*32
+ 		call	tovram16x8
 
 		ld	a,2
 		call	set_cfondo
