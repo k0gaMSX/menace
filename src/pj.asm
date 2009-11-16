@@ -283,9 +283,146 @@ move_pj:
 
 
 
-	
+;;; TODO: colission must be detected in the left pattern if x isn't multiple of 8
 
 .move_rocket:
+	ld	a,(rockety)
+	cp	24
+	jp	c,.nocol_rock
+
+	
+	and	0f8h
+	ld	l,a
+	ld	h,0
+	ld	d,h
+	add	hl,hl
+	add	hl,hl	
+	ld	a,(rocketx)
+	srl	a
+	srl	a
+	srl	a	
+	ld	e,a
+	add	hl,de
+	ld	de,PatternMap
+	add	hl,de
+	ld	de,32
+	
+	ld	a,(rockety)
+	and	7
+	jr	z,.no3ch_1
+	ld	a,(hl)
+	or	a
+	jp	nz,.col_rock
+
+	add	hl,de
+.no3ch_1:		
+	ld	a,(hl)
+	or	a
+	jp	nz,.col_rock
+	add	hl,de
+	ld	a,(hl)
+	or	a
+	jp	nz,.col_rock
+
+
+;;; We begin here with the second pattern when it is necessary
+	ld	a,(rocketx)
+	and	7
+	jp	z,.nocol_rock
+
+	ld	de,-32
+	inc	hl
+	ld	a,(rockety)
+	and	7
+	jr	z,.no3ch_2
+
+	
+	ld	a,(hl)
+	or	a
+	jp	nz,.col_rock	
+	add	hl,de
+
+.no3ch_2:	
+	ld	a,(hl)
+	or	a
+	jp	nz,.col_rock
+	add	hl,de
+	ld	a,(hl)
+	or	a
+	jp	nz,.col_rock	
+	jp	.nocol_rock
+
+	
+.col_rock:
+	cp 	METEOR_PAT1
+	call	z,meteor_col
+	cp 	METEOR_PAT2
+	call	z,meteor_col
+	cp 	METEOR_PAT3
+	call	z,meteor_col
+	cp 	METEOR2_PAT1
+	call	z,meteor_col
+	cp 	METEOR2_PAT2
+	call	z,meteor_col
+	cp 	METEOR2_PAT3
+	call	z,meteor_col
+
+	cp 	ENEMY_PAT1
+	call	z,enemy_col
+	cp 	ENEMY_PAT2
+	call	z,enemy_col
+	cp 	ENEMY_PAT3
+	call	z,enemy_col
+	cp 	ENEMY_PAT4
+	call	z,enemy_col
+	cp 	ENEMY_PAT5
+	call	z,enemy_col
+	cp 	ENEMY_PAT6
+	call	z,enemy_col
+
+	cp 	ENEMY2_PAT1
+	call	z,enemy_col
+	cp 	ENEMY2_PAT2
+	call	z,enemy_col
+	cp 	ENEMY2_PAT3
+	call	z,enemy_col
+	cp 	ENEMY2_PAT4
+	call	z,enemy_col
+	cp 	ENEMY2_PAT5
+	call	z,enemy_col
+	cp 	ENEMY2_PAT6
+	call	z,enemy_col
+
+	cp 	ENEMY3_PAT1
+	call	z,enemy_col
+	cp 	ENEMY3_PAT2
+	call	z,enemy_col
+	cp 	ENEMY3_PAT3
+	call	z,enemy_col
+	cp 	ENEMY3_PAT4
+	call	z,enemy_col
+	cp 	ENEMY3_PAT5
+	call	z,enemy_col
+	cp 	ENEMY3_PAT6
+	call	z,enemy_col
+
+	cp 	ENEMY4_PAT1
+	call	z,enemy_col
+	cp 	ENEMY4_PAT2
+	call	z,enemy_col
+	cp 	ENEMY4_PAT3
+	call	z,enemy_col
+	cp 	ENEMY4_PAT4
+	call	z,enemy_col
+	cp 	ENEMY4_PAT5
+	call	z,enemy_col
+	cp 	ENEMY4_PAT6
+	call	z,enemy_col
+	
+	
+	
+	
+.nocol_rock:	
 	ld	a,(keyfire)
 	or	a
 	jr	nz,.mvrocket_sp
@@ -325,7 +462,250 @@ section code
 
 
 
+;;; d -> y
+;;; e -> x
 
+
+;;; TODO: Clean definition of enemy graphics to allowing a cool
+;;; 	  collision detect based in the definition of the pattern
+	
+TestRocketCol:
+	ld	a,(rockety)
+	and	7
+	ld	(.Yoff),a		
+	ld	c,a
+	ld	a,7
+	sub	c		;a = 7 - Y%8
+	ld	(.YoffC),a
+	
+	ld	a,(rocketx)
+	and	7
+	ld	(.Xoff),a
+	or	a
+	jr	z,.noright
+	ld	c,a
+	ld	b,a
+	ld	a,80h
+.1:	sra	a
+	djnz	.1
+.noright:	
+	ld	(.maskr),a
+	ld	a,7
+	sub	c		;a = 7 - X%8
+	ld	(.XoffC),a
+	or	a
+	jr	z,.noleft
+	
+	ld	b,a
+	ld	a,1
+.2:	sll	a
+	djnz	.2
+.noleft:	
+	ld	(.maskl),a
+
+	
+	ld	a,(rockety)
+	and	0f8h
+	ld	l,a
+	ld	h,0
+	add	hl,hl
+	add	hl,hl
+	ld	de,PatternMap
+	add	hl,de
+
+	ld	a,(rocketx)
+	and	0f8h
+	rrca
+	rrca
+	rrca
+	ld	e,a
+	ld	d,0
+	add	hl,de		; hl = rockety/8*32 + rocketx/8
+
+	ld	(.maptr),hl
+   	call	.1stPart
+   	call	z,.2ndPart
+  	call	z,.3rdPart
+  	ret	z
+
+ 	pop	hl
+	ret
+
+
+	
+
+;;;*******************************************************
+	
+
+	
+.1stPart:
+	ld	a,(.Yoff)
+	or	a
+	ret	z
+	ld	e,a
+	ld	d,0
+	ld	(.offsetY),de
+
+	ld	a,(.YoffC)
+	inc	a
+	ld	(.NumberY),a
+	
+	ld	a,(.maskl)
+	ld	(.mask),a
+	call	.Test1b
+	ret	nz
+	
+	ld	a,(.maskr)
+	ld	(.mask),a	
+	call	z,.Test1b
+	ret	nz
+	
+	ld	hl,(.maptr)
+	ld	de,30
+	add	hl,de
+	ld	(.maptr),hl
+	xor	a
+	ret
+
+
+
+
+
+.2ndPart:
+	ld	a,8
+	ld	(.NumberY),a
+	
+	ld	de,0
+	ld	(.offsetY),de
+
+	ld	a,(.maskl)
+	ld	(.mask),a
+	call	.Test1b
+	ret	nz
+	
+	ld	a,(.maskr)
+	ld	(.mask),a	
+	call	z,.Test1b
+	ret	nz
+	
+	ld	hl,(.maptr)
+	ld	de,30
+	add	hl,de
+	ld	(.maptr),hl
+	xor	a
+	ret
+
+
+	
+
+
+.3rdPart:
+	ld	a,(.Yoff)
+	ld	(.NumberY),a
+	
+	ld	de,0
+	ld	(.offsetY),de
+
+	ld	a,(.maskl)
+	ld	(.mask),a
+	call	.Test1b
+	ret	nz
+	
+	ld	a,(.maskr)
+	ld	(.mask),a	
+	call	z,.Test1b
+	ret	nz
+	
+	xor	a
+	ret
+	
+
+
+
+	
+
+;;; (.maptr) -> pointer to pattern map
+;;; (.offsetY) -> offset in Y
+;;; (.NumberY) -> number of pixels in Y
+;;; (.mask) -> Mascara a aplicar
+	
+.Test1b:
+	ld	hl,(.maptr)
+	ld	a,(hl)
+	inc	hl
+	ld	(.maptr),hl
+	call	.GetByteDef
+
+	ld	bc,(.offsetY)	
+	ld	hl,.def
+	add	hl,bc
+
+	ld	a,(.numberY)
+	ld	b,a
+
+.Test1bLoop:		
+	ld	c,(hl)
+	ld	a,(.mask)
+	and	c
+	jr	nz,.exit
+;; 	ret	nz
+	inc	hl	
+	djnz	.Test1bLoop
+
+
+	xor	a
+	ret
+	
+
+
+.exit:	ret
+	
+	
+;;; a -> Number of pattern
+	
+ .GetByteDef:
+	ld	l,a
+	ld	h,0
+	add	hl,hl
+	add	hl,hl
+	add	hl,hl	
+ 	ex	de,hl
+ 	call	ReadPTR_VRAM
+	ei
+	ld	b,8
+	ld	c,98h
+	ld	hl,.def
+	
+.getdefloop:	
+	in	a,(98h)
+	ld	(hl),a
+	inc	hl	
+	djnz	.getdefloop
+ 	ret
+
+	
+
+section rdata
+.offsetY: rw 1
+.numberY: rb 1
+.maptr:	  rw 2	
+.maskl:	  rb 1
+.maskr:	  rb 1		
+.mask:	  rb 1	
+.def:	  rb 8
+.Xoff:	  rb 1
+.XoffC:	  rb 1
+.Yoff:	  rb 1
+.YoffC:	  rb 1
+section code	
+
+	
+
+
+;;; *************************************************************
+
+	
+	
 
 renderPJ:
 	
@@ -521,5 +901,6 @@ cleanBase:
 
 section rdata
 savebase:	rb	5
+GetColorPar:	rb	1	
 section code	
 				

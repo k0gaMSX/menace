@@ -11,15 +11,34 @@ ENEMY2SPEED:	equ	12
 ENEMY1SPEED:	equ	13
 FRAMETIME:	equ	50
 ANIMETIME:	equ	40
+
+ENEMY_PAT1:	equ	96
+ENEMY_PAT2:	equ	97
+ENEMY_PAT3:	equ	98
+ENEMY_PAT4:	equ	99	
+ENEMY_PAT5:	equ	100
+ENEMY_PAT6:	equ	101
+
+ENEMY2_PAT1:	equ	102
+ENEMY2_PAT2:	equ	103
+ENEMY2_PAT3:	equ	104
+ENEMY2_PAT4:	equ	105
+ENEMY2_PAT5:	equ	106
+ENEMY2_PAT6:	equ	107
+
+ENEMY3_PAT1:	equ	108
+ENEMY3_PAT2:	equ	109
+ENEMY3_PAT3:	equ	110
+ENEMY3_PAT4:	equ	111
+ENEMY3_PAT5:	equ	112
+ENEMY3_PAT6:	equ	113
 	
-
-
-	;; TODO: Falta por añadir el volcado de los graficos de los
-	;; jugadores ya que ahora mismo no se a donde van y por eso
-	;; esta comentado el volcado en el fichero levels.asm. Tambien
-	;; esta comentado el tema en este fichero donde todas las
-	;; rutinas de renderizacion estan incompletas (mirar linea 298)
-
+ENEMY4_PAT1:	equ	114
+ENEMY4_PAT2:	equ	115
+ENEMY4_PAT3:	equ	116
+ENEMY4_PAT4:	equ	117
+ENEMY4_PAT5:	equ	118
+ENEMY4_PAT6:	equ	119
 	
 	
 	
@@ -328,12 +347,19 @@ InitEnemy:
 	
 		
 section rdata
-.colour:	rw	1
+.colour:	rw	1	
 section code		
 
 
 
+enemy_col:
+	jp	TestRocketCol
+;; 	pop	de
+;; 	ret
+	
 
+
+	
 
 paintAllEnemy:
 	ld	hl,PatternMap+100 ;PatternMap+96 is initial position
@@ -561,6 +587,8 @@ UpdateChars:
 
 	
 SwapEnemy:
+	ld	a,1
+	ld	(swapEnemyF),a
         ld	hl,(bufferPtrUp1)
 	ld	de,(bufferPtrUp2)
         ld	(bufferPtrUp1),de
@@ -953,6 +981,7 @@ BufferColor2:	rb	16
 
 
 
+swapEnemyF:	rb	1
 renderEnemyF:	rb	1
 contPoint:	rb	1	
 contframeEnemy:	rb	1	

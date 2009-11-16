@@ -120,7 +120,10 @@ PlayLevel:
 		ld	(0fd9bh),hl
 
 		
-.1:		ei
+.1:
+		ld	a,4
+		call	set_cfondo
+		ei
 		halt
 		call	doPj
 		call	doEnemy
@@ -344,47 +347,41 @@ LevelISR:
 		ld	c,98h
 		call    tovram12x8
 	
+  		ld	de,1800h+3*32
+		call	SetPtr_VRAM
+		ld	hl,PatternMap+3*32
+		call	tovram8x8
+  		ld	de,1800h+6*32
+		call	SetPtr_VRAM
+		ld	hl,PatternMap+6*32	
+ 		call	tovram8x8
+		
 
+
+.meteorMap:	ld	de,1800h+5*32+20*8
+		call	SetPtr_VRAM
+		ld	hl,PatternMap+10*32
+ 		call	tovram12x8
+
+		ld	a,2
+		call	set_cfondo
+
+  		ld	de,1800h+20*32
+		call	SetPtr_VRAM
+		ld	hl,PatternMap+20*32
+		call	tovram4x8
 
 		ld	de,800h+METEOR_VOFF1
 		call	SetPtr_VRAM
 		ld	hl,MeteorBufferR
 		ld	c,98h	
-		call	tovram3x8
-
+		call	tovram3x8_slow
 
 		ld	de,800h+METEOR_VOFF2
 		call	SetPtr_VRAM
 		ld	hl,MeteorBufferL
 		ld	c,98h	
-		call	tovram3x8
-
-
-		ld	hl,renderEnemyF
-		xor	a
-		or	(hl)
-		jr	z,.meteorMap
-		xor	a
-		ld	(hl),a		
-		ld	de,1800h+3*32
-		call	SetPtr_VRAM
-		ld	hl,PatternMap+3*32
-		call	tovram16x8
-		call	tovram4x8
-		
-
-
-.meteorMap:	
-;; 		call	tovram16x8	
-;; 		call	tovram16x8
-;; 		call	tovram16x8
-;; 		call	tovram16x8
-;; 		call	tovram10x8
-
-
-
-		ld	a,2
-		call	set_cfondo
+		call	tovram3x8_slow
 
 		ld	de,1000h+120*8
 		call	SetPtr_VRAM
@@ -393,8 +390,8 @@ LevelISR:
 		call  	tovram5x8_slow	
  		call	.changefloor
 	
-		ld	a,1
-		call	set_cfondo
+;; 		ld	a,1
+;; 		call	set_cfondo
 		ret
 	
 
@@ -713,6 +710,15 @@ tovram1x8:
 	ret
 
 	
+
+
+ReadPTR_VRAM:
+	di
+        ld      a,e
+	out	(99h),a		;VDP acess
+	ld	a,d
+	out	(99h),a		;VDP acess
+	ret
 	
 
 	

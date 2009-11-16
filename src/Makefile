@@ -2,7 +2,7 @@
 AS=/usr/local/bin/tniasm
 SRC = menace.asm tnimsx1.asm 
 MSX = openmsx
-MSXFLAGS = -machine turbor
+MSXFLAGS = -machine turbor -ext debugdevice
 SR52 = ../tools/sr52pat
 PAT = patterns.pat
 SPR = ../tools/sr52spr

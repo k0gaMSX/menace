@@ -37,6 +37,8 @@ p1load:	equ	$
 main:	call	SaveSlotC
 	call	RomSlotPage2
 	call	InitScore
+	ld	a,1fh
+	out	(02eh),a
 	
 game:
 	call	showLogo
