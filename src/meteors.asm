@@ -26,12 +26,15 @@ METEOR_VOFF2:	equ 	((32*5)-3)*8
 
 
 InitMeteors:
-	ld	hl,0d431h
-	ld	(RandomSeed),hl
+        ld      a,r
+        or      a
+        jr      z, InitMeteors
+	ld	(RandomSeed),a
 	ld 	a,4
 	ld	(MeteorFrame),a
 
 	xor	a
+        ld      (RandomIndex),a
 	ld	hl,MeteorBufferR
 	ld	(hl),a
 	ld	de,MeteorBufferR+1
@@ -344,23 +347,62 @@ renderMeteors:
 
 
 
-
-
-
-Rand:
-	push	hl
-        ld      hl,MeteorFrame
+Rand:   push    hl
+        push    de
+        call    Rand_1
         ld      a,r
-        xor     (hl)
-	pop	hl
-	ret
+        ld      hl,RandomTable
+        ld      e,a
+        ld      a,(time)
+        xor     e
+        ld      e,a
+        ld      d,0
+        add     hl,de
+        ld      a,(hl)
+        pop     de
+        pop     hl
+        ret
+
+
+
+; returns pseudo random 8 bit number in A. Only affects A.
+; (r_seed) is the byte from which the number is generated and MUST be
+; initialised to a non zero value or this function will always return
+; zero. Also r_seed must be in RAM, you can see why......
+
+
+Rand_1:
+	LD	A,(RandomSeed)	; get seed
+	AND	0B8h		; mask non feedback bits
+	SCF			; set carry
+	JP	PO,no_clr	; skip clear if odd
+	CCF			; complement carry (clear it)
+no_clr:
+	LD	A,(RandomSeed)	; get seed back
+	RLA			; rotate carry into byte
+	LD	(RandomSeed),A	; save back for next prn
+
+
+        ex      af,af'
+        ld      hl,RandomIndex
+        ld      a,(hl)
+        inc     (hl)
+        ld      hl,RandomTable
+        ld      d,0
+        ld      e,a
+        add     hl,de
+        ex      af,af'
+        ld      (hl),a
+	RET			; done
 
 
 
 
 section rdata
 
-RandomSeed:	rb	2
+RandomTable:    rb      256
+RandomIndex:    rb      1
+RandomSeed:	rb	1 ; prng seed byte (must not be initialised to zero)
 MeteorFrame:	rb	1
 
 MeteorBufferR:	rb	METEOR_SIZE
