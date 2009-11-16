@@ -227,6 +227,9 @@ PlayLevel:
 
 .endGame:	call	.WaitTime
 		push	af
+	        ld	a,208
+	        ld	hl,$1b00
+	        call	WRTVRM
 		call	DelIsrLevel
 		pop	af
 		ret
