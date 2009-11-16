@@ -6,10 +6,10 @@ ENEMYSIZE:	equ     (ENEMYPATW+1)*ENEMYPATH*8
 ENEMYLEVELSIZE:	equ     ENEMYPATW*ENEMYPATH*8*2
 		
 ENEMYVOFF:	equ	96*8	
-ENEMY3SPEED:	equ	20
-ENEMY2SPEED:	equ	20	
-ENEMY1SPEED:	equ	20
-FRAMETIME:	equ	10
+ENEMY3SPEED:	equ	11
+ENEMY2SPEED:	equ	12	
+ENEMY1SPEED:	equ	13
+FRAMETIME:	equ	50
 
 
 
@@ -18,7 +18,7 @@ FRAMETIME:	equ	10
 	;; esta comentado el volcado en el fichero levels.asm. Tambien
 	;; esta comentado el tema en este fichero donde todas las
 	;; rutinas de renderizacion estan incompletas (mirar linea 298)
-	;; Y donde estoy escribiendo el numero de patron???
+
 	
 	
 	
@@ -59,11 +59,14 @@ InitEnemy:
 	inc	e
 	pop	bc
 	djnz	.2
-		
+
+	ld	a,FRAMETIME
+	ld	(contSpeed),a
+	ld	a,8
+	ld	(UpdateCont),a
 	xor	a
 	ld	(contPoint),a
 	ld	(pointCont),a
-	ld	(contSpeed),a
 	ld	hl,stateEnemy
 	ld	b,8
 .3:	ld	(hl),a
@@ -95,27 +98,23 @@ InitEnemy:
 	
 	call	paintAllEnemy
 	
-;;; TODO: PaintAllEnemy!
 	ret
 
 
 .LevelData:
-	db	5,5
-	db	5,5
-	db	5,5
-	db	5,5
-	db	5,5
-	db	5,5
-	db	5,5
-	db	5,5
-	db	5,5
-	db	5,5
+	db	1,5
+	db	2,5
+	db	3,5	
+	db	4,5
+	db	5,5	
+	db	6,5
+	db	7,5
+	db	8,5
+	db      9,5
+	db	10,5
 	
 
 	
-
-	
-
 .initAtt:
 	ld	de,enemybin
 	add	hl,de
@@ -132,7 +131,29 @@ InitEnemy:
 	ld	de,BufferEnUp2+24
 	ld	bc,16
 	ldir
+
+	ld	hl,BufferEnUp1
+	ld	de,BufferEnDw1+8
+	ld	bc,16
+	ldir
+	
+	ld	hl,BufferEnUp1+24
+	ld	de,BufferEnDw1+32
+	ld	bc,16
+	ldir
+
+	ld	hl,BufferEnUp2
+	ld	de,BufferEnDw2+8
+	ld	bc,16
+	ldir
+	
+	ld	hl,BufferEnUp2+24
+	ld	de,BufferEnDw2+32
+	ld	bc,16
+	ldir
 	ret
+
+
 
 	
 
@@ -166,7 +187,7 @@ InitEnemy:
 	ld	hl,(.colour)
 	ld	de,2000h+ENEMYVOFF+40	
 	ld	bc,8
-	call	LDIRVM		; Here is initializiled colour table
+	call	LDIRVM		
 	
 	ld	hl,(.colour)
 	ld	de,32
@@ -202,7 +223,75 @@ InitEnemy:
 	ld	hl,(.colour)
 	ld	de,2000h+ENEMYVOFF+88	
 	ld	bc,8
-	call	LDIRVM		; Here is initializiled colour table			
+	call	LDIRVM		; Here is initializiled colour table
+
+
+	ld	de,2000h+ENEMYVOFF+96	
+	ld	bc,8
+	call	LDIRVM
+	ld	hl,(.colour)
+	ld	de,2000h+ENEMYVOFF+104	
+	ld	bc,8
+	call	LDIRVM
+	ld	hl,(.colour)
+	ld	de,2000h+ENEMYVOFF+112	
+	ld	bc,8
+	call	LDIRVM
+
+
+	ld	hl,(.colour)
+	ld	de,16
+	add	hl,de
+	push	hl
+	push	hl
+	ld	de,2000h+ENEMYVOFF+120
+	ld	bc,8
+	call	LDIRVM
+	pop	hl
+	ld	de,2000h+ENEMYVOFF+128
+	ld	bc,8
+	call	LDIRVM
+	pop 	hl
+	ld	hl,(.colour)
+	ld	de,2000h+ENEMYVOFF+136
+	ld	bc,8
+	call	LDIRVM		
+	
+	ld	hl,(.colour)
+	ld	de,32
+	add	hl,de
+	push	hl
+	push	hl
+	
+	ld	de,2000h+ENEMYVOFF+144
+	ld	bc,8
+	call	LDIRVM
+	pop	hl
+	ld	de,2000h+ENEMYVOFF+152
+	ld	bc,8
+	call	LDIRVM
+	pop	hl
+	ld	de,2000h+ENEMYVOFF+160
+	ld	bc,8
+	call	LDIRVM
+
+	ld	hl,(.colour)
+	ld	de,48
+	add	hl,de
+	push	hl
+	push	hl
+	ld	de,2000h+ENEMYVOFF+168
+	ld	bc,8
+	call	LDIRVM
+	pop	hl
+	ld	de,2000h+ENEMYVOFF+176
+	ld	bc,8
+	call	LDIRVM
+	pop 	hl
+	ld	hl,(.colour)
+	ld	de,2000h+ENEMYVOFF+184
+	ld	bc,8
+	call	LDIRVM		; Here is initializiled colour table		
 	ret
 
 
@@ -219,11 +308,9 @@ section code
 
 
 paintAllEnemy:
-	ld	b,2
 	ld	hl,PatternMap+100 ;PatternMap+96 is initial position
 
 .paintAllEne1:
-	push	bc
 	ld	a,(NumEnemy)		;Paint Enemies
 	rr	a
 	rr	a
@@ -233,13 +320,29 @@ paintAllEnemy:
 	call	paintEnemy1
 	call	paintEnemy2
 	djnz	.paintAllEne2
+	
 	ld	de,64
 	add	hl,de		
-	pop	bc
-	djnz	.paintAllEne1
+	ld	a,(NumEnemy)		;Paint Enemies
+	rr	a
+	rr	a
+	ld	b,a
+	
+.paintAllEne3:	
+	call	paintEnemy1_2
+	call	paintEnemy2_2
+	djnz	.paintAllEne3	
 	ret
 
+
+
+paintEnemy1_2:
+	ld	a,108
+	jr 	paintEnemy	
 	
+paintEnemy2_2:
+	ld	a,114
+	jr 	paintEnemy	
 	
 paintEnemy1:
 	ld	a,96
@@ -314,7 +417,9 @@ moveEnemy:	call	.checkPoint
 	ld	a,ENEMY3SPEED
 .sp3:	ld	(speedEnemy),a
 
-.sp4:		
+.sp4:	
+
+	
 	ret			
 
 		
@@ -329,7 +434,7 @@ moveEnemy:	call	.checkPoint
 		dec	(hl)
 		jr	nz,.cp1
 
-;;; HERE WE HAVE TO CLEAN THE POINT SHOWED IN THE SCREEN
+;;; HERE WE HAVE TO CLEAN THE POINT MARK SHOWED IN THE SCREEN
 	
 .cp1:		inc	a
 		ret
@@ -358,6 +463,11 @@ renderEnemy:
 	
 
 
+
+
+
+	
+
 UpdateChars:	
 	ld	hl,(redchar_right1)
 	call	PointerCall
@@ -367,39 +477,229 @@ UpdateChars:
 	call	PointerCall	
 	ld	hl,(redchar_left2)
 	call	PointerCall
-	ret	
-
 	
+	ld	hl,UpdateCont
+	dec	(hl)
+	ret	nz
+	ld	a,8
+	ld	(hl),a
 
 
+	call	CleanEnemy
 
 
-initFPointer:	
-	ld	hl,.flevel1_right1
-	ld	(redchar_right1),hl
-	ld	(redchar_right2),hl
-	ld	(redchar_left1),hl
-	ld	(redchar_left2),hl	
+	ld	a,(PatternMap+96+31)
+	ld 	hl,PatternMap+96+30
+	ld	de,PatternMap+96+31
+	ld	bc,31
+	lddr
+	ld	(PatternMap+96+0),a
+
+	ld	a,(PatternMap+128+31)
+	ld 	hl,PatternMap+128+30
+	ld	de,PatternMap+128+31
+	ld	bc,31
+	lddr
+	ld	(PatternMap+128+0),a
+
+	ld	a,(PatternMap+192+0)
+	ld 	hl,PatternMap+192+1
+	ld	de,PatternMap+192+0
+	ld	bc,31
+	ldir
+ 	ld	(PatternMap+192+31),a
+
+	ld	a,(PatternMap+224+0)
+	ld 	hl,PatternMap+224+1
+	ld	de,PatternMap+224+0
+	ld	bc,31
+	ldir
+	ld	(PatternMap+224+31),a		
 	ret
 
+
+
+
 	
-		
-		
-.flevel1_right1:
-	ei
-;; 	halt
-;; 	halt
-;; 	halt
-;; 	halt
-;; 	halt
-;; 	halt
-;; 	halt
-;; 	halt
-;; 	halt
-;; 	halt
+
 	
+CleanEnemy:
+	ld	hl,BufferEnUp1+8
+	ld	de,BufferEnUp1
+	ld	bc,16
+	ldir
+
+	ld	hl,BufferEnUp1+32
+	ld	de,BufferEnUp1+24
+	ld	bc,16
+	ldir
+	
+	xor	a
+	ld	b,8
+	ld	hl,BufferEnUp1+16
+.CleanEnUp1_1:
+	ld	(hl),a
+	inc	hl
+	djnz	.CleanEnUp1_1
+
+	xor	a
+	ld	b,8
+	ld	hl,BufferEnUp1+40
+.CleanEnUp1_2:
+	ld	(hl),a
+	inc	hl
+	djnz	.CleanEnUp1_2
+
+	
+	ld	hl,BufferEnUp2+8
+	ld	de,BufferEnUp2
+	ld	bc,16
+	ldir
+	ld	hl,BufferEnUp2+32
+	ld	de,BufferEnUp2+24
+	ld	bc,16
+	ldir
+	
+	xor	a
+	ld	b,8
+	ld	hl,BufferEnUp2+16
+.CleanEnUp2_1:
+	ld	(hl),a
+	inc	hl
+	djnz	.CleanEnUp2_1
+
+
+	xor	a
+	ld	b,8
+	ld	hl,BufferEnUp2+40
+.CleanEnUp2_2:
+	ld	(hl),a
+	inc	hl
+	djnz	.CleanEnUp2_2
+
+	
+	ld	hl,BufferEnDw1+15
+	ld	de,BufferEnDw1+23
+	ld	bc,16
+	lddr
+	
+	ld	hl,BufferEnDw1+39
+	ld	de,BufferEnDw1+47
+	ld	bc,16
+	lddr
+
+	xor	a
+	ld	b,8
+	ld	hl,BufferEnDw1
+.CleanEnDw1_1:
+	ld	(hl),a
+	inc	hl
+	djnz	.CleanEnDw1_1
+
+	xor	a
+	ld	b,8
+	ld	hl,BufferEnDw1+24
+.CleanEnDw1_2:
+	ld	(hl),a
+	inc	hl
+	djnz	.CleanEnDw1_2
+
+	ld	hl,BufferEnDw2+15
+	ld	de,BufferEnDw2+23
+	ld	bc,16
+	lddr
+	
+	ld	hl,BufferEnDw2+39
+	ld	de,BufferEnDw2+47
+	ld	bc,16
+	lddr
+		
+	xor	a
+	ld	b,8
+	ld	hl,BufferEnDw2
+.CleanEnDw2_1:
+	ld	(hl),a
+	inc	hl
+	djnz	.CleanEnDw2_1
+	
+	xor	a
+	ld	b,8
+	ld	hl,BufferEnDw2+24
+.CleanEnDw2_2:
+	ld	(hl),a
+	inc	hl
+	djnz	.CleanEnDw2_2
+	ret
+
+
+
+
+
+	
+
+
+	
+	
+initFPointer:
+	ld	hl,.fvec
+	ld	a,(NumLevel)
+	add	a,a
+	add	a,a
+	add	a,a
+	ld	e,a
+	ld	d,0
+	add	hl,de
+	ld	e,(hl)
+	inc	hl
+	ld	d,(hl)
+	inc	hl
+	ld	(redchar_right1),de
+	ld	e,(hl)
+	inc	hl
+	ld	d,(hl)
+	inc	hl	
+	ld	(redchar_right2),de
+	ld	e,(hl)
+	inc	hl
+	ld	d,(hl)
+	inc	hl	
+	ld	(redchar_left1),de
+	ld	e,(hl)
+	inc	hl
+	ld	d,(hl)
+	inc	hl		
+	ld	(redchar_left2),de	
+	ret
+
+
+
+	
+
+.flevel1_null:
+	ret
+	
+	
+.flevel1_right3:
+	ld	hl,bufferEnUp1
+	ld	de,bufferEnUp2
+	ld	bc,ENEMYSIZE
+	ldir
+	ret
+	
+
+	
+.flevel1_left3:
+	ld	hl,bufferEnDw2
+	ld	de,bufferEnDw1
+	ld	bc,ENEMYSIZE
+	ldir
+	ret
+	
+	
+.flevel1_right1:	
 	ld	ix,bufferEnUp1
 	ld	b,8	
+
 	
 .fl_right1_1:
 	or 	a
@@ -414,19 +714,71 @@ initFPointer:
 	djnz 	.fl_right1_1
 	ret
 	
+
+
 	
-		
-	
-		ret
-		
+
 .flevel1_right2:
-		ret
+	ld	ix,bufferEnUp2
+	ld	b,8	
+
+	
+.fl_right2_1:
+	or 	a
+	rr	(ix+0)
+	rr	(ix+8)
+	rr	(ix+16)
+	or 	a
+	rr	(ix+24)
+	rr	(ix+32)
+	rr	(ix+40)	
+	inc 	ix
+	djnz 	.fl_right2_1
+	ret
+
+
+
+	
 	
 .flevel1_left1:
-		ret
+	ld	ix,bufferEnDw1
+	ld	b,8	
+
+	
+.fl_left1_1:
+	or 	a
+	rl	(ix+16)
+	rl	(ix+8)
+	rl	(ix+0)
+	or 	a
+	rl	(ix+40)
+	rl	(ix+32)
+	rl	(ix+24)	
+	inc 	ix
+	djnz 	.fl_left1_1
+	ret
+	
+
+	
 	
 .flevel1_left2:
-	        ret
+	ld	ix,bufferEnDw2
+	ld	b,8	
+
+	
+.fl_left2_1:
+	or 	a
+	rl	(ix+16)
+	rl	(ix+8)
+	rl	(ix+0)
+	or 	a
+	rl	(ix+40)
+	rl	(ix+32)
+	rl	(ix+24)	
+	inc 	ix
+	djnz 	.fl_left2_1
+	ret
+
 	
 		
 
@@ -464,6 +816,23 @@ initFPointer:
 		dw	.flevel1_left2
 	
 		dw	.flevel1_right1
+		dw      .flevel1_null
+		dw	.flevel1_left1
+		dw	.flevel1_null
+		
+
+		dw	.flevel1_right1
+		dw      .flevel1_right3
+		dw	.flevel1_left2
+		dw	.flevel1_left3
+
+
+		dw	.flevel1_right1
+		dw      .flevel1_right2
+		dw	.flevel1_left1
+		dw	.flevel1_left2
+
+		dw	.flevel1_right1
 		dw      .flevel1_right2
 		dw	.flevel1_left1
 		dw	.flevel1_left2
@@ -474,17 +843,6 @@ initFPointer:
 		dw	.flevel1_left1
 		dw	.flevel1_left2
 
-
-		dw	.flevel1_right1
-		dw      .flevel1_right2
-		dw	.flevel1_left1
-		dw	.flevel1_left2
-
-		dw	.flevel1_right1
-		dw      .flevel1_right2
-		dw	.flevel1_left1
-		dw	.flevel1_left2
-		
 	
 
 	
@@ -538,5 +896,6 @@ frameEnemy:	rb	1
 stateEnemy:	rb	NUMENEMIES	
 coordEnemy:	rb	NUMENEMIES*2
 pointCont:	rb	1
-contSpeed:	rb	1		
+contSpeed:	rb	1
+UpdateCont:	rb	1
 section code		

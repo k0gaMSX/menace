@@ -94,7 +94,8 @@ InitLevel:
 	
 	
 		
-PlayLevel:	ld	a,(NumLevel)
+PlayLevel:	
+		ld	a,(NumLevel)
 		inc	a
 		cp	11
 		jr	nz,.2
@@ -108,6 +109,7 @@ PlayLevel:	ld	a,(NumLevel)
 		call	.showLevel
 		call	.CleanMap	
 		call	.initMap
+		call	VisOff	
 		call    InitEnemy
 		call	initPJ
 		call	PrintScore	
@@ -120,6 +122,7 @@ PlayLevel:	ld	a,(NumLevel)
 		halt
 		call	doPj
 		call	doEnemy
+		call	VisOn
 		ld	a,7
 		call	SNSMAT
 		bit	2,a
@@ -329,18 +332,31 @@ LevelISR:	ld	hl,time
 		otir
 		pop	bc
 		djnz	.isrloop
-
 	
 		ld	de,0+96*8
 		call	SetPtr_VRAM
 		ld	hl,bufferEnUp1
 		ld	b,8*6*2
-		ld	c,98h
+		ld	c,98h	
 		otir
 
 		ld	de,0+102*8
 		call	SetPtr_VRAM
 		ld	hl,bufferEnUp2
+		ld	b,8*6*2
+		ld	c,98h
+		otir
+
+		ld	de,0+108*8
+		call	SetPtr_VRAM
+		ld	hl,bufferEnDw1
+		ld	b,8*6*2
+		ld	c,98h
+		otir
+
+		ld	de,0+114*8
+		call	SetPtr_VRAM
+		ld	hl,bufferEnDw2
 		ld	b,8*6*2
 		ld	c,98h
 		otir	
@@ -444,8 +460,46 @@ CleanScr:	xor	a
 		ld	hl,1800h
 		call	FILVRM
 		ret
+
+
+;Nombre: VisOn
+;Autor: Roberto Vargas Caballero
+;Objetivo: Esta Funcion Habilita La Visualizacion De La Pantalla Ademas
+;          De Colocar El Tamagno De Sprites A 16x16
+;Modifica: A
 	
-		
+
+VisOn:	di
+	ld	a,(rg1sav)
+	set	6,a
+	ld	(rg1sav),a
+	out	(99h),a
+	ld	a,128+1
+	out	(99h),a
+	ei
+	ret
+
+
+	
+;Nombre: VisOff
+;Autor: Roberto Vargas Caballero
+;Objetivo: Esta Funcion Deshabilita La Visualizacion De La Pantalla
+;          Ademas De Colocar El Tamagno De Los Sprites A 16x16
+;Modifica: A
+
+
+visoff:	di
+	ld	a,(rg1sav)
+	res	6,a
+	ld	(rg1sav),a
+	out	(99h),a
+	ld	a,128+1
+	out	(99h),a
+	ei
+	ret
+
+
+	
 	
 section rdata		
 
