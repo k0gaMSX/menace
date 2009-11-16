@@ -73,6 +73,7 @@ fired:		rb	1
 rocketx:	rb	1
 rockety:	rb	1
 boom:		rb	1
+frameBoom:	rb	1
 keyleft:	rb	1
 keyright:	rb	1
 keyfire:	rb	1		
@@ -81,6 +82,17 @@ countchain:	rb	1
 section	code							
 	
 
+
+Death:
+	ld	hl,NumLives
+	dec	(hl)
+
+	ld	a,1
+	ld	(DeathF),a
+	ret
+
+
+	
 
 testcol:	
 	ret	
@@ -441,7 +453,7 @@ move_pj:
 
 ToBase:	
 	ld	a,2
-	ld	(fired),a
+ 	ld	(fired),a
 	ld	a,(pos)
 	add	a,a
 	add	a,a
@@ -705,15 +717,26 @@ section code
 
 ;;; *************************************************************
 
-	
+
+toBoom:
+	ld	a,1
+	ld	(boom),a
+	xor	a
+	ld	(frameBoom),a
+	ret
 	
 
 renderPJ:
-	
 	ld	a,(fired)
 	cp	2
-	jp	z,cleanRocket
+	jp	nz,.noState2
 	
+	call	cleanRocket
+	ret
+
+
+
+.noState2:	
 	call	renderBase
 	ld	a,(boom)
 	or	a
@@ -863,6 +886,7 @@ cleanRocket:
 	ld	(spratt+SPRRCK1*4+0),a
 	ld	(spratt+SPRRCK2*4+0),a
 	ld	(spratt+SPRRCK3*4+0),a
+	ld	(spratt+SPRRCK4*4+0),a	
 	ld	(spratt+SPRFIRE1*4+0),a
 	ld	(spratt+SPRFIRE2*4+0),a	
 	ret

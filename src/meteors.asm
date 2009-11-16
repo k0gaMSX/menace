@@ -92,17 +92,13 @@ InitMeteors:
 	
 	
 
-;;; TODO: Finish meteor routine. it is necessary increment or decrement
-;;; x rocket (left or right movement enemy) and do some test
-;;; I have to get pencil and paper and think about this
-
-
-
-
-
 	
 meteor_col:
-	pop	de	
+	call	TestRocketCol
+ 	or	a
+	ret	z
+	
+	call	Death
 	ret
 	
 

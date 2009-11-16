@@ -7,7 +7,7 @@ InitLevel:
 		call	DISSCR
 		ld	a,3
 		ld	(NumLives),a
-		ld	a,0
+		ld	a,1
 		ld	(NumLevel),a
 
 	
@@ -88,23 +88,83 @@ InitLevel:
 		ld	de,3000h+160*8
 		call	LDIRVM	
 		ret
+
+
+TestDeath:
+		ld	a,(DeathF)
+		or	a
+		ret	z
+
+		push	af
+		xor	a
+		ld	(DeathF),a
+		pop	af
+		ret
 	
+
+
+InsIsrLevel:
+		di
+		xor	a
+		ld	(DeathF),a
+		ld	a,0c3h
+		ld	hl,LevelISR
+		ld	(0fd9ah),a
+		ld	(0fd9bh),hl
+		ei
+		ret
+
 	
+
+DelIsrLevel:	di
+		ld	a,0c9h
+		ld	(0fd9ah),a
+		ei
+		ret
+
+
+
+	
+TestEnd:
+		ld	a,(NumLives)
+		or	a
+		jr	z,.newgame
+	
+		ld	a,(NumEnemy)
+		or	a
+		jr	z,.end
+	
+		ld	a,7
+		call	SNSMAT
+		bit	2,a
+		jr	nz,.noend
+
+	
+.end:	
+		ld	a,1
+		or	a
+		ret
+
+.newgame:	ld	a,2
+		or	a
+		ret
+
+	
+.noend:		xor	a
+		ret
 
 	
 	
 		
 PlayLevel:	
 		ld	a,(NumLevel)
-		inc	a
 		cp	11
 		jr	nz,.2
-		scf
+		xor	a
 		ret
 
 		
 .2: 		
-		ld	(NumLevel),a				
 		call	CleanScr
 		call	.showLevel
 		call	.CleanMap	
@@ -113,12 +173,9 @@ PlayLevel:
 		call    InitEnemy
 		call	InitMeteors
 		call	initPJ
-		call	PrintScore	
-		ld	a,0c3h
-		ld	hl,LevelISR
-		ld	(0fd9ah),a
-		ld	(0fd9bh),hl
-
+		call	PrintScore
+		call	InsIsrLevel
+	
 		
 .1:
 		ld	a,4
@@ -129,15 +186,25 @@ PlayLevel:
 		call	doEnemy
 		call	doMeteors
 		call	VisOn
-		ld	a,7
-		call	SNSMAT
-		bit	2,a
-		jr	nz,.1
-		ld	a,0c9h
-		ld	(0fd9ah),a
+		call	TestDeath
+		jr	nz,.3
+		call	TestEnd
+		jr	z,.1		
+
+.4:
+		push	af
+		ld	hl,NumLevel
+		inc	(hl)
+		call	DelIsrLevel
+		pop	af
 		ret
 
-
+.3:
+ 		call	TestEnd
+ 		jr	nz,.4
+		call	DelIsrLevel
+		jr	PlayLevel
+	
 
 
 	
@@ -818,6 +885,7 @@ visoff:	di
 	
 section rdata		
 
+DeathF:		rb	1
 time:		rb	1	
 NumLevel:	rb	1
 NumLives:	rb	1

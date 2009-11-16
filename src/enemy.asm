@@ -434,6 +434,7 @@ enemy_col:
 	ret	z
 
 	call	DestroyEnemy
+	call	toBoom
 	call	ToBase	
 	ld	hl,NumEnemy
 	dec	(hl)

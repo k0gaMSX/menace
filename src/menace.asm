@@ -45,16 +45,25 @@ game:
 	call	initIntro
 	call	InitLevel
 nextl:	call	PlayLevel
-	call	c,showEnding
+	cp	0
+	call	z,showEnding
+	cp	2
+	jr	z,showGameOver
 	jr	nextl
 
 
+showGameOver:	
+	pop	hl
+	ld	hl,game
+	push	hl
+	ret
+
+	
 	
 showEnding:
 	pop	hl
 	ld	hl,game
 	push	hl
-	
 	ret
 
 
