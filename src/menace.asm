@@ -62,7 +62,7 @@ section	code
 %include "levels.asm"
 %include "pj.asm"
 %include "score.asm"
-
+%include "enemy.asm"
 		
 scrpat:	
 %incbin  "patterns.pat"

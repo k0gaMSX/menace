@@ -7,6 +7,7 @@ PAT = patterns.pat
 SPR = ../tools/sr52spr
 VPATH = ../sc5	
 
+
 all: menace.rom
 
 
@@ -59,11 +60,12 @@ deps:
 
 
 %.ene: %.sc5
-	$(SR52) $< 3
+	$(SR52) $< 3 ../sc5/enemy.col
 	dd if=`dirname $<`/$*.pat of=$@ bs=1 count=640
 	dd if=`dirname $<`/$*.col of=$*.col bs=1 count=640
 	rm -f `dirname $<`/$*.pat
-	rm -f `dirname $<`/$*.col
+
+
 
 
 
