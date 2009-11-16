@@ -13,6 +13,18 @@ SPRRCK4:	equ	SPRRCK3+1
 SPRFIRE1:	equ	SPRRCK4+1
 SPRFIRE2:	equ	SPRFIRE1+1
 
+
+SPRBOOM1:	equ 	SPRFIRE2+1
+SPRBOOM2:	equ	SPRBOOM1+1
+SPRBOOM3:	equ	SPRBOOM2+1
+SPRBOOM4:	equ	SPRBOOM3+1	
+SPRBOOM5:	equ 	SPRBOOM4+1
+SPRBOOM6:	equ	SPRBOOM5+1
+SPRBOOM7:	equ	SPRBOOM6+1
+SPRBOOM8:	equ	SPRBOOM7+1	
+
+
+
 	
 	
 INITIALPOS:	equ	(256/2-16)/8
@@ -20,8 +32,13 @@ INITIALFRAME:	equ	8
 
 
 
+
+
+%include 	"boom.asm"
 	
-InitPJ:	
+	
+InitPJ:
+	call	CleanBoom
 	ld	a,INITIALPOS
 	ld	(pos),a
 	ld	a,INITIALFRAME
@@ -72,8 +89,6 @@ frame:		rb	1
 fired:		rb	1
 rocketx:	rb	1
 rockety:	rb	1
-boom:		rb	1
-frameBoom:	rb	1
 keyleft:	rb	1
 keyright:	rb	1
 keyfire:	rb	1		
@@ -718,35 +733,25 @@ section code
 ;;; *************************************************************
 
 
-toBoom:
-	ld	a,1
-	ld	(boom),a
-	xor	a
-	ld	(frameBoom),a
-	ret
-	
 
+	
+	
 renderPJ:
 	ld	a,(fired)
 	cp	2
 	jp	nz,.noState2
 	
 	call	cleanRocket
+	call	renderBoom
 	ret
 
 
 
 .noState2:	
 	call	renderBase
-	ld	a,(boom)
-	or	a
-	jr	z,.renderocket
-	
+	call	renderBoom
 
 
-
-
-	
 	
 .renderocket:
 	ld	a,(rocketx)

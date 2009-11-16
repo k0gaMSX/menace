@@ -24,7 +24,7 @@ deps:
 	files=`grep include menace.asm | cut -d'"' -f2` ; \
 	for i in  $$files; do \
 	  if [ -f $$i ]; then \
-	     echo menace.rom: $$i >> deps ;\
+	     echo menace.rom: $$i >> depsy ;\
 	  else \
 	     tmp=`which tniasm.linux`;echo menace.rom: `dirname $$tmp`/$$i >> deps ;\
 	  fi ; \

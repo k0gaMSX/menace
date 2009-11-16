@@ -388,7 +388,7 @@ LevelISR:
 		call	SetPtr_VRAM
 		ld	hl,spratt
 		ld	c,98h
-		call    tovram16x8	
+		call    tovram16x8
 	
 		ld	de,0+96*8
 		call	SetPtr_VRAM
