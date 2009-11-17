@@ -1,0 +1,77 @@
+MENACE - Manual
+(c) The New Image
+
+
+The History:
+------------
+
+On a distant galaxy, far far away, not the one with the asthmatic dark helmet
+pal, another one more further... There is an alien alliance lead by a
+civilization of women called Red Bikini who want´s the invasion of our galaxy.
+
+On earth there is no weapon more powerful than atomic missiles, but nuclear
+disarmament has left almost no arms to our planet, only remains to reassemble
+some old missiles of the Cold War '60s.
+
+Communications sound the alert, our space colonies are under attack. Soon the
+alien army coming to our beautiful blue planet.
+
+
+How to play:
+------------
+
+1. The object of the game is to eliminate all the invaders.
+2. Move the platform with left and right.
+3. Fire the missile with button (be quick to launch because the asteroids
+   coming to you)
+4. When the missile is firing you can move left or right, the fire key can
+   give you more speed.
+5. If you lose a life the level will restart.
+6. Avoid contact with asteroids and with enemy fire.
+
+
+Game Requirements:
+------------------
+
+This Game Cartridge is designed for MSX Home Computers with at least 8KB of
+RAM. Both 50Hz and 60Hz refresh rates are allowed. However, it is recommended
+to run this game at 60Hz.
+
+
+Running the game:
+-----------------
+
+1. Turn OFF your MSX.
+2. Insert the Game Cartridge.
+3. Turn ON the computer.
+
+During the computer startup sequence, you can push [SELECT] to force 60Hz
+(only MSX2 and newer generations)
+
+
+Caution:
+--------
+
+TNI decline all the responsability of bad use, inserting the cartridge on a
+non MSX computer can damage the game.
+
+Avoid of expose the cartridge of the sun light, maintain the cartridge on a
+dry place.
+
+
+Credits:
+--------
+
+Graphics:	paulbrk
+		GuyveR800
+
+Sound effects:	paulbrk
+
+Coding:		k0ga
+		BiFi
+		GuyveR800
+
+Manual:		paulbrk
+		BiFi
+
+Game Planning:	paulbrk
