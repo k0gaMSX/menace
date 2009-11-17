@@ -39,6 +39,7 @@ introdemo:	ld	ix,.script
 		ret
 
 .skip:		pop	bc
+		call	initsound
 		ret
 
 .script:	dw	splash.intro01.pat,splash.intro01.col,$1a41,.text.1
