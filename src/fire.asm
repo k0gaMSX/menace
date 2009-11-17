@@ -7,8 +7,9 @@ FIRECOLOR0:	equ	7
 FIRECOLOR1:	equ	8
 FIRE_STATE0:	equ	13
 FIRE_ATTR:      equ     13
-FIRE_HIDEY:     equ     254
-
+FIRE_HIDEY:     equ     224
+PATTERN_FLOOR1: equ     30
+PATTERN_FLOOR2: equ     31
 
 
 
@@ -31,7 +32,7 @@ InitFire:
 
 
 ;;; bc -> Pointer to map
-;;; de -> pointer to end of the map
+;;; de -> pointer to end of the row
 ;;; Return Z = 0 if not found
 ;;;        Z = 1 if found
 ;;;        de -> last position in the map looked
@@ -70,40 +71,57 @@ searchEnemy:
 
 
 TestFire:
-	ld	bc,PatternMap+4*32
-	ld	de,PatternMap+5*32
+        call    Rand
+	ld	hl,probFire
+	cp	(hl)
+        ret     nc
 	ld	a,5*8
 	ld	(FireY),a
-
-
-.1ndRow:
-        ld      a,(NumFire)
-        cp      MAXFIRE-1
-        ret     z
-        call    searchEnemy
-        jr      z,.2ndRow
-	call	NewFire
-        jr      .1ndRow
-
-
-;;; ***************************************************
-
-.2ndRow:
+        call    NewFire
         ret
-	ld	bc,PatternMap+6*32
-	ld	de,PatternMap+7*32
-	ld	a,7*8
-	ld	(FireY),a
 
-.2ndRow_1:
-        ld      a,(NumFire)
-        cp      MAXFIRE-1
-        ret     z
-        call    searchEnemy
-        ret     z
-	call	NewFire
-        jr      .2ndRow_1
-	ret
+
+
+;; 	ld	bc,PatternMap+4*32
+;; 	ld	de,PatternMap+5*32
+;; 	ld	a,5*8
+;; 	ld	(FireY),a
+
+
+;; .1ndRow:
+;;         ld      a,(NumFire)
+;;         cp      MAXFIRE-1
+;;         ret     z
+;;         call    searchEnemy
+;;         jr      z,.2ndRow
+;; 	call	NewFire
+;;         jr      .1ndRow
+
+
+;; ;;; ***************************************************
+
+;; .2ndRow:
+;;         ret
+;; 	ld	bc,PatternMap+6*32
+;; 	ld	de,PatternMap+7*32
+;; 	ld	a,7*8
+;; 	ld	(FireY),a
+
+;; .2ndRow_1:
+;;         ld      a,(NumFire)
+;;         cp      MAXFIRE-1
+;;         ret     z
+;;         call    searchEnemy
+;;         ret     z
+;; 	call	NewFire
+;;         jr      .2ndRow_1
+;; 	ret
+
+
+
+
+
+
 
 
 
@@ -158,9 +176,17 @@ moveFire:
 	add	hl,de
 
 	ld	a,(hl)          ;Test if there is something i the pattern map
-	cp	0
+	cp	PATTERN_FLOOR1
+	jr	z,.n1
+	cp	PATTERN_FLOOR2
 	jr	z,.n1
 
+	pop	hl
+	ret
+
+
+
+.n1:
         pop     hl              ;Sprite collision with a pattern!!!!
         push    hl
         ld      (hl),FIRE_HIDEY          ;Y sprite = FIRE_HIDEY
@@ -173,14 +199,6 @@ moveFire:
 	ld	de,32*8*2
 	or	a
 	sbc	hl,de
-	call	.vpoke
-
-.n1:
-	pop	hl
-	ret
-
-
-
 
 .vpoke:
 	ex	af,af'
@@ -189,15 +207,12 @@ moveFire:
 	ei
 	ex	af,af'
 	out	(98h),a
+        pop     hl
 	ret
 
 ;;; bc -> pointer to the block where fire is launched
 ;;; de -> pointer to last coordenate of the row
 ;;; (FireY) -> y coordinate
-
-HANG:   di
-        halt
-
 
 
 NewFire:
@@ -209,20 +224,15 @@ NewFire:
         ret
 
 .newFire1:
-        ld      hl,-256         ;one row less
-        add     hl,de
-        ex      de,hl
-        ld      l,c
-        ld      h,b
-        or      a
-        sbc     hl,de
-        ld      a,l
-	ld	(.pos),a
-	call	Rand
-	ld	hl,probFire
-	cp	(hl)
-	ret	nc
-
+        ;; ld      hl,-256         ;one row less
+        ;; add     hl,de
+        ;; ex      de,hl
+        ;; ld      l,c
+        ;; ld      h,b
+        ;; or      a
+        ;; sbc     hl,de
+        ;; ld      a,l
+	;; ld	(.pos),a
 	ld	a,(NumFire)
         ld      c,MAXFIRE
 	cp 	c
@@ -231,9 +241,8 @@ NewFire:
 	ld	hl,spriteFire
 .searchsprite:
         dec     c
-        ret     z
-        ;; call    z,HANG
-
+        ret     z               ;We will never return, it's only secure
+                                ;development
         ld      a,(hl)
         cp      FIRE_HIDEY
         jr      z,.foundSprite
@@ -249,7 +258,7 @@ NewFire:
 	ld	(hl),a
 	inc	hl
 	ld	a,(.pos)
-        ld      e,a
+        call    Rand
         ld      (hl),a
 
 
