@@ -32,6 +32,20 @@ main:	call	SaveSlotC
 	;ld	a,1fh
 	;out	(02eh),a
 
+	ld	a,($2d)
+	or	a
+	jr	z,game
+
+	ld	a,7
+	call	SNSMAT
+	bit	6,a
+	jr	nz,game
+
+	ld	a,(RG9SAV)
+	and	$fd
+	ld	b,a
+	ld	c,9
+	call	WRTVDP
 
 game:
  	call	showLogo
