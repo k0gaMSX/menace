@@ -1,6 +1,5 @@
 todo:
 - enemy bombs
-- update floor where bomb has landed
 - variabele difficulty of the meteors
 
 in case of music:
