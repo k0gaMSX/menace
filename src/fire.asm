@@ -193,7 +193,7 @@ moveFire:
         ld      hl,NumFire
         dec     (hl)
 
-	ld	a,94            ;TODO: I must redraw destroyed floor to!!!
+	ld	a,64
 	ld	hl,01a00h
 	add	hl,de
 	ld	de,32*8*2
