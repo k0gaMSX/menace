@@ -183,6 +183,7 @@ showtext:	ld	l,(ix+4)
 		jr	.print
 
 .end:		pop	hl
+		call	initsound
 		ret
 
 demofont:	ld	de,16*8		; starting from $47
