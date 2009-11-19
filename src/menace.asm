@@ -36,6 +36,8 @@ main:	call	SaveSlotC
 	or	a
 	jr	z,game
 
+	call	setplt
+
 	ld	a,7
 	call	SNSMAT
 	bit	6,a

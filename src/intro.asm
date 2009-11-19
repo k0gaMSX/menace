@@ -16,9 +16,6 @@ initIntro:	ld	hl,20 *256+ 0
 
 		call	.start
 
-		ld	hl,intro.palette
-		call	setplt
-
 		xor	a
 		ld	bc,$4000
 		ld	hl,0
@@ -218,9 +215,6 @@ mainIntro:
 
 ;
 setplt:
-		ld	a,($2d)
-		or	a
-		ret	z
 		ld	a,(7)
 		inc	a
 		ld	c,a
@@ -232,6 +226,7 @@ setplt:
 		ei
 		inc	c
 		ld	b,32
+		ld	hl,intro.palette
 		otir
 		ret
 ;
