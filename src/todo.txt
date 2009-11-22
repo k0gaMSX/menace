@@ -1,6 +1,5 @@
 todo:
 - enemy bombs
-- variabele difficulty of the meteors
 
 in case of music:
 - replace pt3 with guyver5
