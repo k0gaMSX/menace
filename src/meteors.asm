@@ -240,11 +240,14 @@ moveMeteors:
 
 
 newMeteor:
-	ld	bc,(METEOR_PROB)
+	ld	a,(METEOR_PROB)
+	cp	METEOR_DSTART
+	jr	c,.cheating
+	ld	b,a
 	call	Rand
-	cp	c
+	cp	b
 	ret	nc
-
+.cheating:
 	ld	(hl),METEOR_PAT1
 	dec	hl
 	ld	(hl),METEOR_PAT2
@@ -257,11 +260,14 @@ newMeteor:
 
 
 newMeteor2:
-	ld	bc,(METEOR_PROB)
+	ld	a,(METEOR_PROB)
+	cp	METEOR_DSTART
+	jr	c,.cheating
+	ld	b,a
 	call	Rand
-	cp	c
+	cp	b
 	ret	nc
-
+.cheating:
 	ld	(hl),METEOR2_PAT1
 	dec	hl
 	ld	(hl),METEOR2_PAT2
