@@ -110,6 +110,11 @@ enddemo:	ld	ix,.script
 
 .skip:		pop	bc
 		djnz	.loop
+
+		di
+		ld	a,$c9
+		ld	($fd9a),a
+		ei
 		ret
 
 

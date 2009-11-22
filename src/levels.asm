@@ -5,11 +5,8 @@ WAIT_TIME:	equ	120
 InitLevel:
 		call	BeginScore
 		call	DISSCR
-		ld	a,3
-		ld	(NumLives),a
 		ld	a,1
 		ld	(NumLevel),a
-
 
 		ld	bc,$4000
 		ld	hl,0
@@ -156,6 +153,13 @@ TestEnd:
 		jr	.noend
 
 .endLevel:
+		ld	a,(METEOR_PROB)
+		add	a,METEOR_DINC
+		cp	METEOR_DMAX
+		jr	c,.endLevel.prob
+		ld	a,METEOR_DMAX
+.endLevel.prob:
+		ld	(METEOR_PROB),a
 		ld	a,1
 		or	a
 		ret

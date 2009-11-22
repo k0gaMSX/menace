@@ -1,4 +1,6 @@
-METEOR_PROB:	equ     5*255/100
+METEOR_DSTART:	equ     8
+METEOR_DINC:	equ	2
+METEOR_DMAX:	equ	240
 
 METEOR_PAT1:	equ 	127
 METEOR_PAT2:	equ	126
@@ -238,8 +240,9 @@ moveMeteors:
 
 
 newMeteor:
+	ld	bc,(METEOR_PROB)
 	call	Rand
-	cp	METEOR_PROB
+	cp	c
 	ret	nc
 
 	ld	(hl),METEOR_PAT1
@@ -254,8 +257,9 @@ newMeteor:
 
 
 newMeteor2:
+	ld	bc,(METEOR_PROB)
 	call	Rand
-	cp	METEOR_PROB
+	cp	c
 	ret	nc
 
 	ld	(hl),METEOR2_PAT1
@@ -405,6 +409,7 @@ RandomIndex:    rb      1
 RandomSeed:	rb	1 ; prng seed byte (must not be initialised to zero)
 MeteorFrame:	rb	1
 
+METEOR_PROB:	rb	1
 MeteorBufferR:	rb	METEOR_SIZE
 MeteorBufferL:	rb	METEOR_SIZE
 

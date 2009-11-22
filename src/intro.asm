@@ -147,6 +147,10 @@ initIntro:	ld	hl,20 *256+ 0
 		jp	.initloop
 
 .start:
+		ld	a,3
+		ld	(NumLives),a
+		ld	a,METEOR_DSTART
+		ld	(METEOR_PROB),a
                 ld	a,0c9h
 		ld	(0fd9ah),a
 		ret

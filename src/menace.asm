@@ -54,6 +54,7 @@ game:
 wasGameOver:
         call	initsound
  	call	initIntro
+wasEnding:
 	call	InitLevel
 nextl:	call	PlayLevel
 	cp	0
@@ -89,9 +90,7 @@ showGameOver:
 .wait:	halt
 	djnz	.wait
 
-	ld	hl,wasGameOver
-	push	hl
-	ret
+	jr	wasGameOver
 
 
 
@@ -103,9 +102,9 @@ showEnding:
 	ld	hl,intromode
 	set	0,(hl)
 	call	enddemo
-	ld	hl,game
-	push	hl
-	ret
+
+	jr	wasEnding	; was 'game', but now with incremental meteor probability
+				; Level 1 will restart
 
 
 
