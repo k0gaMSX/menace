@@ -2,14 +2,14 @@
 
 
 SPRCHAIN1:	equ	8
-SPRCHAIN2:	equ	SPRCHAIN1+1	
+SPRCHAIN2:	equ	SPRCHAIN1+1
 SPRCHAIN3:	equ	SPRCHAIN2+1
-			
+
 SPRRCK1:	equ	SPRCHAIN3+1
 SPRRCK2:	equ	SPRRCK1+1
 SPRRCK3:	equ	SPRRCK2+1
 SPRRCK4:	equ	SPRRCK3+1
-		
+
 SPRFIRE1:	equ	SPRRCK4+1
 SPRFIRE2:	equ	SPRFIRE1+1
 
@@ -17,16 +17,16 @@ SPRFIRE2:	equ	SPRFIRE1+1
 SPRBOOM1:	equ 	SPRFIRE2+1
 SPRBOOM2:	equ	SPRBOOM1+1
 SPRBOOM3:	equ	SPRBOOM2+1
-SPRBOOM4:	equ	SPRBOOM3+1	
+SPRBOOM4:	equ	SPRBOOM3+1
 SPRBOOM5:	equ 	SPRBOOM4+1
 SPRBOOM6:	equ	SPRBOOM5+1
 SPRBOOM7:	equ	SPRBOOM6+1
-SPRBOOM8:	equ	SPRBOOM7+1	
+SPRBOOM8:	equ	SPRBOOM7+1
 
 
 
-	
-	
+
+
 INITIALPOS:	equ	(256/2-16)/8
 INITIALFRAME:	equ	8
 INITIALHURRY:	equ	240
@@ -35,15 +35,15 @@ INITIALHURRY:	equ	240
 
 
 %include 	"boom.asm"
-	
-	
+
+
 InitPJ:
 	call	CleanBoom
 	ld	a,INITIALPOS
 	ld	(pos),a
 	ld	a,INITIALFRAME
 	ld	(frame),a
-	ld	(countchain),a	
+	ld	(countchain),a
 	xor	a
 	ld	(fired),a
 	ld	(boom),a
@@ -53,13 +53,13 @@ InitPJ:
 	ld	hl,basegfxt
  	ld	bc,6*8
  	ld	de,basegfx
- 	ldir	
+ 	ldir
 
 	ld	a,129
-	ld	(rocketx),a		
+	ld	(rocketx),a
 	ld	a,144
-	ld	(rockety),a	
-	
+	ld	(rockety),a
+
 	ld	hl,.sprdatapj
 	ld	de,spratt
 	ld	bc,15*4
@@ -75,16 +75,16 @@ InitPJ:
 	db	9,200,250,0
 	db	9,208,250,0
 	db	9,216,250,0
-	db	9,224,250,0		
+	db	9,224,250,0
 	db	159,0,56,14
 	db	159,0,57,14
 	db	159,0,58,14
 	db	144,129,0,14
 	db	152,129,1,14
 	db	144,129,2,8
-	db	152,129,3,8	
+	db	152,129,3,8
 
-	
+
 section rdata
 pos:		rb	1
 frame:		rb	1
@@ -93,13 +93,13 @@ rocketx:	rb	1
 rockety:	rb	1
 keyleft:	rb	1
 keyright:	rb	1
-keyfire:	rb	1		
+keyfire:	rb	1
 keyfirenew:	rb	1
 basegfx:	rb	40
 basegfxt:	rb	48
 countchain:	rb	1
-section	code							
-	
+section	code
+
 
 
 Death:
@@ -115,24 +115,62 @@ Death:
 	call	cleanRocket
 	ld	a,230
 	ld	(rocketx),a
-	ld	(rockety),a	
+	ld	(rockety),a
 	ret
 
 
-	
 
-testcol:	
-	ret	
 
-	
+testcol:	ld	b,4
+		ld	de,4
+		ld	hl,spriteFire
+.loop:		push	hl
+		call	.check
+		pop	hl
+		jr	c,.hit
+		;ld	a,(fired)
+		;or	a
+		;push	hl
+		;ld	bc,24 *256+ 8	; width and height (platform)
+		;call	nz,.check
+		;pop	hl
+		;jr	c,.hit
+		add	hl,de
+		djnz	.loop
+		ret
+
+.hit:		call	pjexp
+		call	toBoom
+		jr	Death
+
+.check:		ld	a,(rockety)
+		sub	(hl)
+		jr	c,.yswap
+		cp	8		; bullet height
+		jr	c,.checkx
+		ret
+.yswap:		neg
+		cp	16		; rocket height
+		ret	nc
+.checkx:	inc	hl
+		ld	a,(rocketx)
+		sub	(hl)
+		jr	nc,.noxswap
+		neg
+		cp	8		; rocket width
+		ret
+.noxswap:	cp	8		; bullet width
+		ret
+
+
 doPj:
-	call	move_pj	
-	call	testcol
+	call	move_pj
+	;call	testcol		; todo: fix the mess this thing now causes
 	call	renderPJ
 	ret
-	
-			
-	
+
+
+
 move_pj:
 	ld	a,(fired)
 	cp	3
@@ -185,8 +223,8 @@ move_pj:
 	call	nz,.move_base
 	jp	.move_rocket
 
-	
-	
+
+
 .move_base:
 	ld	a,[hurryup]
 	or	a
@@ -202,7 +240,7 @@ move_pj:
 	ld	(fired),a
 
 .mvb1:
-	ld	hl,keyfirenew	
+	ld	hl,keyfirenew
 	ld	a,(keyfire)
 	and	[hl]
 	and	1
@@ -219,8 +257,8 @@ move_pj:
 	ld	a,(keyleft)
 	or	a
 	jr	z,.baseright
-	
-	ld	hl,pos		
+
+	ld	hl,pos
 	xor	a
 	cp	(hl)
 	ret	z
@@ -228,7 +266,7 @@ move_pj:
 
 	ld	hl,rocketx
 	dec	(hl)
-	
+
 	ld	hl,frame
 	ld	a,1
 	cp	(hl)
@@ -250,9 +288,9 @@ move_pj:
 	dec	(hl)
 	ld	ix,basegfx
 	ld	b,8
-.shiftleft:	
+.shiftleft:
 	or	a
-	rl	(ix+32)	
+	rl	(ix+32)
 	rl	(ix+24)
 	rl	(ix+16)
 	rl	(ix+8)
@@ -263,61 +301,61 @@ move_pj:
 	ret
 
 
-	
+
 
 .baseright:
 	ld	a,(keyright)
 	or	a
 	ret	z
 
-	
+
 	ld	hl,pos
 	ld	a,27
 	cp	(hl)
 	ret	z
-	
-	ld	hl,rocketx
-	inc	(hl)	
 
-			
+	ld	hl,rocketx
+	inc	(hl)
+
+
 	ld	hl,frame
 	ld	a,15
 	cp	(hl)
 	jr	nz,.noincposr
-	
+
 	ld	a,INITIALFRAME
 	ld	(hl),a
-	ld	hl,pos	
+	ld	hl,pos
 	inc	(hl)
  	ld	hl,basegfxt
  	ld	bc,5*8
  	ld	de,basegfx
- 	ldir	
+ 	ldir
 	ret
 
-	
+
 .noincposr:
 	inc	(hl)
 	ld	ix,basegfx
 	ld	b,8
-.shiftright:	
+.shiftright:
 	or	a
-	rr	(ix+0)	
+	rr	(ix+0)
 	rr	(ix+8)
 	rr	(ix+16)
 	rr	(ix+24)
 	rr	(ix+32)
 	inc	ix
 	djnz	.shiftright
-	call	base_motor	
+	call	base_motor
 	ret
 
-	
 
 
 
 
-.mvrck_side:		
+
+.mvrck_side:
 	ld	a,(rocketx)
 	ld	b,a
 	ld	a,(keyright)
@@ -327,9 +365,9 @@ move_pj:
 	cp	b
 	jr	z,.mvrck2
 	inc	b
-	
-	
-.mvrck1:			
+
+
+.mvrck1:
 	ld	a,(keyleft)
 	or	a
 	jr	z,.mvrck2
@@ -337,14 +375,14 @@ move_pj:
 	cp	b
 	jr	z,.mvrck2
 	dec	b
-	
+
 
 .mvrck2:
 	ld	a,b
 	ld	(rocketx),a
 	ret
-	
-	
+
+
 
 
 
@@ -357,23 +395,23 @@ move_pj:
 	cp	16
 	jp	c,.nocol_rock
 
-	
+
 	and	0f8h
 	ld	l,a
 	ld	h,0
 	ld	d,h
 	add	hl,hl
-	add	hl,hl	
+	add	hl,hl
 	ld	a,(rocketx)
 	srl	a
 	srl	a
-	srl	a	
+	srl	a
 	ld	e,a
 	add	hl,de
 	ld	de,PatternMap
 	add	hl,de
 	ld	de,32
-	
+
 	ld	a,(rockety)
 	and	7
 	jr	z,.no3ch_1
@@ -382,7 +420,7 @@ move_pj:
 	jp	nz,.col_rock
 
 	add	hl,de
-.no3ch_1:		
+.no3ch_1:
 	ld	a,(hl)
 	or	a
 	jp	nz,.col_rock
@@ -403,23 +441,23 @@ move_pj:
 	and	7
 	jr	z,.no3ch_2
 
-	
+
 	ld	a,(hl)
 	or	a
-	jp	nz,.col_rock	
+	jp	nz,.col_rock
 	add	hl,de
 
-.no3ch_2:	
+.no3ch_2:
 	ld	a,(hl)
 	or	a
 	jp	nz,.col_rock
 	add	hl,de
 	ld	a,(hl)
 	or	a
-	jp	nz,.col_rock	
+	jp	nz,.col_rock
 	jp	.nocol_rock
 
-	
+
 .col_rock:
 	cp 	METEOR_PAT1
 	call	z,meteor_col
@@ -485,11 +523,11 @@ move_pj:
 	call	z,enemy_col
 	cp 	ENEMY4_PAT6
 	call	z,enemy_col
-	
-	
-	
-	
-.nocol_rock:	
+
+
+
+
+.nocol_rock:
 	ld	a,(fired)		; don't move unless it's flying
 	cp	1
 	ret	nz
@@ -502,16 +540,16 @@ move_pj:
 	dec	(hl)
 	ret	nz
 	ld	a,6
-	ld	(hl),a	
+	ld	(hl),a
 
 .mvrocket_sp:
 	call	.mvrck_side
 	ld	hl,rockety
 	dec	(hl)
 	ret	nz
-	
 
-ToBase:	
+
+ToBase:
 	ld	a,2
  	ld	(fired),a
 	ld	a,INITIALPOS
@@ -525,32 +563,32 @@ ToBase:
 	add	a,9
 	ld	(rocketx),a
 	ld	a,144
-	ld	(rockety),a		
+	ld	(rockety),a
 	ret
 
-	
-	
+
+
 section rdata
 contRocket:	rb	1
-section code		
+section code
 
 
 
 
 
-	
+
 ;;; *****************************************************
 
-	
+
 TestRocketCol:
 	ld	a,(rockety)
 	and	7
-	ld	(.Yoff),a		
+	ld	(.Yoff),a
 	ld	c,a
 	ld	a,7
 	sub	c		;a = 7 - Y%8
 	ld	(.YoffC),a
-	
+
 	ld	a,(rocketx)
 	and	7
 	ld	(.Xoff),a
@@ -561,22 +599,22 @@ TestRocketCol:
 	ld	a,80h
 .1:	sra	a
 	djnz	.1
-.noright:	
+.noright:
 	ld	(.maskr),a
 	ld	a,7
 	sub	c		;a = 7 - X%8
 	ld	(.XoffC),a
 	or	a
 	jr	z,.noleft
-	
+
 	ld	b,a
 	ld	a,1
 .2:	sll	a
 	djnz	.2
-.noleft:	
+.noleft:
 	ld	(.maskl),a
 
-	
+
 	ld	a,(rockety)
 	and	0f8h
 	ld	l,a
@@ -606,12 +644,12 @@ TestRocketCol:
 	ret
 
 
-	
+
 
 ;;;*******************************************************
-	
 
-	
+
+
 .1stPart:
 	ld	a,(.Yoff)
 	or	a
@@ -623,17 +661,17 @@ TestRocketCol:
 	ld	a,(.YoffC)
 	inc	a
 	ld	(.NumberY),a
-	
+
 	ld	a,(.maskl)
 	ld	(.mask),a
 	call	.Test1b
 	ret	nz
-	
+
 	ld	a,(.maskr)
-	ld	(.mask),a	
+	ld	(.mask),a
 	call	z,.Test1b
 	ret	nz
-	
+
 	ld	hl,(.maptr)
 	ld	de,30
 	add	hl,de
@@ -648,7 +686,7 @@ TestRocketCol:
 .2ndPart:
 	ld	a,8
 	ld	(.NumberY),a
-	
+
 	ld	de,0
 	ld	(.offsetY),de
 
@@ -656,12 +694,12 @@ TestRocketCol:
 	ld	(.mask),a
 	call	.Test1b
 	ret	nz
-	
+
 	ld	a,(.maskr)
-	ld	(.mask),a	
+	ld	(.mask),a
 	call	z,.Test1b
 	ret	nz
-	
+
 	ld	hl,(.maptr)
 	ld	de,30
 	add	hl,de
@@ -670,14 +708,14 @@ TestRocketCol:
 	ret
 
 
-	
+
 
 
 .3rdPart:
 	ld	a,(.Yoff)
 	inc	a
 	ld	(.NumberY),a
-	
+
 	ld	de,0
 	ld	(.offsetY),de
 
@@ -685,25 +723,25 @@ TestRocketCol:
 	ld	(.mask),a
 	call	.Test1b
 	ret	nz
-	
+
 	ld	a,(.maskr)
-	ld	(.mask),a	
+	ld	(.mask),a
 	call	z,.Test1b
 	ret	nz
-	
+
 	xor	a
 	ret
-	
 
 
 
-	
+
+
 
 ;;; (.maptr) -> pointer to pattern map
 ;;; (.offsetY) -> offset in Y
 ;;; (.NumberY) -> number of pixels in Y
-;;; (.mask) -> Mask 
-	
+;;; (.mask) -> Mask
+
 .Test1b:
 	ld	hl,(.maptr)
 	ld	a,(hl)
@@ -711,32 +749,32 @@ TestRocketCol:
 	ld	(.maptr),hl
 	call	.GetByteDef
 
-	ld	bc,(.offsetY)	
+	ld	bc,(.offsetY)
 	ld	hl,.def
 	add	hl,bc
 
 	ld	a,(.numberY)
 	ld	b,a
 
-.Test1bLoop:		
+.Test1bLoop:
 	ld	c,(hl)
 	ld	a,(.mask)
 	and	c
  	ret	nz
-	inc	hl	
+	inc	hl
 	djnz	.Test1bLoop
 
 
 	xor	a
 	ret
-	
 
 
 
-	
-	
+
+
+
 ;;; a -> Number of pattern
-	
+
  .GetByteDef:
 	ld	l,a
 	ld	h,0
@@ -751,66 +789,66 @@ TestRocketCol:
 	ld	b,8
 	ld	c,98h
 	ld	hl,.def
-	
-.getdefloop:	
+
+.getdefloop:
 	in	a,(98h)
 	ld	(hl),a
-	inc	hl	
+	inc	hl
 	djnz	.getdefloop
  	ret
 
-	
+
 
 section rdata
 .offsetY: rw 1
 .numberY: rb 1
-.maptr:	  rw 2	
+.maptr:	  rw 2
 .maskl:	  rb 1
-.maskr:	  rb 1		
-.mask:	  rb 1	
+.maskr:	  rb 1
+.mask:	  rb 1
 .def:	  rb 8
 .Xoff:	  rb 1
 .XoffC:	  rb 1
 .Yoff:	  rb 1
 .YoffC:	  rb 1
 BankPattern:	rw 1
-section code	
+section code
 
-	
+
 
 
 ;;; *************************************************************
 
 
 
-	
-	
+
+
 renderPJ:
 	ld	a,(fired)
 	cp	2
 	jp	nz,.noState2
-	
+
 	call	cleanRocket
 	call	renderBoom
 	ret
 
 
 
-.noState2:	
+.noState2:
 	call	renderBase
 	call	renderBoom
 
 
-	
+
 .renderocket:
 	ld	a,(fired)
 	cp	3
 	jr	nz,.renderocket0
 	call	cleanRocket
 	ret
-	
-	
-.renderocket0:			
+
+
+.renderocket0:
 	ld	a,(rocketx)
 	ld	(spratt+SPRRCK1*4+1),a
 	ld	(spratt+SPRRCK2*4+1),a
@@ -827,8 +865,8 @@ renderPJ:
 	ld	a,(spratt+SPRRCK1*4+2)
 	or	a
 	xor	4
-	
-.renderocket1:	
+
+.renderocket1:
 	ld	(spratt+SPRRCK1*4+2),a
 	inc	a
 	ld	(spratt+SPRRCK2*4+2),a
@@ -843,7 +881,7 @@ renderPJ:
 	ld	a,(keyfire)
 	or	a
 	jr	z,.renderrck1
-	
+
 	ld	a,(rocketx)
 	ld	(spratt+SPRFIRE1*4+1),a
 	ld	(spratt+SPRFIRE2*4+1),a
@@ -858,7 +896,7 @@ renderPJ:
 	ld	b,8
 
 .renderrck2:
-	ld	a,b			
+	ld	a,b
 	ld	(spratt+SPRFIRE1*4+2),a
 	inc	a
 	ld	(spratt+SPRFIRE2*4+2),a
@@ -866,25 +904,25 @@ renderPJ:
 	ld	(spratt+SPRFIRE1*4+3),a
 	ld	a,8
 	ld	(spratt+SPRFIRE2*4+3),a
-	call	rck_ignition			
+	call	rck_ignition
 	ret
-	
 
-.renderrck1:	
+
+.renderrck1:
 	ld	a,255
 	ld	(spratt+SPRFIRE1*4+2),a
 	ld	(spratt+SPRFIRE2*4+2),a
-	ret	
+	ret
 
 
 
-	
-	
+
+
 renderBase:
 	ld	a,(fired)
 	or	a
 	ret	nz
-				
+
 	ld	hl,PatternMap+20*32
 	ld	a,(pos)
 	ld	e,a
@@ -893,8 +931,8 @@ renderBase:
 	ld	a,120
 	ld	b,5
 
-	
-.baseEnd1:		
+
+.baseEnd1:
 	ld	(hl),a
 	inc	a
 	inc	hl
@@ -910,8 +948,8 @@ renderBase:
 	add	a,b
 	ld	hl,spratt+SPRCHAIN1*4+1
 	ld	b,3
-	
-.baseEnd2:	
+
+.baseEnd2:
 	ld	(hl),a
 	add	a,8
 	inc	hl
@@ -919,43 +957,43 @@ renderBase:
 	inc	hl
 	inc	hl
 	djnz	.baseEnd2
-	
+
 	ld	hl,countchain
 	dec	(hl)
 	ret	nz
 	ld	a,8
 	ld	(hl),a
-		
+
 	ld	b,59
 	ld	a,(spratt+SPRCHAIN1*4+2)
 	cp	56
 	jr	z,.baseEnd3
 	ld	b,56
-		
+
 .baseEnd3:
-	ld	a,b		
+	ld	a,b
 	ld	(spratt+SPRCHAIN1*4+2),a
 	inc	a
 	ld	(spratt+SPRCHAIN2*4+2),a
 	inc	a
-	ld	(spratt+SPRCHAIN3*4+2),a		
-	ret	
+	ld	(spratt+SPRCHAIN3*4+2),a
+	ret
 
 
 
-	
+
 cleanRocket:
 	ld	a,230
 	ld	(spratt+SPRRCK1*4+0),a
 	ld	(spratt+SPRRCK2*4+0),a
 	ld	(spratt+SPRRCK3*4+0),a
-	ld	(spratt+SPRRCK4*4+0),a	
+	ld	(spratt+SPRRCK4*4+0),a
 	ld	(spratt+SPRFIRE1*4+0),a
-	ld	(spratt+SPRFIRE2*4+0),a	
+	ld	(spratt+SPRFIRE2*4+0),a
 	ret
 
 
-	
+
 
 cleanBase:
 	ld	hl,PatternMap+20*32
@@ -967,7 +1005,7 @@ cleanBase:
 	ld	de,savebase
 	ld	bc,5
 	ldir
-	
+
 	pop	hl
 	ld	e,l
 	ld	d,h
@@ -976,7 +1014,7 @@ cleanBase:
 	ld	(hl),a
 	ld	bc,4
 	ldir
-	
+
 	ld	a,254
 	ld	b,3
 	ld	hl,spratt+SPRCHAIN1*4+2
@@ -989,7 +1027,7 @@ cleanBase:
 
 section rdata
 savebase:	rb	5
-GetColorPar:	rb	1	
+GetColorPar:	rb	1
 hurryup:	rb	1
-section code	
-				
+section code
+

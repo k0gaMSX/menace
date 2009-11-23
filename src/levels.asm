@@ -144,11 +144,12 @@ TestEnd:
 		or	a
 		jr	nz,.death
 
+%if ESCAPE
  		ld	a,7
  		call	SNSMAT
  		bit	2,a
  		jr	z,.endLevel
-
+%endif
 
 		jr	.noend
 
@@ -674,8 +675,6 @@ LevelISR:
 		ld 	c,98h
 		call	tovram4x8_slow
 
-; WE MUST CHANGE destroyed floor!!!
-
 		pop	de
 		ld	hl,floorcol
 		add	hl,de
@@ -688,7 +687,7 @@ LevelISR:
 		call	SetPtr_VRAM
 		ld 	c,98h
 		call  	tovram4x8_slow
-		ret        ; TODO: WE MUST CHANGE color of destroyed floor!!!
+		ret
 
 
 

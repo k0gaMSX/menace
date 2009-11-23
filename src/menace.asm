@@ -1,4 +1,5 @@
 DEBUG %set 0
+ESCAPE %set 1
 
 %include "tniasm.inc"
 %include "z80r800.inc"
