@@ -128,13 +128,12 @@ testcol:	ld	b,4
 		call	.check
 		pop	hl
 		jr	c,.hit
-		;ld	a,(fired)
-		;or	a
-		;push	hl
-		;ld	bc,24 *256+ 8	; width and height (platform)
-		;call	nz,.check
-		;pop	hl
-		;jr	c,.hit
+		ld	a,(fired)
+		cp	2
+		push	hl
+		call	nz,.check.pj
+		pop	hl
+		jr	c,.hit
 		add	hl,de
 		djnz	.loop
 		ret
@@ -164,6 +163,28 @@ testcol:	ld	b,4
 		ret
 .noxswap:	cp	2		; bullet width
 		ret
+
+.check.pj:	ld	a,(rockety)
+		add	a,16
+		sub	(hl)
+		jr	c,.yswap.pj
+		cp	8		; bullet height
+		jr	c,.checkx.pj
+		ret
+.yswap.pj:	neg
+		cp	8		; platform height
+		ret	nc
+.checkx.pj:	inc	hl
+		ld	a,(rocketx)
+		sub	8
+		sub	(hl)
+		jr	nc,.noxswap.pj
+		neg
+		cp	24		; platform width
+		ret
+.noxswap.pj:	cp	2		; bullet width
+		ret
+
 
 
 doPj:
