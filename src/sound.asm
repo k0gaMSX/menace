@@ -54,7 +54,9 @@ initsound:
 	ld	(rckign),a
 	ld	(atmos),a
 	ld	(basemtr),a
+	push	af
 	call	PT3_ROUT
+	pop	af
 	ret
 
 
