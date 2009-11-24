@@ -139,7 +139,10 @@ testcol:	ld	b,4
 		djnz	.loop
 		ret
 
-.hit:		call	pjexp
+.hit:		call	TestDeath
+		ret	nz
+
+		call	pjexp
 		call	toBoom
 		jr	Death
 
@@ -157,7 +160,7 @@ testcol:	ld	b,4
 		sub	(hl)
 		jr	nc,.noxswap
 		neg
-		cp	8		; rocket width
+		cp	2		; rocket width
 		ret
 .noxswap:	cp	8		; bullet width
 		ret
@@ -165,7 +168,7 @@ testcol:	ld	b,4
 
 doPj:
 	call	move_pj
-	;call	testcol		; todo: fix the mess this thing now causes
+	call	testcol		; todo: fix the mess this thing now causes
 	call	renderPJ
 	ret
 
