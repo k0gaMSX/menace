@@ -160,9 +160,9 @@ testcol:	ld	b,4
 		sub	(hl)
 		jr	nc,.noxswap
 		neg
-		cp	2		; rocket width
+		cp	8		; rocket width
 		ret
-.noxswap:	cp	8		; bullet width
+.noxswap:	cp	2		; bullet width
 		ret
 
 
