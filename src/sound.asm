@@ -54,6 +54,7 @@ initsound:
 	ld	(rckign),a
 	ld	(atmos),a
 	ld	(basemtr),a
+	call	PT3_ROUT
 	ret
 
 
