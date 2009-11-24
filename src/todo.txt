@@ -1,5 +1,4 @@
 todo:
-- enemy bombs
 
 in case of music:
 - replace pt3 with guyver5
