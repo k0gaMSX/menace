@@ -195,6 +195,7 @@ PlayLevel:
 
 
 .BeginPlay:
+		call	initsound
 		ld	a,(NumLives)
 		or	a
 		jr	z,TestEnd.newgame
