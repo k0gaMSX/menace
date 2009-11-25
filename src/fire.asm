@@ -233,8 +233,12 @@ NewFire:
         ;; sbc     hl,de
         ;; ld      a,l
 	;; ld	(.pos),a
+	ld	a,(NumEnemy)
+	inc	a
+	sra	a
+	inc	a
+	ld	c,a
 	ld	a,(NumFire)
-        ld      c,MAXFIRE
 	cp 	c
 	ret	z
 
