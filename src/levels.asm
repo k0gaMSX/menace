@@ -254,6 +254,11 @@ PlayLevel:
 		ld	b,50
 .1:		ei
 		halt
+		push	af
+		push	bc
+		call	renderPJ
+		pop	bc
+		pop	af
 		djnz	.1
 		ret
 

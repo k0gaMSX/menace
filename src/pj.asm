@@ -189,7 +189,7 @@ testcol:	ld	b,4
 
 doPj:
 	call	move_pj
-	call	testcol		; todo: fix the mess this thing now causes
+	call	testcol
 	call	renderPJ
 	ret
 
@@ -799,7 +799,7 @@ TestRocketCol:
 
 ;;; a -> Number of pattern
 
- .GetByteDef:
+.GetByteDef:
 	ld	l,a
 	ld	h,0
 	add	hl,hl
