@@ -77,10 +77,14 @@ deps:
 	rm -f `dirname $<`/$*.pat
 
 
+intro.col intro.pat: ../sc2/intro.sc2
+	dd if=../sc2/intro.sc2 of=intro.pat bs=1 count=1328 skip=7
+	dd if=../sc2/intro.sc2 of=intro.col bs=1 count=1328 skip=8199
+
 
 %.pat %.col: %.sc2
-	dd if=`dirname $<`/$*.sc2 of=$*.pat bs=1 count=6144
-	dd if=`dirname $<`/$*.sc2 of=$*.col bs=1 count=6144 skip=8192
+	dd if=`dirname $<`/$*.sc2 of=$*.pat bs=1 count=2048 skip=7
+	dd if=`dirname $<`/$*.sc2 of=$*.col bs=1 count=2048 skip=8199
 
 
 
