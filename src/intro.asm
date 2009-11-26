@@ -72,41 +72,41 @@ initIntro:	ld	hl,20 *256+ 0
 		call	LDIRVM
 
 		ld	bc,32
-		ld	de,$1800
+		ld	de,$1820
 		ld	hl,intro.score
 		push	hl
 		push	bc
 		call	LDIRVM
 		pop	bc
 		pop	hl
-		ld	de,$1c00
+		ld	de,$1c20
 		call	LDIRVM
 
 		ld	de,hiscore
-		ld	hl,$1809
+		ld	hl,$1829
 		push	de
 		call	.printScore
 		pop	de
-		ld	hl,$1c09
+		ld	hl,$1c29
 		call	.printScore
 
 		ld	de,score
-		ld	hl,$181a
+		ld	hl,$183a
 		push	de
 		call	.printScore
 		pop	de
-		ld	hl,$1c1a
+		ld	hl,$1c3a
 		call	.printScore
 
 		ld	bc,32
-		ld	de,$1ae0
+		ld	de,$1ac0
 		ld	hl,intro.cred
 		push	hl
 		push	bc
 		call	LDIRVM
 		pop	bc
 		pop	hl
-		ld	de,$1ee0
+		ld	de,$1ec0
 		call	LDIRVM
 
 
@@ -254,9 +254,9 @@ intro:
 .score:		db	$00,$17,$18,$22,$12,$1e,$21,$14,$00,$00,$00,$00,$00,$00,$00,$00
 		db	$00,$00,$00,$00,$22,$12,$1e,$21,$14,$00,$00,$00,$00,$00,$00,$00
 			; 01234567890123456789012345678901
-			;"    c 2008 2009 THE NEW IMAGE   "
-.cred:		db	$00,$00,$00,$46,$00,$3c,$3a,$3a,$42,$00,$3c,$3a,$3a,$43,$00,$33
-		db	$27,$24,$00,$2d,$24,$36,$00,$28,$2c,$20,$26,$24,$00,$00,$00,$00
+			;"      c 2009 THE NEW IMAGE     "
+.cred:		db	$00,$00,$00,$00,$00,$00,$46,$00,$3c,$3a,$3a,$43,$00,$33,$27,$24
+		db	$00,$2d,$24,$36,$00,$28,$2c,$20,$26,$24,$00,$00,$00,$00,$00,$00
 			; 01234567890123456789012345678901
 			;"        PUSH FIRE BUTTON        "
 .trig:		db	$00,$00,$00,$00,$00,$00,$00,$00,$2f,$34,$32,$27,$00,$25,$28,$31
