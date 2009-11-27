@@ -146,20 +146,22 @@ testcol:	ld	b,4
 		jr	Death
 
 .check:		ld	a,(rockety)
+		add	a,3
 		sub	(hl)
 		jr	c,.yswap
 		cp	8		; bullet height
 		jr	c,.checkx
 		ret
 .yswap:		neg
-		cp	16		; rocket height
+		cp	4		; rocket height
 		ret	nc
 .checkx:	inc	hl
 		ld	a,(rocketx)
+		add	a,4
 		sub	(hl)
 		jr	nc,.noxswap
 		neg
-		cp	8		; rocket width
+		cp	1		; rocket width
 		ret
 .noxswap:	cp	2		; bullet width
 		ret
@@ -172,7 +174,7 @@ testcol:	ld	b,4
 		jr	c,.checkx.pj
 		ret
 .yswap.pj:	neg
-		cp	8		; platform height
+		cp	1		; platform height
 		ret	nc
 .checkx.pj:	inc	hl
 		ld	a,(rocketx)
