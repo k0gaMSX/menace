@@ -323,8 +323,13 @@ PlayLevel:
 
 
 		ld	a,(NumLives)
+		or	a
+		jr	z,.noPJs
 		ld	b,a
-		ld	hl,PatternMap+23*32
+		cp	6
+		jr	c,.initMapLoopGo
+		ld	b,5
+.initMapLoopGo:	ld	hl,PatternMap+23*32
 .initMapLoopE1:	push	bc
 		ld	a,160
 		ld	b,3
@@ -334,7 +339,7 @@ PlayLevel:
 		djnz	.initMapLoop4
 		pop	bc
 		djnz	.initMapLoopE1
-
+.noPJs:
 		ld	hl,PatternMap
 		ld	de,1800h
 		ld	bc,32*24
