@@ -486,6 +486,7 @@ enemy_col:
 	call	DestroyEnemy
 	call	toBoom
 	call	ToBase
+	call	savePJ
 	ld	hl,NumEnemy
 	dec	(hl)
 	xor	a

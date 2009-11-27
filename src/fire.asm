@@ -210,6 +210,50 @@ moveFire:
         pop     hl
 	ret
 
+
+
+savePJ:
+	ld	b,MAXFIRE
+	ld	de,spriteFire
+	ld	hl,NumFire
+.loop:
+	ld	a,(de)
+	cp	FIRE_HIDEY
+	jr	z,.next
+
+	ld	a,(rocketx)
+	sub	10
+	ld	c,a
+
+	inc	de
+	ld	a,(de)
+	dec	de
+	cp	c
+	jr	c,.next
+
+	ld	a,c
+	add	a,30
+	ld	c,a
+
+	inc	de
+	ld	a,(de)
+	dec	de
+	cp	c
+	jr	nc,.next
+
+	ld	a,FIRE_HIDEY
+	ld	(de),a
+	dec	(hl)
+
+.next:	inc	de
+	inc	de
+	inc	de
+	inc	de
+	djnz	.loop
+	ret
+
+
+
 ;;; bc -> pointer to the block where fire is launched
 ;;; de -> pointer to last coordenate of the row
 ;;; (FireY) -> y coordinate
