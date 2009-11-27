@@ -221,6 +221,10 @@ savePJ:
 	cp	FIRE_HIDEY
 	jr	z,.next
 
+	ld	a,(de)
+	cp	96
+	jr	c,.next
+
 	ld	a,(rocketx)
 	sub	10
 	ld	c,a
