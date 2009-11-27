@@ -208,6 +208,7 @@ PlayLevel:
 		call	.initMap
 		call	VisOff
 		call    InitEnemy
+		call	renderFire
 		call	InitMeteors
 		call	initPJ
 		call	PrintScore
