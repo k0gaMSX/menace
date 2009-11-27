@@ -73,7 +73,7 @@ InitLevel:
 		ld	a,3
 		ld	de,2000h
 .cpcol:		ld	hl,scrcol
-		ld	bc,800h
+		ld	bc,sprdata-scrcol
 		push	de
 		push	af
 		call    LDIRVM
