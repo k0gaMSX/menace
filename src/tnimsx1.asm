@@ -151,6 +151,58 @@ MainShow:
         cp      [hl]
         jp      z,.wait
 
+	ld	a,[FrameCtr]
+	sub	InitialWait
+	srl	a			; calculate map length
+	srl	a
+	srl	a
+	inc	a
+	ld	[tnimsx1_maplen],a
+
+	ld	hl,1800h+80h+04h -32	; calculate map offset
+	ld	de,32
+	ld	b,a
+	ld	a,12 +1
+	sub	b
+	ld	b,a
+.offsl:	add	hl,de
+	djnz	.offsl
+	ld	[tnimsx1_mapofs],hl
+
+	ld	a,[FrameCtr]
+	sub	InitialWait
+	and	7
+	inc	a
+	ld	hl,LogoMaps-24*12
+	ld	bc,24*12
+.mapl:	add	hl,bc
+	dec	a
+	jr	nz,.mapl
+	ld	[tnimsx1_mapsrc],hl
+
+	ld	a,[FrameCtr]
+	sub	InitialWait
+	and	7
+	inc	a
+	ld	hl,LogoColors-5*8
+	ld	bc,5*8
+.coll:	add	hl,bc
+	dec	a
+	jr	nz,.coll
+	ld	[tnimsx1_colsrc],hl
+
+	ld	a,[FrameCtr]
+	sub	InitialWait
+	cp	64
+	ld	hl,2800h+200
+	jr	c,.bottom
+	ld	bc,-800h
+	add	hl,bc
+.bottom:
+	ld	[tnimsx1_coldst],hl
+
+
+
 	ld	hl,BG+1		; vertical scroll
 	ld	de,BG
 	ld	b,5
@@ -313,36 +365,9 @@ Interrupt:
 	cp	InitialWait+96
 	jp	nc,.noscroll
 
-	ld	a,[FrameCtr]
-	sub	InitialWait
-	srl	a			; calculate map length
-	srl	a
-	srl	a
-	inc	a
-
-	push	af
-	ld	hl,1800h+80h+04h -32	; calculate map offset
-	ld	de,32
-	ld	b,a
-	ld	a,12 +1
-	sub	b
-	ld	b,a
-.offsl:	add	hl,de
-	djnz	.offsl
-	ex	de,hl
-	pop	af
-
-	push	af
-	ld	a,[FrameCtr]
-	sub	InitialWait
-	and	7
-	inc	a
-	ld	hl,LogoMaps-24*12
-	ld	bc,24*12
-.mapl:	add	hl,bc
-	dec	a
-	jr	nz,.mapl
-	pop	af
+	ld	a,[tnimsx1_maplen]
+	ld	de,[tnimsx1_mapofs]
+	ld	hl,[tnimsx1_mapsrc]
 
 .loop:	push	af
 	ex	de,hl
@@ -357,30 +382,11 @@ Interrupt:
 	dec	a
 	jr	nz,.loop
 
-	ld	a,[FrameCtr]
-	sub	InitialWait
-	and	7
-	inc	a
-	ld	hl,LogoColors-5*8
-	ld	bc,5*8
-.coll:	add	hl,bc
-	dec	a
-	jr	nz,.coll
-
-	ex	de,hl
-	ld	a,[FrameCtr]
-	sub	InitialWait
-	cp	64
-	ld	hl,2800h+200
-	jr	c,.bottom
-	ld	bc,-800h
-	add	hl,bc
-.bottom:
+	ld	hl,[tnimsx1_coldst]
 	call	SETWRT
-	ex	de,hl
+	ld	hl,[tnimsx1_colsrc]
 	ld	bc,[VDP.DW]
-	call 	R_outi+199
-
+	call 	R_outi+100*2
 	ld	hl,1B00h
 	call	SETWRT
 	ld	hl,Sprites
@@ -652,5 +658,10 @@ FrameCtr:	rb	1
 BG:		rb	200+40
 Sprites:	rb	128
 R_outi:		rb	240*2+1
+tnimsx1_maplen:	rb	1
+tnimsx1_mapofs:	rw	1
+tnimsx1_mapsrc:	rw	1
+tnimsx1_coldst:	rw	1
+tnimsx1_colsrc:	rw	1
 
 section code
