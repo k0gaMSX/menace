@@ -1,4 +1,4 @@
-METEOR_DSTART:	equ     8
+METEOR_DSTART:	equ     10
 METEOR_DINC:	equ	2
 METEOR_DMAX:	equ	240
 

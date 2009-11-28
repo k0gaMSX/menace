@@ -158,11 +158,11 @@ testcol:	ld	b,4
 		ret	nc
 .checkx:	inc	hl
 		ld	a,(rocketx)
-		add	a,4
+		add	a,3
 		sub	(hl)
 		jr	nc,.noxswap
 		neg
-		cp	1		; rocket width
+		cp	3		; rocket width
 		ret
 .noxswap:	cp	2		; bullet width
 		ret
