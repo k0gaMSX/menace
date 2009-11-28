@@ -153,6 +153,11 @@ initIntro:	ld	hl,20 *256+ 0
 		ld	(METEOR_PROB),a
                 ld	a,0c9h
 		ld	(0fd9ah),a
+		ld	a,($f3e1)
+		and	$fe
+		ld	b,a
+		ld	c,2
+		call	WRTVDP
 		ret
 
 
