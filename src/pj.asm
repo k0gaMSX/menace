@@ -129,7 +129,7 @@ testcol:	ld	b,4
 		pop	hl
 		jr	c,.hit
 		ld	a,(fired)
-		cp	2
+		or	a
 		jr	nz,.no.pj
 		push	hl
 		call	.check.pj
