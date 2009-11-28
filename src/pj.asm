@@ -130,11 +130,12 @@ testcol:	ld	b,4
 		jr	c,.hit
 		ld	a,(fired)
 		cp	2
+		jr	nz,.no.pj
 		push	hl
-		call	nz,.check.pj
+		call	.check.pj
 		pop	hl
 		jr	c,.hit
-		add	hl,de
+.no.pj:		add	hl,de
 		djnz	.loop
 		ret
 
@@ -153,7 +154,7 @@ testcol:	ld	b,4
 		jr	c,.checkx
 		ret
 .yswap:		neg
-		cp	4		; rocket height
+		cp	12		; rocket height
 		ret	nc
 .checkx:	inc	hl
 		ld	a,(rocketx)
