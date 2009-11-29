@@ -222,18 +222,23 @@ PlayLevel:
 %endif
 		ei
  		halt
+                xor     a
+                ld      (vblankf),a
 		call	doPj
 		call	doEnemy
 		call	doMeteors
 		call	VisOn
 		call	TestDeath
 		jr	nz,.death
+                ld      a,1
+                ld      (vblankf),a
 		call	TestEnd
 		jr	z,.GameLoop
 
 
-.endGame:	call	.WaitTime
-		push	af
+.endGame:
+        	push	af
+                call	.WaitTime
 	        ld	a,208
 	        ld	hl,$1b00
 	        call	WRTVRM
@@ -242,6 +247,8 @@ PlayLevel:
 		ret
 
 .death:
+                ld      a,1
+                ld      (vblankf),a
 		ld	hl,waitgame
 		dec	(hl)
 		jr	nz,.GameLoop
@@ -256,11 +263,13 @@ PlayLevel:
 		ld	b,50
 .1:		ei
 		halt
-		push	af
+                ld      a,1
+                ld      (vblankf),a
 		push	bc
+                ld      a,1
+                ld      (vblankf),a
 		call	renderPJ
 		pop	bc
-		pop	af
 		djnz	.1
 		ret
 
@@ -445,6 +454,13 @@ PlayLevel:
 
 
 LevelISR:
+                call	SoundISR
+                ld      hl,vblankf
+                xor     a
+                or      (hl)
+                ret     z
+
+                ld      (hl),0
 %if DEBUG
 		ld	a,5
  		call	set_cfondo
@@ -550,7 +566,7 @@ LevelISR:
 		ld	a,10
   		call	set_cfondo
 %endif
-		call	SoundISR
+
 %if DEBUG
  		ld	a,1
   		call	set_cfondo
@@ -938,6 +954,7 @@ visoff:	di
 
 section rdata
 
+vblankf:        rb      1
 waitgame:	rb	1
 DeathF:		rb	1
 time:		rb	1
