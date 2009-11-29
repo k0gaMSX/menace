@@ -263,8 +263,6 @@ PlayLevel:
 		ld	b,50
 .1:		ei
 		halt
-                ld      a,1
-                ld      (vblankf),a
 		push	bc
                 ld      a,1
                 ld      (vblankf),a
@@ -454,19 +452,20 @@ PlayLevel:
 
 
 LevelISR:
+      		ld	hl,time
+		inc	(hl)
+
                 call	SoundISR
                 ld      hl,vblankf
                 xor     a
                 or      (hl)
                 ret     z
-
                 ld      (hl),0
+
 %if DEBUG
 		ld	a,5
  		call	set_cfondo
 %endif
-		ld	hl,time
-		inc	(hl)
 
 		ld	c,98h
 		ld	de,1b00h
