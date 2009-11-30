@@ -3,9 +3,9 @@ AS=/usr/local/bin/tniasm
 SRC = menace.asm tnimsx1.asm
 MSX = openmsx
 MSXFLAGS = -machine turbor -ext debugdevice
-SR52 = ../tools/sr52pat
+SR52 = wine ../tools/sr52pat.exe
 PAT = patterns.pat
-SPR = ../tools/sr52spr
+SPR = wine ../tools/sr52spr.exe
 TCF = wine ../tools/tcpack.exe
 VPATH = ../sc5 ../sc2 ../data
 

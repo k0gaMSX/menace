@@ -185,7 +185,7 @@ splash:
 %incbin  "intro03.col.tcf",8
 
 introtune:
-%incbin  "../sounds/Alien Menace.pt3",100
+%incbin  "../sounds/Alien_Menace.pt3",100
 
 p1end:	equ $
 	ds      p1padd,0
