@@ -284,7 +284,7 @@ NewFire:
 	ld	a,(NumEnemy)
 	inc	a
 	sra	a
-	inc	a
+;	dec	a
 	ld	c,a
 	ld	a,(NumFire)
 	cp 	c
