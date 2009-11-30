@@ -419,6 +419,10 @@ move_pj:
 
 .move_rocket:
 	ld	a,(rockety)
+	cp	16
+	jp	c,.nocol_rock
+
+
 	and	0f8h
 	ld	l,a
 	ld	h,0
@@ -695,7 +699,6 @@ TestRocketCol:
 	call	z,.Test1b
 	ret	nz
 
-.1stPart_not:
 	ld	hl,(.maptr)
 	ld	de,30
 	add	hl,de
