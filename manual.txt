@@ -63,7 +63,7 @@ Credits:
 --------
 
 Graphics:	paulbrk
-		GuyveR800
+		GuyveR800 (TNI logo)
 
 Sound effects:	paulbrk
 
