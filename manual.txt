@@ -64,9 +64,9 @@ Credits:
 
 Graphics:	paulbrk
 
-Sound effects:	paulbrk
+Sound Effects:	paulbrk
 
-Intro music:	Beyker
+Intro Music:	Beyker
 
 Coding:		k0ga
 		BiFi
