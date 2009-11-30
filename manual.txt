@@ -67,6 +67,8 @@ Graphics:	paulbrk
 
 Sound effects:	paulbrk
 
+Intro music:	Beyker
+
 Coding:		k0ga
 		BiFi
 		GuyveR800
