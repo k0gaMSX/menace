@@ -347,6 +347,8 @@ renderFire:
 	ld	(hl),a
 
 .0:
+	call	.rotate
+
 	ld	b,MAXFIRE
 	ld	de,spriteFire
  	ld	ix,spratt+SPRFIRE_A*4
@@ -364,7 +366,17 @@ renderFire:
 	ret
 
 
-
+.rotate:	ld	b,4
+.loop:		push	bc
+		ld	bc,MAXFIRE_1*4-1
+		ld	de,spriteFire
+		ld	hl,spriteFire+1
+		ld	a,(de)
+		ldir
+		ld	(de),a
+		pop	bc
+		djnz	.loop
+		ret
 
 ;;; b -> Number of sprite
 
