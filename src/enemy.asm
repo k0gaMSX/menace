@@ -371,7 +371,8 @@ DestroyEnemy:
 	ld	a,(rockety)
 	ld	d,a
 	call	.findCorner
-	ld	c,4
+	ld	c,3
+
 	xor	a
 .loopy:
 	ld	b,3
@@ -417,8 +418,7 @@ DestroyEnemy:
 	call	.findEnemy
 .findloopL:
         ex      de,hl
-.skip_marquee:
-        ld      hl,PatternMap+96
+        ld      hl,PatternMap+128
         or      a
         sbc     hl,de
         jr      c,.noskip_marquee
