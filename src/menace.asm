@@ -86,11 +86,19 @@ showGameOver:
 	call	LDIRVM
 
 	call	ENASCR
-	ei
+        di
+	ld	a,0c3h
+	ld	hl,GameOverISR
+	ld	(0fd9ah),a
+	ld	(0fd9bh),hl
+
+        ei
+        call    gameover_sfx
 	ld	b,0
 .wait:	halt
 	djnz	.wait
 
+        call    DelIsrLevel
 	jr	wasGameOver
 
 
@@ -109,6 +117,9 @@ showEnding:
 
 
 
+GameOverISR:
+        call	SoundISR
+        ret
 
 
 

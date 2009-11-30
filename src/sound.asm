@@ -26,6 +26,10 @@ LETTER_NUMBER:          equ   10
 LETTER_PRIO:            equ   10
 
 
+GAMEOVER_NUMBER:        equ   11
+GAMEOVER_PRIO:          equ    1
+
+
 SoundISR:
 	call	PT3_ROUT
 	ld	a,(inIntro)
@@ -63,6 +67,12 @@ initsound:
 	call	PT3_ROUT
 	pop	af
 	ret
+
+
+gameover_sfx:
+	ld	c,GAMEOVER_PRIO
+	ld	a,GAMEOVER_NUMBER
+	jp	ayFX_INIT
 
 
 
