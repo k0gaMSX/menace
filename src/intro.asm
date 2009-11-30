@@ -12,6 +12,8 @@ initIntro:	ld	hl,20 *256+ 0
 
 		ld	a,1
 		ld	(inIntro),a
+		ld	hl,PT3_SETUP
+		res	0,(hl)
 		ld	hl,introtune-100
 		call	PT3_INIT
 
