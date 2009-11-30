@@ -28,7 +28,12 @@ LETTER_PRIO:            equ   10
 
 SoundISR:
 	call	PT3_ROUT
-	call	SimPT3
+	ld	a,(inIntro)
+	or	a
+	push	af
+	call	nz,PT3_PLAY
+	pop	af
+	call	z,SimPT3
 	call	ayFX_PLAY
 	ret
 

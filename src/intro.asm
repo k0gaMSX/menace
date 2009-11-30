@@ -10,11 +10,18 @@ initIntro:	ld	hl,20 *256+ 0
 		ld	(CLIKSW),a
 		call	INIGRP
 
+		ld	a,1
+		ld	(inIntro),a
+		ld	hl,introtune-100
+		call	PT3_INIT
+
 .initloop:	ld	hl,intromode
 		res	0,(hl)
 		call	DISSCR
+		ld	a,1
+		ld	(vdpstuff),a
 
-		call	.start
+		;call	.start
 
 		xor	a
 		ld	bc,$4000
@@ -117,6 +124,8 @@ initIntro:	ld	hl,20 *256+ 0
 		ld	($fd9b),hl
 		ei
 
+		ld	a,0
+		ld	(vdpstuff),a
 		call	ENASCR
 
 
@@ -151,8 +160,11 @@ initIntro:	ld	hl,20 *256+ 0
 		ld	(NumLives),a
 		ld	a,METEOR_DSTART
 		ld	(METEOR_PROB),a
-                ld	a,0c9h
+		call	PT3_MUTE
+		ld	a,0c9h
 		ld	(0fd9ah),a
+		xor	a
+		ld	(inIntro),a
 		ld	a,($f3e1)
 		and	$fe
 		ld	b,a
@@ -174,6 +186,10 @@ initIntro:	ld	hl,20 *256+ 0
 mainIntro:
 		call	RDVDP
                 call    SoundISR
+
+		ld	a,(vdpstuff)
+		or	a
+		ret	nz
 
 		; $1800 = 0001 1000 0000 0000
 		; $1C00 = 0001 1100 0000 0000
@@ -271,5 +287,7 @@ section rdata
 intromode:	rb	1		; bit 0 = intro demo mode
 					; bit 1 = blink flag
 blinkdelay:	rb	1
+vdpstuff:	rb	1		; !0 = busy doing VDP stuff, so disable R#2 toggle
+inIntro:	rb	1		; !0 = allow music to play
 
 section code

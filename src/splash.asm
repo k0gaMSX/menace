@@ -3,19 +3,23 @@ introdemo:	ld	ix,.script
 .loop:		push	bc
 
 		call	DISSCR
-		di
-		ld	a,$c9
-		ld	($fd9a),a
-		ei
+		;di
+		;ld	a,$c9
+		;ld	($fd9a),a
+		;ei
+		ld	a,1
+		ld	(vdpstuff),a
 
 		call	showdemo
 
-		di
-		ld	a,$c3
-		ld	hl,mainIntro
-		ld	($fd9a),a
-		ld	($fd9b),hl
-		ei
+		;di
+		;ld	a,$c3
+		;ld	hl,mainIntro
+		;ld	($fd9a),a
+		;ld	($fd9b),hl
+		;ei
+		ld	a,0
+		ld	(vdpstuff),a
 		call	ENASCR
 
 		ld	c,1
@@ -39,7 +43,7 @@ introdemo:	ld	ix,.script
 		ret
 
 .skip:		pop	bc
-		call	initsound
+		;call	initsound
 		ret
 
 .script:	dw	splash.intro01.pat,splash.intro01.col,$1a41,.text.1
@@ -63,10 +67,12 @@ enddemo:	ld	ix,.script
 .loop:		push	bc
 
 		call	DISSCR
-		di
-		ld	a,$c9
-		ld	($fd9a),a
-		ei
+		;di
+		;ld	a,$c9
+		;ld	($fd9a),a
+		;ei
+		ld	a,1
+		ld	(vdpstuff),a
 
 		pop	bc
 		ld	a,b
@@ -88,12 +94,14 @@ enddemo:	ld	ix,.script
 		ld	hl,font.exclamation
 		call	LDIRVM
 
-.second:	di
-		ld	a,$c3
-		ld	hl,mainIntro
-		ld	($fd9a),a
-		ld	($fd9b),hl
-		ei
+.second:	;di
+		;ld	a,$c3
+		;ld	hl,mainIntro
+		;ld	($fd9a),a
+		;ld	($fd9b),hl
+		;ei
+		ld	a,0
+		ld	(vdpstuff),a
 		call	ENASCR
 
 		pop	bc
@@ -111,10 +119,10 @@ enddemo:	ld	ix,.script
 .skip:		pop	bc
 		djnz	.loop
 
-		di
-		ld	a,$c9
-		ld	($fd9a),a
-		ei
+		;di
+		;ld	a,$c9
+		;ld	($fd9a),a
+		;ei
 		ret
 
 
@@ -188,7 +196,7 @@ showtext:	ld	l,(ix+4)
 		jr	.print
 
 .end:		pop	hl
-		call	initsound
+		;call	initsound
 		ret
 
 demofont:	ld	de,16*8		; starting from $47

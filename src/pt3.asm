@@ -1,5 +1,5 @@
 PT3_ROUT:	XOR A
-	
+
 ROUT_A0:	; --- FIXES BITS 6 AND 7 OF MIXER ---
 		LD	HL,AYREGS+7
 		set	7,(hl)
@@ -9,7 +9,7 @@ ROUT_A0:	; --- FIXES BITS 6 AND 7 OF MIXER ---
 		LD HL,AYREGS
 .LOUT:		OUT (C),A
 		INC C
-		OUTI 
+		OUTI
 		DEC C
 		INC A
 		CP 13
@@ -23,14 +23,14 @@ ROUT_A0:	; --- FIXES BITS 6 AND 7 OF MIXER ---
 		RET
 
 
-/;		; --- PT3 REPLAYER WORKING ON ROM ---
+		; --- PT3 REPLAYER WORKING ON ROM ---
 		; --- Can be assembled with asMSX ---
 		; --- ROM version: MSX-KUN        ---
 		; --- asMSX version: SapphiRe     ---
 
 ; Based on MSX version of PT3 by Dioniso
 ;
-; This version of the replayer uses a fixed volume and note table, if you need a 
+; This version of the replayer uses a fixed volume and note table, if you need a
 ; different note table you can copy it from TABLES.TXT file, distributed with the
 ; original PT3 distribution. This version also allows the use of PT3 commands.
 ;
@@ -110,8 +110,8 @@ AR_EnvTp	equ 13	;RESB 1
 
 
 
-	
-	
+
+
 		; --- CODE STARTS HERE ---
 
 CHECKLP:	LD	HL,PT3_SETUP
@@ -241,7 +241,7 @@ PD_VOL:		RLCA
 		RLCA
 		LD (IX+(CHNPRM_Volume-12)),A
 		JR PD_LP2
-	
+
 PD_EOff:	LD (IX+(CHNPRM_Env_En-12)),A
 		LD (IX+(CHNPRM_PsInOr-12)),A
 		JR PD_LP2
@@ -258,7 +258,7 @@ PD_ENV:		CALL SETENV
 
 PD_ORN:		CALL SETORN
 		JR PD_LOOP
-       
+
 PD_ESAM:	LD (IX+(CHNPRM_Env_En-12)),A
 		LD (IX+(CHNPRM_PsInOr-12)),A
 		CALL NZ,SETENV
@@ -309,7 +309,7 @@ PD_NOIS:	LD (Ns_Base),A
 
 PD_REL:		RES 0,(IX+(CHNPRM_Flags-12))
 		JR PD_RES
-	
+
 PD_NOTE:	LD (IX+(CHNPRM_Note-12)),A
 		SET 0,(IX+(CHNPRM_Flags-12))
 		XOR A
@@ -439,7 +439,7 @@ C_DELAY:	LD A,(BC)
 		INC BC
 		LD (PT3_Delay),A
 		RET
-	
+
 SETENV:		LD (IX+(CHNPRM_Env_En-12)),E
 		LD (AYREGS+AR_EnvTp),A
 		LD A,(BC)
@@ -820,7 +820,7 @@ PT3_AddToEn:		rb	1
 PT3_Env_Del:		rb	1
 PT3_ESldAdd:		rb	2
 PT3_PDSP:		rb	2
-	
+
 VARS:
 
 ChanA:			rb	29			;CHNPRM_Size
@@ -839,5 +839,4 @@ AYREGS:
 VT_:			rb	14
 EnvBase:		rb	2
 VAR0END:		rb	240
-section code	
-\;
+section code

@@ -164,7 +164,7 @@ ayFX_PLAY:	; --- PLAY A FRAME OF AN ayFX STREAM ---
 
 
 
-section  rdata	
+section  rdata
 
 ayFX_BANK:	rb	2			; Current ayFX Bank
 ayFX_PRIORITY:	rb	1			; Current ayFX stream priotity
@@ -175,7 +175,7 @@ ayFX_VOLUME:	rb	1			; Current volume of the ayFX stream
 ayFX_CHANNEL:	rb	1			; PSG channel to play the ayFX stream
 
 		; --- UNCOMMENT THIS IF YOU DON'T USE THIS REPLAYER WITH PT3 REPLAYER ---
-AYREGS:		rb	14			; Ram copy of PSG registers
+;AYREGS:		rb	14			; Ram copy of PSG registers
 		; --- UNCOMMENT THIS IF YOU DON'T USE THIS REPLAYER WITH PT3 REPLAYER ---
-	
-section code 
+
+section code
