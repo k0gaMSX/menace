@@ -93,7 +93,7 @@ showGameOver:
 	ld	(0fd9bh),hl
 
         ei
-        call    gameover_sfx
+        ;; call    gameover_sfx
 	ld	b,0
 .wait:	halt
 	djnz	.wait
