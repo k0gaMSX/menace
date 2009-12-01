@@ -94,12 +94,12 @@ enddemo:	ld	ix,.script
 		ld	hl,font.exclamation
 		call	LDIRVM
 
-.second:	;di
-		;ld	a,$c3
-		;ld	hl,mainIntro
-		;ld	($fd9a),a
-		;ld	($fd9b),hl
-		;ei
+.second:	di
+		ld	a,$c3
+		ld	hl,mainIntro
+		ld	($fd9a),a
+		ld	($fd9b),hl
+		ei
 		ld	a,0
 		ld	(vdpstuff),a
 		call	ENASCR
@@ -119,10 +119,15 @@ enddemo:	ld	ix,.script
 .skip:		pop	bc
 		djnz	.loop
 
-		;di
-		;ld	a,$c9
-		;ld	($fd9a),a
-		;ei
+		di
+		ld	a,$c9
+		ld	($fd9a),a
+		ei
+		ld	a,($f3e1)
+		and	$fe
+		ld	b,a
+		ld	c,2
+		call	WRTVDP
 		ret
 
 
