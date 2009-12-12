@@ -206,7 +206,7 @@ PlayLevel:
 		call	.showLevel
 		call	.CleanMap
 		call	.initMap
-		call	VisOff
+		call	DISSCR
 		call    InitEnemy
 		call	renderFire
 		call	InitMeteors
@@ -227,7 +227,7 @@ PlayLevel:
 		call	doPj
 		call	doEnemy
 		call	doMeteors
-		call	VisOn
+		call	ENASCR
 		call	TestDeath
 		jr	nz,.death
                 ld      a,1
@@ -467,7 +467,6 @@ LevelISR:
  		call	set_cfondo
 %endif
 
-		ld	c,98h
 		ld	de,1b00h
 		call	SetPtr_VRAM
 		ld	hl,spratt
@@ -693,13 +692,11 @@ LevelISR:
 		add	hl,de
 		ld	de,1000h+30*8
 		call	SetPtr_VRAM
-		ld	c,98h
 		call	tovram2x8_slow
 
 
 		ld	de,1000h+62*8
 		call	SetPtr_VRAM
-		ld 	c,98h
 		call	tovram4x8_slow
 
 		pop	de
@@ -707,12 +704,10 @@ LevelISR:
 		add	hl,de
 		ld	de,3000h+30*8
 		call	SetPtr_VRAM
-		ld	c,98h
 		call	tovram2x8_slow
 
 		ld	de,3000h+62*8
 		call	SetPtr_VRAM
-		ld 	c,98h
 		call  	tovram4x8_slow
 		ret
 
@@ -847,45 +842,16 @@ tovram1x8_slow:
 
 
 
-ReadPTR_VRAM:
-	di
-        ld      a,e
-	out	(99h),a		;VDP acess
-	ld	a,d
-	out	(99h),a		;VDP acess
-	ret
-
-
-
-;Nombre:  SetPtr_VRAM
-;Entrada: de -> Direccion a escribir
-;Modifica: af
-
-SetPtr_VRAM:
-	di
-	ld	a,e
-	out	(99h),a		;VDP acess
-	ld	a,d
-	or	40h		;'@'
-	out	(99h),a		;VDP acess
-	ret
-
-
 ;nombre: set_spd8
 ;objetivo: poner los sprites en 16x16
 
 
 set_spd8:
-	di
 	ld	a,(RG1SAV)
-	res	1,a
-	ld	(RG1SAV),a
-	out	(99h),a
-	ld	a,128+1
-	out	(99h),a
-	ei
-	ret
-
+	and	$fc
+	ld	b,a
+	ld	c,1
+	jp	WRTVDP
 
 
 
@@ -894,25 +860,6 @@ CleanScr:	xor	a
 		ld	hl,1800h
 		call	FILVRM
 		ret
-
-
-;Nombre: VisOn
-;Autor: Roberto Vargas Caballero
-;Objetivo: Esta Funcion Habilita La Visualizacion De La Pantalla Ademas
-;          De Colocar El Tamagno De Sprites A 16x16
-;Modifica: A
-
-
-VisOn:	di
-	ld	a,(rg1sav)
-	set	6,a
-	ld	(rg1sav),a
-	out	(99h),a
-	ld	a,128+1
-	out	(99h),a
-	ret
-
-
 
 
 %if DEBUG
@@ -931,22 +878,63 @@ set_cfondo:
 %endif
 
 
-;nombre: VisOff
-;Autor: Roberto Vargas Caballero
-;Objetivo: Esta Funcion Deshabilita La Visualizacion De La Pantalla
-;          Ademas De Colocar El Tamagno De Los Sprites A 16x16
-;Modifica: A
-
-
-visoff:	di
-	ld	a,(rg1sav)
-	res	6,a
-	ld	(rg1sav),a
-	out	(99h),a
-	ld	a,128+1
-	out	(99h),a
-	ei
+fastVdp:
+	ld	bc,.length
+	ld	de,ReadPTR_VRAM
+	ld	hl,.source
+	ldir
+	ld	a,(VDP.DR)
+	ld	(ReadPTR_VRAM.3),a
+	ld	a,(VDP.DW)
+	ld	(SetPTR_VRAM.3),a
+	inc	a
+	ld	(ReadPTR_VRAM.1),a
+	ld	(ReadPTR_VRAM.2),a
+	ld	(SetPTR_VRAM.1),a
+	ld	(SetPTR_VRAM.2),a
+;	ld	(VisOn.1),a
+;	ld	(VisOn.2),a
+;	ld	(VisOff.1),a
+;	ld	(VisOff.2),a
 	ret
+
+.source:
+	phase	.dst
+
+ReadPTR_VRAM:
+	di
+        ld      a,e
+.1:	equ	$+1
+	out	(99h),a		;VDP acess
+	ld	a,d
+.2:	equ	$+1
+	out	(99h),a		;VDP acess
+.3:	equ	$+1
+	ld	c,98h
+	ret
+
+
+
+;Nombre:  SetPtr_VRAM
+;Entrada: de -> Direccion a escribir
+;Modifica: af
+
+SetPtr_VRAM:
+	di
+	ld	a,e
+.1:	equ	$+1
+	out	(99h),a		;VDP acess
+	ld	a,d
+	or	40h		;'@'
+.2:	equ	$+1
+	out	(99h),a		;VDP acess
+.3:	equ	$+1
+	ld	c,98h
+	ret
+
+	dephase
+
+fastVdp.length:	equ	$-fastVdp.source
 
 
 
@@ -961,7 +949,7 @@ NumLevel:	rb	1
 NumLives:	rb	1
 PatternMap:	rb	32*24
 spratt:		rb	4*32
-
+fastVdp.dst:	rb	fastVdp.length
 
 
 

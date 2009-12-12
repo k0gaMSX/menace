@@ -31,6 +31,7 @@ main:	call	SaveSlotC
 	call	RomSlotPage2
 	call	InitScore
 	call	InitBasePorts
+	call	fastVdp
 	;ld	a,1fh
 	;out	(02eh),a
 

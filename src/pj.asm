@@ -814,11 +814,10 @@ TestRocketCol:
  	call	ReadPTR_VRAM
 	ei
 	ld	b,8
-	ld	c,98h
 	ld	hl,.def
 
 .getdefloop:
-	in	a,(98h)
+	in	a,(c)
 	ld	(hl),a
 	inc	hl
 	djnz	.getdefloop
