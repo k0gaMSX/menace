@@ -5,7 +5,7 @@ ROUT_A0:	; --- FIXES BITS 6 AND 7 OF MIXER ---
 		set	7,(hl)
 		res	6,(hl)
 
-		LD C,0A0h
+		LD BC,(BASEPORT.PSG)
 		LD HL,AYREGS
 .LOUT:		OUT (C),A
 		INC C

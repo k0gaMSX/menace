@@ -30,6 +30,7 @@ p1load:	equ	$
 main:	call	SaveSlotC
 	call	RomSlotPage2
 	call	InitScore
+	call	InitBasePorts
 	;ld	a,1fh
 	;out	(02eh),a
 
